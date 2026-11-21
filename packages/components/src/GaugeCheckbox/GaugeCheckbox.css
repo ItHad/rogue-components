@@ -1,0 +1,164 @@
+.rc-gcb {
+  --rc-gcb-accent: #6ee7b7;
+  --rc-gcb-danger: #fb7185;
+  --rc-gcb-warn: #fbbf24;
+  --rc-gcb-ink: currentColor;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10px;
+  font: inherit;
+}
+
+.rc-gcb__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rc-gcb__label {
+  cursor: pointer;
+  user-select: none;
+}
+
+.rc-gcb__box {
+  position: relative;
+  flex: none;
+  inline-size: 22px;
+  block-size: 22px;
+  padding: 0;
+  border: 2px solid var(--rc-gcb-ink);
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.rc-gcb__box:focus-visible {
+  outline: 3px solid var(--rc-gcb-accent);
+  outline-offset: 2px;
+}
+
+.rc-gcb[data-checked] .rc-gcb__box {
+  background: var(--rc-gcb-accent);
+  border-color: var(--rc-gcb-accent);
+  color: #052e1c;
+}
+
+/* 箱の中に下からたまっていくゲージ */
+.rc-gcb__fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: bottom center;
+  background: color-mix(in srgb, var(--rc-gcb-accent) 70%, transparent);
+  pointer-events: none;
+  /* 押した瞬間にぐっと持ち上がる */
+  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+/* 外すときは上から赤く侵食していく */
+.rc-gcb__fill[data-direction="off"] {
+  transform-origin: top center;
+  background: var(--rc-gcb-danger);
+}
+
+.rc-gcb__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.rc-gcb__mark[data-hit] {
+  animation: rc-gcb-hit 0.1s ease-out;
+}
+
+.rc-gcb__mark svg {
+  inline-size: 16px;
+  block-size: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.15s, transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.rc-gcb[data-checked] .rc-gcb__mark svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes rc-gcb-hit {
+  0% {
+    transform: scale(0.8);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rc-gcb__bill {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 12px;
+  border: 1px solid var(--rc-gcb-warn);
+  border-radius: 8px;
+  font-size: 13px;
+  overflow: hidden;
+  animation: rc-gcb-bill-in 0.25s ease-out;
+}
+
+.rc-gcb__pay {
+  padding: 2px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--rc-gcb-warn);
+  color: #422006;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rc-gcb__pay-label {
+  display: inline-block;
+  animation: rc-gcb-hit 0.1s ease-out;
+}
+
+.rc-gcb__timer {
+  position: absolute;
+  inset: auto 0 0 0;
+  block-size: 3px;
+  transform-origin: left center;
+  background: var(--rc-gcb-warn);
+}
+
+@keyframes rc-gcb-bill-in {
+  from {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+}
+
+.rc-gcb[data-disabled] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .rc-gcb__mark[data-hit],
+  .rc-gcb__pay-label,
+  .rc-gcb__bill {
+    animation: none;
+  }
+}

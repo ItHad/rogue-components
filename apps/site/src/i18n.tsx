@@ -1,0 +1,305 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { LocaleProvider, type Locale } from "rogue-components";
+
+export type { Locale };
+
+const STORAGE_KEY = "hoshikuzu-gacha:locale";
+
+const ja = {
+  siteName: "ほしくずガチャ",
+  nav: { gacha: "ガチャ", collection: "図鑑", shop: "ショップ" },
+  mainNav: "メイン",
+  gemsLabel: (n: number) => `所持ほしくず ${n}`,
+  footer: "ほしくずガチャ | 入力ひとつに全力をかけるガチャサイト",
+  language: "言語",
+  switchTo: "English",
+  modalClose: "閉じる",
+
+  gacha: {
+    eyebrow: "期間限定ではないガチャ",
+    lead: "夜空から落ちてきたものが出てきます。だいたいは小石です。",
+    openCapsule: "カプセルを開ける",
+    capsuleHint: "カプセルをタップして開けよう",
+    resultTitle: "ガチャ結果",
+    pull1: "1 回引く",
+    pull10: "10 回引く",
+    short: "ほしくずが足りません。",
+    goShop: "ショップでチャージする",
+    rates: "排出率",
+  },
+
+  collection: {
+    title: "図鑑",
+    lead: (found: number, total: number) => `${found} / ${total} 種類 見つけました`,
+    unknown: "？？？",
+  },
+
+  shop: {
+    title: "ショップ",
+    lead: "ほしくずをチャージできます。お代はいただきません（決済パスワードはいただきます）。",
+    product: "ほしくず 100 個パック",
+    desc: "1 パックでガチャを 1 回引けます。",
+    quantity: "購入数",
+    total: "合計",
+    buy: "購入する",
+    done: (amount: string) => `✦ ${amount} をチャージしました。`,
+  },
+
+  terms: {
+    title: "利用規約への同意",
+    docLabel: "利用規約",
+    articles: [
+      "第 1 条　本サービスは、ほしくずを消費してガチャを引くサービスです。",
+      "第 2 条　排出されたアイテムは、宇宙的価値を除き、いかなる価値も持ちません。",
+      "第 3 条　利用者は、入力ひとつに全力をかけることに同意するものとします。",
+      "第 4 条　本規約への同意は、同意を維持し続けることによってのみ有効となります。",
+    ],
+    agree: "利用規約に同意する",
+    proceed: "同意してガチャへ進む",
+  },
+
+  consent: {
+    title: "Coookie の使用について",
+    message: "🍪 当サイトでは、より快適にご利用いただくために Coookie を使用しています。",
+    details: "詳細",
+    accept: "Coookie に同意しました。おいしくいただきます。",
+    reject: "Coookie を拒否しました。よくぞ同意を倒しました。",
+    proceed: "サイトへ進む",
+  },
+
+  age: {
+    title: "年齢確認",
+    lead: "ガチャのご利用には年齢確認が必要です。生年月日を入力してください。",
+    label: "生年月日",
+    future: "未来から来た方はご利用いただけません。",
+    age: (n: number) => `${n} 歳として確認します。`,
+    confirm: "この生年月日で確認する",
+  },
+
+  captcha: {
+    title: "人間確認",
+    lead: "ガチャを引く前に、あなたが人間であることを確認します。",
+    proceed: "ガチャへ進む",
+  },
+
+  payment: {
+    title: "決済パスワード",
+    setLead: "決済パスワードを設定してください。",
+    label: "決済パスワード",
+    next: "次へ",
+    confirmLead: "確認のため、もう一度入力してください。",
+    confirmLabel: "決済パスワード（確認）",
+    mismatch: "パスワードが一致しません。最初から入れ直してください。",
+    setAndPay: "設定して決済する",
+    wrong: "パスワードが違います。",
+    pay: "決済する",
+  },
+
+  policy: {
+    revised: "最終改定日: 宇宙暦 0.0001 年",
+    title: "Coookie ポリシー",
+    lead: "ほしくずガチャ（以下「当サイト」）における Coookie（コーーキー）の取り扱いについて定めます。",
+    sections: [
+      {
+        heading: "第 1 条　Coookie とは",
+        body: "Coookie とは、夜空の隅でこっそり焼かれている架空の焼き菓子です。o がひとつ多いぶん、通常の Cookie より少しだけ香ばしいとされています。ブラウザの Cookie とは一切関係がありません。",
+      },
+      {
+        heading: "第 2 条　収集する情報",
+        body: "当サイトは、Coookie を通じて以下の情報を収集しません。",
+        list: [
+          "あなたが同意と拒否のどちらを応援したかったか",
+          "連打で指がどれくらい疲れたか",
+          "ガチャで小石しか出なかったときの気持ち",
+        ],
+      },
+      {
+        heading: "第 3 条　拒否が勝ちにくい理由",
+        body: "同意は長年の修行により、自然回復とガードを身につけました。拒否が弱いのは仕様であり、どこかの実在するサイトを参考にしたわけではありません。たぶん。",
+      },
+      {
+        heading: "第 4 条　第三者への提供",
+        body: "焼き上がった Coookie は、月のうさぎ、流れ星、およびその他の天体に提供されることがあります。提供先はおいしくいただきます。",
+      },
+      {
+        heading: "第 5 条　保存期間",
+        body: "Coookie の賞味期限は、焼き上がりから約 46 億年です。お早めにお召し上がりください。",
+      },
+    ] as { heading: string; body: string; list?: string[] }[],
+    back: "ガチャへ戻る",
+  },
+};
+
+export type Messages = typeof ja;
+
+const en: Messages = {
+  siteName: "Stardust Gacha",
+  nav: { gacha: "Gacha", collection: "Collection", shop: "Shop" },
+  mainNav: "Main",
+  gemsLabel: (n: number) => `${n} stardust`,
+  footer: "Stardust Gacha | a gacha site where every input takes everything you've got",
+  language: "Language",
+  switchTo: "日本語",
+  modalClose: "Close",
+
+  gacha: {
+    eyebrow: "A Not-Limited-Time Gacha",
+    lead: "Things that fell from the night sky come out. Mostly pebbles.",
+    openCapsule: "Open the capsule",
+    capsuleHint: "Tap the capsule to open it",
+    resultTitle: "Your Pull",
+    pull1: "Pull ×1",
+    pull10: "Pull ×10",
+    short: "Not enough stardust.",
+    goShop: "Top up at the shop",
+    rates: "Drop rates",
+  },
+
+  collection: {
+    title: "Collection",
+    lead: (found: number, total: number) => `Found ${found} / ${total}`,
+    unknown: "???",
+  },
+
+  shop: {
+    title: "Shop",
+    lead: "Top up your stardust. It's free (we only take your payment password).",
+    product: "Stardust ×100 Pack",
+    desc: "One pack gets you one pull.",
+    quantity: "Quantity",
+    total: "Total",
+    buy: "Buy",
+    done: (amount: string) => `Added ✦ ${amount}.`,
+  },
+
+  terms: {
+    title: "Terms of Service",
+    docLabel: "Terms of Service",
+    articles: [
+      "Article 1. This service lets you spend stardust to pull the gacha.",
+      "Article 2. Items obtained have no value whatsoever, cosmic value excepted.",
+      "Article 3. The user agrees to give every single input everything they've got.",
+      "Article 4. Agreement to these terms remains valid only for as long as it is maintained.",
+    ],
+    agree: "I agree to the Terms of Service",
+    proceed: "Agree and continue",
+  },
+
+  consent: {
+    title: "About Coookies",
+    message: "🍪 We use Coookies to give you a better experience.",
+    details: "Learn more",
+    accept: "You accepted Coookies. We'll enjoy them.",
+    reject: "You rejected Coookies. You actually beat Accept.",
+    proceed: "Continue to site",
+  },
+
+  age: {
+    title: "Age Verification",
+    lead: "Age verification is required to use the gacha. Please enter your date of birth.",
+    label: "Date of birth",
+    future: "Visitors from the future cannot use this service.",
+    age: (n: number) => `You will be verified as ${n} years old.`,
+    confirm: "Confirm date of birth",
+  },
+
+  captcha: {
+    title: "Human Verification",
+    lead: "Before you pull, we need to confirm that you are human.",
+    proceed: "Continue to gacha",
+  },
+
+  payment: {
+    title: "Payment Password",
+    setLead: "Please set a payment password.",
+    label: "Payment password",
+    next: "Next",
+    confirmLead: "Please enter it once more to confirm.",
+    confirmLabel: "Payment password (confirm)",
+    mismatch: "The passwords don't match. Please start over.",
+    setAndPay: "Set and pay",
+    wrong: "Incorrect password.",
+    pay: "Pay",
+  },
+
+  policy: {
+    revised: "Last revised: Space Era 0.0001",
+    title: "Coookie Policy",
+    lead: "This policy describes how Stardust Gacha (the \"Site\") handles Coookies.",
+    sections: [
+      {
+        heading: "Article 1. What is a Coookie?",
+        body: "A Coookie is an imaginary baked treat secretly made in a corner of the night sky. With one extra o, it is said to be slightly more fragrant than a regular cookie. It has nothing to do with browser cookies.",
+      },
+      {
+        heading: "Article 2. Information we collect",
+        body: "The Site does not collect the following information through Coookies:",
+        list: [
+          "Which side you were secretly rooting for, Accept or Reject",
+          "How tired your fingers got from all the clicking",
+          "How you felt when the gacha gave you nothing but pebbles",
+        ],
+      },
+      {
+        heading: "Article 3. Why Reject rarely wins",
+        body: "Through years of training, Accept has mastered regeneration and guarding. Reject being weak is by design and was not inspired by any real website. Probably.",
+      },
+      {
+        heading: "Article 4. Sharing with third parties",
+        body: "Freshly baked Coookies may be shared with the rabbit on the moon, shooting stars and other celestial bodies. They will enjoy them.",
+      },
+      {
+        heading: "Article 5. Retention period",
+        body: "Coookies are best before roughly 4.6 billion years after baking. Please enjoy them soon.",
+      },
+    ],
+    back: "Back to the gacha",
+  },
+};
+
+const MESSAGES: Record<Locale, Messages> = { ja, en };
+
+function initialLocale(): Locale {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "ja" || saved === "en") return saved;
+  } catch {
+    // 保存できない環境でもブラウザの言語で動かす
+  }
+  return navigator.language.toLowerCase().startsWith("ja") ? "ja" : "en";
+}
+
+interface I18n {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  t: Messages;
+}
+
+const I18nContext = createContext<I18n | null>(null);
+
+/** サイト全体の言語。コンポーネントライブラリの LocaleProvider にも同じ言語を渡す。 */
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [locale, setLocale] = useState<Locale>(initialLocale);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.title = MESSAGES[locale].siteName;
+    try {
+      localStorage.setItem(STORAGE_KEY, locale);
+    } catch {
+      // 保存できなくても切り替え自体は動く
+    }
+  }, [locale]);
+
+  return (
+    <I18nContext.Provider value={{ locale, setLocale, t: MESSAGES[locale] }}>
+      <LocaleProvider locale={locale}>{children}</LocaleProvider>
+    </I18nContext.Provider>
+  );
+}
+
+export function useI18n(): I18n {
+  const ctx = useContext(I18nContext);
+  if (!ctx) throw new Error("useI18n must be used inside I18nProvider");
+  return ctx;
+}

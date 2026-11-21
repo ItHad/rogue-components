@@ -1,0 +1,236 @@
+.rc-cb {
+  --rc-cb-accept: #34d399;
+  --rc-cb-reject: #f87171;
+  --rc-cb-track: rgba(127, 127, 127, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font: inherit;
+}
+
+.rc-cb__message {
+  margin: 0;
+}
+
+.rc-cb__arena {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+}
+
+.rc-cb__vs {
+  align-self: center;
+  font-size: 22px;
+  font-weight: 900;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.rc-cb__fighter {
+  --c: var(--rc-cb-accept);
+  position: relative;
+  flex: 1;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  border: 2px solid color-mix(in srgb, var(--c) 60%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--c) 10%, transparent);
+  color: inherit;
+  font: inherit;
+  cursor: crosshair;
+  user-select: none;
+  touch-action: manipulation;
+  animation: rc-cb-reveal 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.rc-cb__fighter[data-side="reject"] {
+  --c: var(--rc-cb-reject);
+}
+
+.rc-cb__fighter:focus-visible {
+  outline: 3px solid var(--c);
+  outline-offset: 2px;
+}
+
+.rc-cb__fighter:disabled {
+  cursor: default;
+}
+
+.rc-cb__fighter[data-guard] {
+  box-shadow: 0 0 0 4px #93c5fd inset, 0 0 24px #93c5fd;
+}
+
+.rc-cb__fighter[data-ko] {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.rc-cb__fighter[data-win] {
+  box-shadow: 0 0 32px var(--c);
+}
+
+.rc-cb__avatar {
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.rc-cb__fighter[data-side="accept"] .rc-cb__avatar {
+  font-size: 56px;
+}
+
+.rc-cb__avatar[data-shake] {
+  animation: rc-cb-shake 0.25s;
+}
+
+.rc-cb__fighter[data-ko] .rc-cb__avatar {
+  transform: rotate(90deg);
+}
+
+.rc-cb__name {
+  font-weight: 800;
+}
+
+.rc-cb__hp {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--rc-cb-track);
+  overflow: hidden;
+}
+
+.rc-cb__hp-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: var(--c);
+  transition: transform 0.15s;
+}
+
+.rc-cb__hp-text {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.rc-cb__pop {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  font-weight: 900;
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 0 2px 0 #000a;
+  pointer-events: none;
+  animation: rc-cb-pop 0.8s ease-out forwards;
+}
+
+.rc-cb__pop[data-kind="crit"] {
+  font-size: 28px;
+  color: #fde047;
+}
+
+.rc-cb__pop[data-kind="guard"] {
+  color: #93c5fd;
+}
+
+.rc-cb__details {
+  color: inherit;
+  font-weight: 400;
+  font-size: 0.9em;
+  text-decoration: underline;
+}
+
+.rc-cb__log {
+  margin: 0;
+  min-height: 1.7em;
+  padding: 6px 10px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+@keyframes rc-cb-shake {
+  25% {
+    transform: translateX(-5px) rotate(-6deg);
+  }
+
+  75% {
+    transform: translateX(5px) rotate(6deg);
+  }
+}
+
+@keyframes rc-cb-pop {
+  from {
+    transform: translate(-50%, 0) scale(0.6);
+    opacity: 1;
+  }
+
+  to {
+    transform: translate(-50%, -48px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .rc-cb__avatar[data-shake],
+  .rc-cb__fighter,
+  .rc-cb__pop {
+    animation: none;
+  }
+}
+
+/* ---- 戦いが始まる前: ただの同意バナーに見せる ---- */
+
+.rc-cb:not([data-started]) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rc-cb:not([data-started]) .rc-cb__message {
+  flex: 1 1 280px;
+  font-size: 14px;
+}
+
+.rc-cb:not([data-started]) .rc-cb__arena {
+  gap: 8px;
+}
+
+.rc-cb:not([data-started]) .rc-cb__fighter {
+  flex: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  animation: none;
+}
+
+.rc-cb:not([data-started]) .rc-cb__fighter[data-side="accept"] {
+  border-color: var(--c);
+  background: var(--c);
+  color: #052e1c;
+}
+
+.rc-cb:not([data-started]) .rc-cb__fighter[data-side="reject"] {
+  border-color: rgba(127, 127, 127, 0.5);
+  background: transparent;
+}
+
+.rc-cb[data-started] .rc-cb__name {
+  font-size: 15px;
+}
+
+@keyframes rc-cb-reveal {
+  from {
+    transform: scale(0.6);
+  }
+}
