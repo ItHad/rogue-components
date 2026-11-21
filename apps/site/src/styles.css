@@ -26,12 +26,6 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(1px 1px at 12% 18%, #fff8, transparent),
-    radial-gradient(1px 1px at 72% 12%, #fff9, transparent),
-    radial-gradient(1.5px 1.5px at 38% 42%, #fff6, transparent),
-    radial-gradient(1px 1px at 88% 48%, #fff7, transparent),
-    radial-gradient(1px 1px at 22% 78%, #fff6, transparent),
-    radial-gradient(1.5px 1.5px at 62% 86%, #fff5, transparent),
     radial-gradient(ellipse at 50% -10%, #2a2f6b 0%, transparent 60%),
     var(--bg);
   background-attachment: fixed;
@@ -154,6 +148,14 @@ p {
   font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar__logo-icon {
+  inline-size: 28px;
+  block-size: 28px;
 }
 
 .topbar__nav {
@@ -205,15 +207,94 @@ p {
   color: var(--ink);
 }
 
-@media (max-width: 520px) {
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   .topbar {
-    flex-wrap: wrap;
     gap: 8px;
+    padding: 8px 12px;
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+
+  .topbar__logo {
+    margin-inline-end: auto;
+    font-size: 15px;
   }
 
   .topbar__nav {
-    order: 3;
-    width: 100%;
+    display: none;
+  }
+
+  .topbar__gems {
+    padding: 2px 10px;
+    font-size: 14px;
+  }
+
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 90;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-bottom: env(safe-area-inset-bottom);
+    border-top: 1px solid var(--line);
+    background: #0a0b1aee;
+    backdrop-filter: blur(10px);
+  }
+
+  .tabbar__tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 60px;
+    padding: 6px 0 8px;
+    border: 0;
+    background: none;
+    color: var(--ink-muted);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .tabbar__icon {
+    inline-size: 28px;
+    block-size: 28px;
+    opacity: 0.45;
+    filter: grayscale(1);
+    transition: opacity 0.2s, filter 0.2s, transform 0.2s;
+  }
+
+  .tabbar__tab[aria-current="page"] {
+    color: var(--accent);
+  }
+
+  .tabbar__tab[aria-current="page"] .tabbar__icon {
+    opacity: 1;
+    filter: none;
+    transform: translateY(-2px) scale(1.1);
+  }
+
+  .main {
+    padding: 24px 16px 40px;
+  }
+
+  .footer {
+    /* 下のタブに隠れないようにする */
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 360px) {
+  .topbar__logo-text {
+    display: none;
   }
 }
 
@@ -535,12 +616,16 @@ p {
 }
 
 .item-card__icon {
+  inline-size: 72px;
+  block-size: 72px;
   font-size: 44px;
-  line-height: 1.2;
+  line-height: 72px;
+  text-align: center;
 }
 
 .result-single .item-card__icon {
-  font-size: 72px;
+  inline-size: 140px;
+  block-size: 140px;
 }
 
 .item-card__name {

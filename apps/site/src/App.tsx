@@ -10,6 +10,7 @@ import { ShopView } from "./views/ShopView";
 type View = "gacha" | "collection" | "shop";
 
 const NAV: View[] = ["gacha", "collection", "shop"];
+const TAB_ICON: Record<View, string> = { gacha: "puni", collection: "hakase", shop: "gogogo" };
 
 export function App() {
   const { locale, setLocale, t } = useI18n();
@@ -53,7 +54,8 @@ export function App() {
     <div className="app">
       <header className="topbar">
         <button type="button" className="topbar__logo" onClick={() => setView("gacha")}>
-          ✦ {t.siteName}
+          <img className="topbar__logo-icon" src="/monsters/puni.png" alt="" width="28" height="28" />
+          <span className="topbar__logo-text">{t.siteName}</span>
         </button>
         <nav className="topbar__nav" aria-label={t.mainNav}>
           {NAV.map((id) => (
@@ -69,7 +71,7 @@ export function App() {
           ))}
         </nav>
         <p className="topbar__gems" aria-label={t.gemsLabel(state.gems)}>
-          ✦ {state.gems.toLocaleString()}
+          ◆ {state.gems.toLocaleString()}
         </p>
         <button
           type="button"
@@ -90,6 +92,22 @@ export function App() {
       <footer className="footer">
         <p>{t.footer}</p>
       </footer>
+
+      {/* スマホではメニューを画面下のタブにする */}
+      <nav className="tabbar" aria-label={t.mainNav}>
+        {NAV.map((id) => (
+          <button
+            key={id}
+            type="button"
+            className="tabbar__tab"
+            aria-current={view === id ? "page" : undefined}
+            onClick={() => setView(id)}
+          >
+            <img className="tabbar__icon" src={`/monsters/${TAB_ICON[id]}.png`} alt="" width="28" height="28" />
+            {t.nav[id]}
+          </button>
+        ))}
+      </nav>
 
       {gateView}
     </div>

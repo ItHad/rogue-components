@@ -28,14 +28,14 @@ export function ShopView({ onCharge }: ShopViewProps) {
 
       <article className="product">
         <div className="product__visual" aria-hidden="true">
-          ✦
+          ◆
         </div>
         <div className="product__body">
           <h2 className="product__name">{t.shop.product}</h2>
           <p className="product__desc">{t.shop.desc}</p>
           <FibonacciStepper label={t.shop.quantity} value={quantity} onChange={setQuantity} max={999} />
           <p className="product__total">
-            {t.shop.total} <strong>✦ {(quantity * UNIT).toLocaleString()}</strong>
+            {t.shop.total} <strong>◆ {(quantity * UNIT).toLocaleString()}</strong>
           </p>
           <button type="button" className="btn btn--primary btn--big" disabled={quantity === 0} onClick={buy}>
             {t.shop.buy}

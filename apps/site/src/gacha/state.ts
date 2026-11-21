@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 export const PULL_COST = 100;
 const INITIAL_GEMS = 500;
-const STORAGE_KEY = "hoshikuzu-gacha:v1";
+const STORAGE_KEY = "monster-gacha:v1";
 
 export interface GameState {
-  /** 所持しているほしくず (ガチャ用の通貨) */
+  /** 所持しているジェム (ガチャ用の通貨) */
   gems: number;
   owned: Record<string, number>;
   agreedTerms: boolean;

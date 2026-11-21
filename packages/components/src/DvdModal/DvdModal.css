@@ -23,6 +23,8 @@
   overflow: hidden;
   box-shadow: 0 30px 80px -20px #000;
   animation: rc-dvd-in 0.3s cubic-bezier(0.3, 1.4, 0.5, 1);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .rc-dvd:focus {

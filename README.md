@@ -67,3 +67,7 @@ import { LocaleProvider } from "rogue-components";
 ## 導入について
 
 まだ npm には公開していません。使う場合は `packages/components/src` をプロジェクトにコピーしてください。各コンポーネントは自分の CSS を `import` しているので、CSS の import を扱えるバンドラー（Vite、Next.js など）が必要です。React 18 以上で動きます。
+
+## 素材
+
+デモサイトのモンスターの画像は、[Kenney](https://kenney.nl) の [Monster Builder Pack](https://kenney.nl/assets/monster-builder-pack)（CC0）のパーツを組み合わせて作っています。

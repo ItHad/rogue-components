@@ -2,6 +2,8 @@
   --rc-fs-accent: #60a5fa;
   --rc-fs-line: rgba(127, 127, 127, 0.35);
   display: inline-flex;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   flex-direction: column;
   gap: 8px;
   font: inherit;

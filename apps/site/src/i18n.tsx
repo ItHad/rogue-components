@@ -3,27 +3,27 @@ import { LocaleProvider, type Locale } from "rogue-components";
 
 export type { Locale };
 
-const STORAGE_KEY = "hoshikuzu-gacha:locale";
+const STORAGE_KEY = "monster-gacha:locale";
 
 const ja = {
-  siteName: "ほしくずガチャ",
+  siteName: "モンスターガチャ",
   nav: { gacha: "ガチャ", collection: "図鑑", shop: "ショップ" },
   mainNav: "メイン",
-  gemsLabel: (n: number) => `所持ほしくず ${n}`,
-  footer: "ほしくずガチャ | 入力ひとつに全力をかけるガチャサイト",
+  gemsLabel: (n: number) => `所持ジェム ${n}`,
+  footer: "モンスターガチャ | 入力ひとつに全力をかけるガチャサイト",
   language: "言語",
   switchTo: "English",
   modalClose: "閉じる",
 
   gacha: {
     eyebrow: "期間限定ではないガチャ",
-    lead: "夜空から落ちてきたものが出てきます。だいたいは小石です。",
+    lead: "ダンジョンの奥からモンスターが飛び出してきます。だいたいは弱いです。",
     openCapsule: "カプセルを開ける",
     capsuleHint: "カプセルをタップして開けよう",
     resultTitle: "ガチャ結果",
     pull1: "1 回引く",
     pull10: "10 回引く",
-    short: "ほしくずが足りません。",
+    short: "ジェムが足りません。",
     goShop: "ショップでチャージする",
     rates: "排出率",
   },
@@ -36,21 +36,21 @@ const ja = {
 
   shop: {
     title: "ショップ",
-    lead: "ほしくずをチャージできます。お代はいただきません（決済パスワードはいただきます）。",
-    product: "ほしくず 100 個パック",
+    lead: "ジェムをチャージできます。お代はいただきません（決済パスワードはいただきます）。",
+    product: "ジェム 100 個パック",
     desc: "1 パックでガチャを 1 回引けます。",
     quantity: "購入数",
     total: "合計",
     buy: "購入する",
-    done: (amount: string) => `✦ ${amount} をチャージしました。`,
+    done: (amount: string) => `◆ ${amount} をチャージしました。`,
   },
 
   terms: {
     title: "利用規約への同意",
     docLabel: "利用規約",
     articles: [
-      "第 1 条　本サービスは、ほしくずを消費してガチャを引くサービスです。",
-      "第 2 条　排出されたアイテムは、宇宙的価値を除き、いかなる価値も持ちません。",
+      "第 1 条　本サービスは、ジェムを消費してモンスターを呼び出すサービスです。",
+      "第 2 条　排出されたモンスターは、かわいさを除き、いかなる価値も持ちません。",
       "第 3 条　利用者は、入力ひとつに全力をかけることに同意するものとします。",
       "第 4 条　本規約への同意は、同意を維持し続けることによってのみ有効となります。",
     ],
@@ -96,13 +96,13 @@ const ja = {
   },
 
   policy: {
-    revised: "最終改定日: 宇宙暦 0.0001 年",
+    revised: "最終改定日: 魔界暦 666 年",
     title: "Coookie ポリシー",
-    lead: "ほしくずガチャ（以下「当サイト」）における Coookie（コーーキー）の取り扱いについて定めます。",
+    lead: "モンスターガチャ（以下「当サイト」）における Coookie（コーーキー）の取り扱いについて定めます。",
     sections: [
       {
         heading: "第 1 条　Coookie とは",
-        body: "Coookie とは、夜空の隅でこっそり焼かれている架空の焼き菓子です。o がひとつ多いぶん、通常の Cookie より少しだけ香ばしいとされています。ブラウザの Cookie とは一切関係がありません。",
+        body: "Coookie とは、ダンジョンの最下層でこっそり焼かれている架空の焼き菓子です。o がひとつ多いぶん、通常の Cookie より少しだけ香ばしいとされています。ブラウザの Cookie とは一切関係がありません。",
       },
       {
         heading: "第 2 条　収集する情報",
@@ -110,7 +110,7 @@ const ja = {
         list: [
           "あなたが同意と拒否のどちらを応援したかったか",
           "連打で指がどれくらい疲れたか",
-          "ガチャで小石しか出なかったときの気持ち",
+          "ガチャで N のモンスターしか出なかったときの気持ち",
         ],
       },
       {
@@ -119,11 +119,11 @@ const ja = {
       },
       {
         heading: "第 4 条　第三者への提供",
-        body: "焼き上がった Coookie は、月のうさぎ、流れ星、およびその他の天体に提供されることがあります。提供先はおいしくいただきます。",
+        body: "焼き上がった Coookie は、ダンジョンのボス、通りすがりのモンスター、およびその他の魔物に提供されることがあります。提供先はおいしくいただきます。",
       },
       {
         heading: "第 5 条　保存期間",
-        body: "Coookie の賞味期限は、焼き上がりから約 46 億年です。お早めにお召し上がりください。",
+        body: "Coookie の賞味期限は、焼き上がりから魔界時間で約 1000 年です。お早めにお召し上がりください。",
       },
     ] as { heading: string; body: string; list?: string[] }[],
     back: "ガチャへ戻る",
@@ -133,24 +133,24 @@ const ja = {
 export type Messages = typeof ja;
 
 const en: Messages = {
-  siteName: "Stardust Gacha",
+  siteName: "Monster Gacha",
   nav: { gacha: "Gacha", collection: "Collection", shop: "Shop" },
   mainNav: "Main",
-  gemsLabel: (n: number) => `${n} stardust`,
-  footer: "Stardust Gacha | a gacha site where every input takes everything you've got",
+  gemsLabel: (n: number) => `${n} gems`,
+  footer: "Monster Gacha | a gacha site where every input takes everything you've got",
   language: "Language",
   switchTo: "日本語",
   modalClose: "Close",
 
   gacha: {
     eyebrow: "A Not-Limited-Time Gacha",
-    lead: "Things that fell from the night sky come out. Mostly pebbles.",
+    lead: "Monsters burst out from deep in the dungeon. Mostly weak ones.",
     openCapsule: "Open the capsule",
     capsuleHint: "Tap the capsule to open it",
     resultTitle: "Your Pull",
     pull1: "Pull ×1",
     pull10: "Pull ×10",
-    short: "Not enough stardust.",
+    short: "Not enough gems.",
     goShop: "Top up at the shop",
     rates: "Drop rates",
   },
@@ -163,21 +163,21 @@ const en: Messages = {
 
   shop: {
     title: "Shop",
-    lead: "Top up your stardust. It's free (we only take your payment password).",
-    product: "Stardust ×100 Pack",
+    lead: "Top up your gems. It's free (we only take your payment password).",
+    product: "Gems ×100 Pack",
     desc: "One pack gets you one pull.",
     quantity: "Quantity",
     total: "Total",
     buy: "Buy",
-    done: (amount: string) => `Added ✦ ${amount}.`,
+    done: (amount: string) => `Added ◆ ${amount}.`,
   },
 
   terms: {
     title: "Terms of Service",
     docLabel: "Terms of Service",
     articles: [
-      "Article 1. This service lets you spend stardust to pull the gacha.",
-      "Article 2. Items obtained have no value whatsoever, cosmic value excepted.",
+      "Article 1. This service lets you spend gems to summon monsters.",
+      "Article 2. Monsters obtained have no value whatsoever, cuteness excepted.",
       "Article 3. The user agrees to give every single input everything they've got.",
       "Article 4. Agreement to these terms remains valid only for as long as it is maintained.",
     ],
@@ -223,13 +223,13 @@ const en: Messages = {
   },
 
   policy: {
-    revised: "Last revised: Space Era 0.0001",
+    revised: "Last revised: Demon Realm Era 666",
     title: "Coookie Policy",
-    lead: "This policy describes how Stardust Gacha (the \"Site\") handles Coookies.",
+    lead: "This policy describes how Monster Gacha (the \"Site\") handles Coookies.",
     sections: [
       {
         heading: "Article 1. What is a Coookie?",
-        body: "A Coookie is an imaginary baked treat secretly made in a corner of the night sky. With one extra o, it is said to be slightly more fragrant than a regular cookie. It has nothing to do with browser cookies.",
+        body: "A Coookie is an imaginary baked treat secretly made on the lowest floor of a dungeon. With one extra o, it is said to be slightly more fragrant than a regular cookie. It has nothing to do with browser cookies.",
       },
       {
         heading: "Article 2. Information we collect",
@@ -237,7 +237,7 @@ const en: Messages = {
         list: [
           "Which side you were secretly rooting for, Accept or Reject",
           "How tired your fingers got from all the clicking",
-          "How you felt when the gacha gave you nothing but pebbles",
+          "How you felt when the gacha gave you nothing but N-rank monsters",
         ],
       },
       {
@@ -246,11 +246,11 @@ const en: Messages = {
       },
       {
         heading: "Article 4. Sharing with third parties",
-        body: "Freshly baked Coookies may be shared with the rabbit on the moon, shooting stars and other celestial bodies. They will enjoy them.",
+        body: "Freshly baked Coookies may be shared with dungeon bosses, passing monsters and other fiends. They will enjoy them.",
       },
       {
         heading: "Article 5. Retention period",
-        body: "Coookies are best before roughly 4.6 billion years after baking. Please enjoy them soon.",
+        body: "Coookies are best before roughly 1,000 years after baking, in demon realm time. Please enjoy them soon.",
       },
     ],
     back: "Back to the gacha",

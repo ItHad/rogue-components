@@ -4,6 +4,9 @@
   --rc-gcb-warn: #fbbf24;
   --rc-gcb-ink: currentColor;
   display: inline-flex;
+  /* 連打してもダブルタップで拡大されないようにする */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   flex-direction: column;
   gap: 10px;
   font: inherit;

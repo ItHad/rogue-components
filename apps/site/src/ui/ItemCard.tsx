@@ -17,9 +17,7 @@ export function ItemCard({ item, count, delay = 0 }: ItemCardProps) {
       style={{ "--delay": `${delay}ms` } as CSSProperties}
     >
       <span className={`rarity rarity--${item.rarity}`}>{item.rarity}</span>
-      <span className="item-card__icon" aria-hidden="true">
-        {item.icon}
-      </span>
+      <img className="item-card__icon" src={`/monsters/${item.id}.png`} alt="" />
       <h3 className="item-card__name">{item.name[locale]}</h3>
       <p className="item-card__flavor">{item.flavor[locale]}</p>
       {count !== undefined && <p className="item-card__count">× {count}</p>}

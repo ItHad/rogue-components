@@ -97,7 +97,7 @@ export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
           onClick={() => pull(1)}
         >
           {t.gacha.pull1}
-          <small>✦ {PULL_COST}</small>
+          <small>◆ {PULL_COST}</small>
         </button>
         <button
           type="button"
@@ -106,7 +106,7 @@ export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
           onClick={() => pull(10)}
         >
           {t.gacha.pull10}
-          <small>✦ {PULL_COST * 10}</small>
+          <small>◆ {PULL_COST * 10}</small>
         </button>
       </div>
 

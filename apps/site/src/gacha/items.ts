@@ -5,7 +5,6 @@ export type Rarity = "N" | "R" | "SR" | "SSR";
 export interface Item {
   id: string;
   name: Record<Locale, string>;
-  icon: string;
   rarity: Rarity;
   flavor: Record<Locale, string>;
 }
@@ -19,81 +18,82 @@ export const RARITY_RATE: Record<Rarity, number> = {
 
 export const RARITY_ORDER: readonly Rarity[] = ["N", "R", "SR", "SSR"];
 
+/** 画像は public/monsters/<id>.png (Kenney の Monster Builder Pack のパーツから作ったもの) */
 export const ITEMS: readonly Item[] = [
   {
-    id: "pebble", icon: "🪨", rarity: "N",
-    name: { ja: "ふつうの小石", en: "An Ordinary Pebble" },
-    flavor: { ja: "道で拾った。たぶん星ではない。", en: "Found on the road. Probably not a star." }
+    id: "puni", rarity: "N",
+    name: { ja: "ぷにかく", en: "Puni Cube" },
+    flavor: { ja: "角がある。でも痛くない。", en: "Has corners. Doesn't hurt." }
   },
   {
-    id: "acorn", icon: "🌰", rarity: "N",
-    name: { ja: "どんぐり", en: "Acorn" },
-    flavor: { ja: "帽子つき。", en: "Comes with a hat." }
+    id: "mochi", rarity: "N",
+    name: { ja: "もちもっち", en: "Mochimocchi" },
+    flavor: { ja: "つきたて。さわると指が沈む。", en: "Freshly pounded. Your finger sinks right in." }
   },
   {
-    id: "sock", icon: "🧦", rarity: "N",
-    name: { ja: "片方の靴下", en: "One Sock" },
-    flavor: { ja: "もう片方は宇宙のどこかにある。", en: "The other one is somewhere in space." }
+    id: "kobaru", rarity: "N",
+    name: { ja: "ひとめくん", en: "Hitome" },
+    flavor: { ja: "目はひとつだが、見落としはしない。", en: "Only one eye, but it never misses a thing." }
   },
   {
-    id: "battery", icon: "🔋", rarity: "N",
-    name: { ja: "ボタン電池", en: "Button Battery" },
-    flavor: { ja: "残量不明。", en: "Charge unknown." }
+    id: "nemuri", rarity: "N",
+    name: { ja: "ねむりん", en: "Nemurin" },
+    flavor: { ja: "いつも月曜の朝の顔をしている。", en: "Always wears its Monday-morning face." }
   },
   {
-    id: "clip", icon: "📎", rarity: "N",
-    name: { ja: "ゼムクリップ", en: "Paper Clip" },
-    flavor: { ja: "何かを留めていた記憶がある。", en: "It remembers holding something together." }
+    id: "dorodoro", rarity: "N",
+    name: { ja: "どろんこ", en: "Mudling" },
+    flavor: { ja: "お風呂がきらい。", en: "Hates baths." }
   },
   {
-    id: "pin", icon: "🧷", rarity: "N",
-    name: { ja: "安全ピン", en: "Safety Pin" },
-    flavor: { ja: "安全とは限らない。", en: "Not necessarily safe." }
+    id: "kurin", rarity: "N",
+    name: { ja: "くりくり", en: "Kurikuri" },
+    flavor: { ja: "目がボタンでできている。", en: "Its eyes are made of buttons." }
   },
   {
-    id: "clover", icon: "🍀", rarity: "R",
-    name: { ja: "四つ葉のクローバー", en: "Four-Leaf Clover" },
-    flavor: { ja: "幸運の在庫あり。", en: "Luck in stock." }
+    id: "tsunotsuno", rarity: "R",
+    name: { ja: "ツノピン", en: "Hornpin" },
+    flavor: { ja: "腕だけ借り物。", en: "Only the arms are borrowed." }
   },
   {
-    id: "key", icon: "🗝️", rarity: "R",
-    name: { ja: "古い鍵", en: "Old Key" },
-    flavor: { ja: "どの扉の鍵かは誰も知らない。", en: "Nobody knows which door it opens." }
+    id: "mimimi", rarity: "R",
+    name: { ja: "みつめ", en: "Mitsume" },
+    flavor: { ja: "3 つめの目で空気を読む。", en: "Reads the room with its third eye." }
   },
   {
-    id: "konpeito", icon: "🍬", rarity: "R",
-    name: { ja: "金平糖", en: "Konpeito" },
-    flavor: { ja: "星の形をしたお菓子。", en: "Star-shaped sugar candy." }
+    id: "hakase", rarity: "R",
+    name: { ja: "のびめ博士", en: "Dr. Stalkeye" },
+    flavor: { ja: "長い目で物事を見る。", en: "Always takes the long view." }
   },
   {
-    id: "shell", icon: "🐚", rarity: "R",
-    name: { ja: "まき貝", en: "Conch Shell" },
-    flavor: { ja: "耳を当てると通知音がする。", en: "Hold it to your ear and you hear notification sounds." }
+    id: "gerogero", rarity: "R",
+    name: { ja: "ゲロゲーロ", en: "Croakmore" },
+    flavor: { ja: "鳴き声は 1 オクターブ低い。", en: "Croaks one octave lower." }
   },
   {
-    id: "shooting-star", icon: "🌠", rarity: "SR",
-    name: { ja: "流れ星のしっぽ", en: "Shooting Star's Tail" },
-    flavor: { ja: "願い事を 3 回唱える前に消えた。", en: "Gone before I could make three wishes." }
+    id: "kirikiri", rarity: "SR",
+    name: { ja: "キリキリ", en: "Kirikiri" },
+    flavor: { ja: "いつも何かに怒っている。たぶん締め切り。", en: "Always angry about something. Probably a deadline." }
   },
   {
-    id: "moon-sand", icon: "🌙", rarity: "SR",
-    name: { ja: "月の砂", en: "Moon Sand" },
-    flavor: { ja: "持ち帰り禁止のはず。", en: "Pretty sure you're not allowed to take this home." }
+    id: "gogogo", rarity: "SR",
+    name: { ja: "ゴゴゴ", en: "Rumblor" },
+    flavor: { ja: "登場するときに地鳴りがする。", en: "The ground rumbles whenever it shows up." }
   },
   {
-    id: "rainbow", icon: "🌈", rarity: "SR",
-    name: { ja: "虹のかけら", en: "Rainbow Shard" },
-    flavor: { ja: "7 色ぶんの重さがある。", en: "Weighs as much as seven colors." }
+    id: "medamaru", rarity: "SR",
+    name: { ja: "めだまる", en: "Eyeball King" },
+    flavor: { ja: "目が 7 つある。全部ちがう方向を見ている。", en: "Has seven eyes, each looking a different way." }
   },
   {
-    id: "galaxy-seed", icon: "🌌", rarity: "SSR",
-    name: { ja: "銀河の種", en: "Galaxy Seed" },
-    flavor: { ja: "水をやると 100 億年で芽が出る。", en: "Water it and it sprouts in 10 billion years." }
+    id: "daimaou", rarity: "SSR",
+    name: { ja: "大魔王ガチャラ", en: "Gacharoth the Overlord" },
+    flavor: { ja: "ガチャの底に住む魔王。引いた人の財布を見ている。", en: "The overlord at the bottom of the gacha. It is watching your wallet." }
   },
   {
-    id: "dawn", icon: "✨", rarity: "SSR",
-    name: { ja: "夜明けのびん詰め", en: "Bottled Dawn" },
-    flavor: { ja: "ふたを開けると朝になる。", en: "Open the lid and it becomes morning." }
+    id: "nijiiro", rarity: "SSR",
+    name: { ja: "にじいろキメラ", en: "Rainbow Chimera" },
+    flavor: { ja: "いろんなモンスターの良いところを集めた。性格以外。", en: "Made from the best parts of many monsters. Except the personality." }
   },
 ];
 
