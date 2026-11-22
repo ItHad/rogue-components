@@ -1,4 +1,5 @@
 .rc-acc {
+  position: relative;
   --rc-acc-bellows: #b91c1c;
   --rc-acc-bellows-dark: #5f0f0f;
   --rc-acc-board: #1f2937;
@@ -11,31 +12,82 @@
   font: inherit;
   user-select: none;
   -webkit-user-select: none;
+  /* 縦のスクロールは残し、横に引っぱる操作だけ受け取る */
+  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
 }
 
-.rc-acc__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 4px 10px;
-  margin: 0;
+.rc-acc__summary {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
-.rc-acc__label {
-  font-weight: 700;
+.rc-acc__summary:focus-visible {
+  outline: 3px solid var(--rc-acc-accent);
+  outline-offset: 2px;
 }
 
+/* 普通のアコーディオンの「⌄」。広げた分だけ回る */
+.rc-acc__chevron {
+  inline-size: 0.5em;
+  block-size: 0.5em;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: translateY(-25%) rotate(calc(45deg + var(--rc-acc-ratio) * 180deg));
+}
+
+/* 叱る吹き出し。見出しの上に重ねて、レイアウトは動かさない */
 .rc-acc__status {
-  font-size: 0.85em;
-  opacity: 0.75;
+  position: absolute;
+  inset-block-end: calc(100% + 4px);
+  inset-inline: 0;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
 }
 
-.rc-acc__track {
+.rc-acc__status > span {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--rc-acc-paper);
+  color: CanvasText;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.rc-acc__status > span[data-nag] {
+  animation: rc-acc-shake 0.4s ease-in-out;
+}
+
+@keyframes rc-acc-shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.rc-acc__panel {
   display: flex;
   justify-content: center;
   inline-size: 100%;
+}
+
+.rc-acc__panel[hidden] {
+  display: none;
 }
 
 .rc-acc__instrument {
@@ -58,7 +110,6 @@
     center / 10px 60% no-repeat,
     var(--rc-acc-board);
   cursor: grab;
-  touch-action: none;
 }
 
 .rc-acc__handle--left {
@@ -71,11 +122,6 @@
 
 .rc-acc[data-held] .rc-acc__handle {
   cursor: grabbing;
-}
-
-.rc-acc__handle:focus-visible {
-  outline: 3px solid var(--rc-acc-accent);
-  outline-offset: 2px;
 }
 
 .rc-acc__bellows {
@@ -146,6 +192,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .rc-acc__status > span[data-nag] {
+    animation: none;
+  }
+
   .rc-acc__puff {
     animation: none;
     opacity: 0;
