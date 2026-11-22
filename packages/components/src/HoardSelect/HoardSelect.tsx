@@ -45,6 +45,8 @@ export interface HoardSelectProps {
   onChange?: (value: string | null) => void;
   /** 検索欄が吹き飛ばされる間隔 (ミリ秒) */
   breathInterval?: number;
+  /** ドラゴンが眠っている。息を吹かず、並び順も崩れない、ただのセレクトボックスになる */
+  calm?: boolean;
   label?: ReactNode;
   placeholder?: string;
   disabled?: boolean;
@@ -93,6 +95,7 @@ export function HoardSelect({
   defaultValue = null,
   onChange,
   breathInterval = 6500,
+  calm = false,
   label,
   placeholder,
   disabled = false,
@@ -165,12 +168,12 @@ export function HoardSelect({
 
   // 開いている間の、吸う → 吹く → しばらく静か の繰り返し
   useEffect(() => {
-    if (!open) {
+    if (!open || calm) {
       setBreath("calm");
       return;
     }
     let timer: number;
-    const calm = () => {
+    const rest = () => {
       setBreath("calm");
       timer = window.setTimeout(inhale, Math.max(0, breathInterval - INHALE_MS));
     };
@@ -181,12 +184,12 @@ export function HoardSelect({
     const blow = () => {
       setBreath("blow");
       blowAway();
-      timer = window.setTimeout(calm, BLOW_MS);
+      timer = window.setTimeout(rest, BLOW_MS);
     };
-    calm();
+    rest();
     return () => window.clearTimeout(timer);
     // blowAway は ref と setState しか使わないので、最初の描画のものを使い続けてよい
-  }, [open, breathInterval]);
+  }, [open, breathInterval, calm]);
 
   // 選ばれている候補が見えるようにスクロールする
   useEffect(() => {
@@ -198,7 +201,7 @@ export function HoardSelect({
 
   const openList = () => {
     if (disabled) return;
-    setOrder((o) => jostle(o, 0.35));
+    if (!calm) setOrder((o) => jostle(o, 0.35));
     setQuery("");
     setActive(0);
     setOpen(true);
@@ -220,6 +223,7 @@ export function HoardSelect({
   };
 
   const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
+    if (calm) return;
     // 貼り付けた文字はいったん入れてから、すぐに吹き飛ばす
     const text = e.clipboardData.getData("text");
     if (!text) return;

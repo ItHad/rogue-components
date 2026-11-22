@@ -28,16 +28,34 @@ for (let c = 0; c < CONDITIONS.ja.length; c++) {
   }
 }
 
-/** 宝物庫の目録。名前の順に並べる (並びはセレクトの中で少しずつ崩れていく) */
-export function treasureOptions(locale: Locale): HoardOption[] {
-  return IDS.map((value) => ({ value, label: treasureName(value, locale) })).sort((a, b) =>
-    a.label.localeCompare(b.label, locale),
-  );
+/** 財宝の目録。名前の順に並べる (並びはセレクトの中で少しずつ崩れていく) */
+export function treasureOptions(locale: Locale, ids: readonly string[] = IDS): HoardOption[] {
+  return ids
+    .map((value) => ({ value, label: treasureName(value, locale) }))
+    .sort((a, b) => a.label.localeCompare(b.label, locale));
 }
 
-export function randomTreasure(except?: string): string {
+/** 宝物庫にある財宝をすべて */
+export const ALL_TREASURES: readonly string[] = IDS;
+
+export function randomTreasure(except?: string, pool: readonly string[] = IDS): string {
   let id: string;
-  do id = IDS[Math.floor(Math.random() * IDS.length)]!;
+  do id = pool[Math.floor(Math.random() * pool.length)]!;
   while (id === except);
   return id;
+}
+
+/** 重ならないように n 点を選ぶ。素材も品物もばらばらにして、見分けやすくする */
+export function distinctTreasures(n: number): string[] {
+  const picked: string[] = [];
+  const used = { m: new Set<string>(), o: new Set<string>() };
+  while (picked.length < n) {
+    const id = randomTreasure();
+    const [, m, o] = id.split("-");
+    if (used.m.has(m!) || used.o.has(o!)) continue;
+    used.m.add(m!);
+    used.o.add(o!);
+    picked.push(id);
+  }
+  return picked;
 }
