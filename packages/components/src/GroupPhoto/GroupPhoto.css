@@ -1,0 +1,246 @@
+.rc-gp {
+  --rc-gp-sky-top: #3b3f8f;
+  --rc-gp-sky-mid: #7d6bc4;
+  --rc-gp-sky-bottom: #c79bd8;
+  --rc-gp-frame: #fff;
+  --rc-gp-out: #f43f5e;
+  --rc-gp-accent: #fbbf24;
+  --rc-gp-paper: #fbf8f1;
+  --rc-gp-ink: #3a3346;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-gp__stage {
+  position: relative;
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(var(--rc-gp-sky-top), var(--rc-gp-sky-mid) 65%, var(--rc-gp-sky-bottom));
+  /* 指でつかんで運んでもページがスクロールしないようにする */
+  touch-action: none;
+}
+
+@media (max-width: 600px) {
+  .rc-gp__stage {
+    aspect-ratio: 1;
+  }
+}
+
+/* ファインダーのように、枠の外を暗くする */
+.rc-gp__frame {
+  position: absolute;
+  border: 2px dashed var(--rc-gp-frame);
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px #05061066;
+  pointer-events: none;
+}
+
+.rc-gp__subject {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: grab;
+  transform: translate(-50%, -50%);
+  touch-action: none;
+}
+
+.rc-gp__subject img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 2px #0006);
+}
+
+.rc-gp__subject:focus-visible {
+  outline: 2px solid var(--rc-gp-accent);
+  outline-offset: 2px;
+}
+
+.rc-gp__subject[data-mode="held"] {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.rc-gp__subject[data-fidget] {
+  animation: rc-gp-fidget 0.18s infinite alternate;
+}
+
+.rc-gp__subject[data-out] {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--rc-gp-out);
+  background: color-mix(in srgb, var(--rc-gp-out) 30%, transparent);
+}
+
+.rc-gp__tag {
+  position: absolute;
+  inset-block-start: -10px;
+  inset-inline-start: 50%;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--rc-gp-accent);
+  color: #1b1530;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.rc-gp__count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: clamp(64px, 18vw, 120px);
+  font-weight: 900;
+  text-shadow: 0 4px 16px #0008;
+  pointer-events: none;
+  z-index: 20000;
+  animation: rc-gp-count 1s ease-out forwards;
+}
+
+.rc-gp__flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  pointer-events: none;
+  z-index: 20001;
+  opacity: 0;
+  animation: rc-gp-flash ease-out;
+}
+
+.rc-gp__status {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.rc-gp__message {
+  margin: 0;
+  min-block-size: 1.5em;
+  text-align: center;
+}
+
+.rc-gp[data-phase="missed"] .rc-gp__message {
+  color: var(--rc-gp-out);
+  font-weight: 700;
+}
+
+.rc-gp__after {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rc-gp__button {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rc-gp-accent);
+  color: #1b1530;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rc-gp__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.rc-gp__print {
+  inline-size: min(420px, 100%);
+  margin: 0;
+  padding: 12px 12px 0;
+  border-radius: 4px;
+  background: var(--rc-gp-paper);
+  box-shadow: 0 12px 30px -10px #000;
+  transform: rotate(-1.5deg);
+  animation: rc-gp-develop 1.2s ease-out;
+}
+
+.rc-gp__photo {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(var(--rc-gp-sky-top), var(--rc-gp-sky-mid) 65%, var(--rc-gp-sky-bottom));
+}
+
+.rc-gp__still {
+  position: absolute;
+  aspect-ratio: 1;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 3px 2px #0006);
+}
+
+.rc-gp__caption {
+  padding: 10px 0 14px;
+  color: var(--rc-gp-ink);
+  font-weight: 700;
+  text-align: center;
+}
+
+@keyframes rc-gp-fidget {
+  from {
+    transform: translate(-50%, -50%) rotate(-8deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(8deg);
+  }
+}
+
+@keyframes rc-gp-count {
+  from {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    opacity: 0.2;
+  }
+}
+
+@keyframes rc-gp-flash {
+  from {
+    opacity: 0.95;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes rc-gp-develop {
+  from {
+    filter: brightness(2.2) saturate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-gp__subject[data-fidget],
+  .rc-gp__print,
+  .rc-gp__count {
+    animation: none;
+  }
+}

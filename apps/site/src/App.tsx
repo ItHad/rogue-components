@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { BurgerMenu, SmugShareButton } from "rogue-components";
-import { roll, type Item } from "./gacha/items";
+import { isComplete, roll, type Item } from "./gacha/items";
 import { GEM_PACK, PULL_COST, resetEverything, useGameState } from "./gacha/state";
 import { DragonTrial } from "./dragon/DragonTrial";
 import { SECRET_ITEMS } from "./gacha/items";
 import { useGates } from "./gates/useGates";
 import { useI18n } from "./i18n";
+import { PhotoSession } from "./photo/PhotoSession";
 import { Scenery } from "./ui/Scenery";
 import { CollectionView } from "./views/CollectionView";
 import { GachaView } from "./views/GachaView";
@@ -24,6 +25,9 @@ export function App() {
   const { runGates, gateView } = useGates(state, setState);
   /** 背景のドラゴンが降りてきているときの、降りてくる前の位置 */
   const [dragonFrom, setDragonFrom] = useState<DOMRect | null>(null);
+  /** 図鑑の最後の枠を埋めたモンスター。ガチャ結果を閉じたら記念撮影に呼ぶ */
+  const [newcomers, setNewcomers] = useState<string[] | null>(null);
+  const [photoOpen, setPhotoOpen] = useState(false);
 
   // Coookie 同意バナー
   const visited = useRef(false);
@@ -37,6 +41,12 @@ export function App() {
     if (state.gems < PULL_COST * count) return null;
     if (!(await runGates("pull"))) return null;
     const results = Array.from({ length: count }, roll);
+    // 10 連で最後の 2 体が同時に出ても、そろった 1 回だけ数える
+    const after = { ...state.owned };
+    for (const item of results) after[item.id] = (after[item.id] ?? 0) + 1;
+    if (!isComplete(state.owned) && isComplete(after)) {
+      setNewcomers([...new Set(results.filter((i) => !state.owned[i.id]).map((i) => i.id))]);
+    }
     setState((s) => {
       const owned = { ...s.owned };
       for (const item of results) owned[item.id] = (owned[item.id] ?? 0) + 1;
@@ -129,8 +139,21 @@ export function App() {
       </header>
 
       <main className="main">
-        {view === "gacha" && <GachaView gems={state.gems} onPull={pull} onGoShop={() => setView("shop")} />}
-        {view === "collection" && <CollectionView owned={state.owned} />}
+        {view === "gacha" && (
+          <GachaView
+            gems={state.gems}
+            onPull={pull}
+            onGoShop={() => setView("shop")}
+            onResultClosed={() => newcomers && setPhotoOpen(true)}
+          />
+        )}
+        {view === "collection" && (
+          <CollectionView
+            owned={state.owned}
+            photoTaken={state.photoTaken}
+            onPhoto={() => setPhotoOpen(true)}
+          />
+        )}
         {view === "shop" && <ShopView onCharge={charge} />}
       </main>
 
@@ -155,6 +178,18 @@ export function App() {
       </nav>
 
       {gateView}
+
+      {photoOpen && (
+        <PhotoSession
+          owned={state.owned}
+          newcomers={newcomers ?? []}
+          onTaken={() => setState((s) => ({ ...s, photoTaken: true }))}
+          onClose={() => {
+            setPhotoOpen(false);
+            setNewcomers(null);
+          }}
+        />
+      )}
 
       {dragonFrom && (
         <DragonTrial

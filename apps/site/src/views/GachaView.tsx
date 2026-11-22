@@ -12,11 +12,13 @@ interface GachaViewProps {
   /** 関門を通過して引けたら結果を、やめたら null を返す */
   onPull: (count: number) => Promise<Item[] | null>;
   onGoShop: () => void;
+  /** ガチャ結果を閉じたとき */
+  onResultClosed?: () => void;
 }
 
 const SPIN_MS = 1400;
 
-export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
+export function GachaView({ gems, onPull, onGoShop, onResultClosed }: GachaViewProps) {
   const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>("idle");
   const [results, setResults] = useState<Item[]>([]);
@@ -81,7 +83,11 @@ export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
         {phase === "capsule" && <p className="machine__hint">{t.gacha.capsuleHint}</p>}
       </div>
 
-      <DvdModal open={phase === "result"} title={t.gacha.resultTitle} onClose={() => setPhase("idle")}>
+      <DvdModal open={phase === "result"} title={t.gacha.resultTitle} onClose={() => {
+          setPhase("idle");
+          onResultClosed?.();
+        }}
+      >
         <div className={results.length === 1 ? "result-single" : "result-grid"}>
           {results.map((item, i) => (
             <ItemCard key={i} item={item} delay={i * 80} />

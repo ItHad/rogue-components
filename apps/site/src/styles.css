@@ -924,6 +924,10 @@ p {
   outline: none;
 }
 
+.modal--wide {
+  width: min(720px, 100%);
+}
+
 /* 中身が長くなってスクロールしても、閉じるボタンは常に見えるようにする */
 .modal__header {
   position: sticky;
@@ -1431,4 +1435,37 @@ p {
   .dragon-trial[data-phase="gone"] .dragon-trial__dragon {
     animation: none;
   }
+}
+
+/* ---------- group photo ---------- */
+
+.collection__photo {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 24px;
+}
+
+.photo__lead {
+  margin: 0 0 12px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.photo {
+  --rc-gp-accent: var(--accent);
+}
+
+.photo__share {
+  --rc-ssb-accent: var(--accent);
+  --rc-ssb-accent-ink: var(--accent-ink);
+  --rc-ssb-bg: var(--surface);
+  --rc-ssb-line: var(--line);
+  --rc-ssb-muted: var(--ink-muted);
+}
+
+.photo__hint {
+  margin: 16px 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9em;
+  text-align: center;
 }

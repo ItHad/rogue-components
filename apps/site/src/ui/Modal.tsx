@@ -6,10 +6,12 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /** 横に広く出す */
+  wide?: boolean;
 }
 
 /** 関門を出すための、ふつうのモーダル。重ねて開いてもよい (body 直下に出し、Escape はいちばん上のものだけ閉じる)。 */
-export function Modal({ title, onClose, children }: ModalProps) {
+export function Modal({ title, onClose, children, wide = false }: ModalProps) {
   const { t } = useI18n();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
     >
       <div
         ref={dialogRef}
-        className="modal"
+        className={wide ? "modal modal--wide" : "modal"}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
