@@ -842,6 +842,15 @@ p {
 
 /* ---------- collection ---------- */
 
+.collection__share {
+  --rc-ssb-accent: var(--accent);
+  --rc-ssb-accent-ink: var(--accent-ink);
+  --rc-ssb-bg: var(--surface);
+  --rc-ssb-line: var(--line);
+  --rc-ssb-muted: var(--ink-muted);
+  margin-bottom: 24px;
+}
+
 .collection {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -1019,6 +1028,11 @@ p {
   text-align: left;
   --rc-bw-goal: var(--accent);
   --rc-bw-focus: var(--accent);
+}
+
+.gate__hint {
+  font-size: 12px;
+  color: var(--ink-muted);
 }
 
 .gate__age {

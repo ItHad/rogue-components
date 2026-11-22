@@ -32,6 +32,10 @@ const ja = {
     title: "図鑑",
     lead: (found: number, total: number) => `${found} / ${total} 種類 見つけました`,
     unknown: "？？？",
+    share: "図鑑を自慢する",
+    shareTag: "モンスターガチャ",
+    shareText: (found: number, total: number) =>
+      `私はモンスターガチャで ${found} 体のモンスターを開放しました！（全 ${total} 種）`,
   },
 
   shop: {
@@ -73,7 +77,10 @@ const ja = {
     title: "年齢確認",
     lead: "ガチャのご利用には年齢確認が必要です。生年月日を入力してください。",
     label: "生年月日",
-    future: "未来から来た方はご利用いただけません。",
+    hint: "日付欄を開いて ◀ ▶ を長押しすると加速します。",
+    untouched: "1000 年 1 月 1 日生まれ……？ さすがにそれは嘘でしょう。",
+    tooOld: (n: number) => `${n} 歳……？ さすがにそれは嘘でしょう。`,
+    future: "おっと、未来人の方でいらっしゃいましたか。お引き取りください。",
     age: (n: number) => `${n} 歳として確認します。`,
     confirm: "この生年月日で確認する",
   },
@@ -195,6 +202,10 @@ const en: Messages = {
     title: "Collection",
     lead: (found: number, total: number) => `Found ${found} / ${total}`,
     unknown: "???",
+    share: "Show off your collection",
+    shareTag: "MonsterGacha",
+    shareText: (found: number, total: number) =>
+      `I've unlocked ${found} monsters in Monster Gacha! (${total} in total)`,
   },
 
   shop: {
@@ -236,7 +247,10 @@ const en: Messages = {
     title: "Age Verification",
     lead: "Age verification is required to use the gacha. Please enter your date of birth.",
     label: "Date of birth",
-    future: "Visitors from the future cannot use this service.",
+    hint: "Open the date field and hold ◀ ▶ to speed up.",
+    untouched: "Born on January 1, 1000…? Come on, that can't be true.",
+    tooOld: (n: number) => `${n} years old…? Come on, that can't be true.`,
+    future: "Oh, a visitor from the future, are we? We must ask you to leave.",
     age: (n: number) => `You will be verified as ${n} years old.`,
     confirm: "Confirm date of birth",
   },

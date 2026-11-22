@@ -34,3 +34,6 @@ export type { BuzzWireToggleProps } from "./BuzzWireToggle/BuzzWireToggle";
 
 export { HoardSelect } from "./HoardSelect/HoardSelect";
 export type { HoardSelectProps, HoardOption } from "./HoardSelect/HoardSelect";
+
+export { SmugShareButton } from "./SmugShareButton/SmugShareButton";
+export type { SmugShareButtonProps, ShareTarget } from "./SmugShareButton/SmugShareButton";

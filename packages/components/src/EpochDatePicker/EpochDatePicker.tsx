@@ -5,7 +5,7 @@ import { useControllable } from "../useControllable";
 import "./EpochDatePicker.css";
 
 const DAY_MS = 86_400_000;
-/** 長押しの最高速度 (日/秒) */
+/** 長押しの最高速度の既定値 (日/秒) */
 const MAX_SPEED = 365;
 /** 長押しを始めてから加速が始まるまで (ms) */
 const HOLD_DELAY_MS = 300;
@@ -49,8 +49,8 @@ function toIso(day: number): string {
 }
 
 /** 加速カーブ: 押し続けた秒数 → 日/秒 */
-function speedAt(heldSec: number) {
-  return Math.min(MAX_SPEED, 3 * 2 ** (heldSec * 1.5));
+function speedAt(heldSec: number, maxSpeed: number) {
+  return Math.min(maxSpeed, 3 * 2 ** (heldSec * 1.5));
 }
 
 interface Hold {
@@ -65,6 +65,8 @@ export interface EpochDatePickerProps {
   defaultValue?: string;
   onChange?: (value: string) => void;
   label?: ReactNode;
+  /** 長押しの最高速度 (日/秒)。最高速度で回し続けたときの過熱の速さは変わらない */
+  maxSpeed?: number;
   disabled?: boolean;
   className?: string;
 }
@@ -78,6 +80,7 @@ export function EpochDatePicker({
   defaultValue = "1970-01-01",
   onChange,
   label,
+  maxSpeed = MAX_SPEED,
   disabled = false,
   className,
 }: EpochDatePickerProps) {
@@ -128,12 +131,12 @@ export function EpochDatePicker({
       const hold = holdRef.current;
       if (hold && !overheatedRef.current) {
         const held = (now - hold.start) / 1000;
-        const v = held > 0 ? speedAt(held) : 0;
+        const v = held > 0 ? speedAt(held, maxSpeed) : 0;
         hold.carry += v * dt;
         const steps = Math.floor(hold.carry);
         hold.carry -= steps;
         move(steps * hold.dir);
-        addHeat((v / MAX_SPEED) * HEAT_PER_SEC_AT_MAX * dt);
+        addHeat((v / maxSpeed) * HEAT_PER_SEC_AT_MAX * dt);
       } else {
         heatRef.current = Math.max(0, heatRef.current - COOL_PER_SEC * dt);
         if (heatRef.current === 0 && overheatedRef.current) {
@@ -147,7 +150,7 @@ export function EpochDatePicker({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
     // move / addHeat は ref だけを触るので依存に含めない
-  }, [looping]);
+  }, [looping, maxSpeed]);
 
   const step = (dir: 1 | -1) => {
     if (disabled || overheatedRef.current) return;

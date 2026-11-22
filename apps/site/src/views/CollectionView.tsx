@@ -1,3 +1,4 @@
+import { SmugShareButton } from "rogue-components";
 import { ITEMS, SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { ItemCard } from "../ui/ItemCard";
@@ -16,6 +17,13 @@ export function CollectionView({ owned }: CollectionViewProps) {
       <p className="page__lead">
         {t.collection.lead(found, ITEMS.length)}
       </p>
+      <SmugShareButton
+        className="collection__share"
+        label={t.collection.share}
+        text={t.collection.shareText(found, ITEMS.length)}
+        url={window.location.origin}
+        hashtags={[t.collection.shareTag]}
+      />
       <div className="collection">
         {ITEMS.map((item) =>
           (owned[item.id] ?? 0) > 0 ? (

@@ -10,20 +10,36 @@ function ageOf(birthdate: string, today = new Date()): number {
   return age;
 }
 
+/** 最初に入っている生年月日。ここから 0〜120 歳の範囲まで送ってもらう */
+const INITIAL_BIRTHDATE = "1000-01-01";
+const MAX_AGE = 120;
+/** 長押しの最高速度 (日/秒)。毎秒およそ 100 年。120 年の範囲を 1 秒ほどで通り過ぎる */
+const MAX_SPEED = 36_500;
+
 function AgeGateView({ onPass }: GateProps) {
   const { t } = useI18n();
-  const [birthdate, setBirthdate] = useState("1970-01-01");
+  const [birthdate, setBirthdate] = useState(INITIAL_BIRTHDATE);
   const age = ageOf(birthdate);
-  const future = age < 0;
+  const ok = age >= 0 && age <= MAX_AGE;
+
+  const message =
+    birthdate === INITIAL_BIRTHDATE
+      ? t.age.untouched
+      : age < 0
+        ? t.age.future
+        : age > MAX_AGE
+          ? t.age.tooOld(age)
+          : t.age.age(age);
 
   return (
     <div className="gate">
       <p className="gate__lead">{t.age.lead}</p>
-      <EpochDatePicker label={t.age.label} value={birthdate} onChange={setBirthdate} />
+      <EpochDatePicker label={t.age.label} value={birthdate} onChange={setBirthdate} maxSpeed={MAX_SPEED} />
+      <p className="gate__hint">{t.age.hint}</p>
       <p className="gate__age" aria-live="polite">
-        {future ? t.age.future : t.age.age(age)}
+        {message}
       </p>
-      <button type="button" className="btn btn--primary" disabled={future} onClick={() => onPass({ birthdate })}>
+      <button type="button" className="btn btn--primary" disabled={!ok} onClick={() => onPass({ birthdate })}>
         {t.age.confirm}
       </button>
     </div>

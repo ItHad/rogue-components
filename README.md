@@ -16,6 +16,7 @@
 | `PhilosophicalCaptcha` | 「私はロボットではありません」 | 人間であることを哲学的な問いで証明させられる |
 | `DvdModal` | モーダル | 閉じる × が DVD のロゴのように跳ね回り、角に当たった瞬間しか押せない |
 | `BuzzWireToggle` | トグルスイッチ | オンにしようとすると溝が迷路のように伸びる。スイッチの丸を壁に触れずにゴールまで運ばないとオンにならず、壁に触れると縮んで元に戻る |
+| `SmugShareButton` | 共有ボタン | ちゃんと共有できるが、文面の最後に自分を褒める一言を勝手に書き足す。プレビューで消せるが、消すとしょんぼりする |
 
 ## 使い方
 
@@ -51,10 +52,11 @@ function SignUp() {
 | `FibonacciStepper` | `value` / `onChange(value: number)` | `min`, `max`, `label`, `disabled` |
 | `SafeDial` | `value` / `onChange(value: string)` | `reverse`, `maxLength`, `label`, `disabled` |
 | `PasswordBoss` | `password: string` | `onDefeat()`（強度 100 で呼ばれる）, `name`, `rules`（倒すための条件のリスト。すべて満たすまで倒れない） |
-| `EpochDatePicker` | `value` / `onChange(value: string)`（`YYYY-MM-DD`） | `label`, `disabled` |
+| `EpochDatePicker` | `value` / `onChange(value: string)`（`YYYY-MM-DD`） | `label`, `maxSpeed`（長押しの最高速度・日/秒）, `disabled` |
 | `PhilosophicalCaptcha` | `value` / `onChange(verified: boolean)` | `level`, `questions` |
 | `DvdModal` | `open` / `onClose()` | `title`, `children`, `closeOnEscape`（既定は `true`） |
 | `BuzzWireToggle` | `checked` / `onChange(checked: boolean)` | `label`, `disabled` |
+| `SmugShareButton` | `text: string` / `onShare(target: "x" \| "native" \| "copy", text: string)` | `url`, `hashtags`, `brags`（書き足す一言の候補）, `label`, `disabled` |
 
 ### 日本語と英語
 
