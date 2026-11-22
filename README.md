@@ -2,6 +2,7 @@
 
 入力ひとつに全力をかける、最強の React コンポーネント集です。
 `value` / `onChange` で扱えるふつうの React コンポーネントで、制御・非制御のどちらでも使えます。
+サイト：https://gacha.rogue-components.workers.dev/
 
 ## コンポーネント
 
