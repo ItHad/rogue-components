@@ -106,6 +106,13 @@ MONSTERS = [
     {"id": "kurin", "color": "red", "body": "B", "legs": "D", "leg_x": 0.24,
      "head": [("detail_$_antenna_small", 0.3, -0.06)],
      "face": EYE2("eye_blue", 0.4, 0.3, 0.8) + [("mouthA", 0, 0.66, 0.9)]},
+    {"id": "hetoheto", "color": "dark", "body": "A", "legs": "D", "leg_x": 0.22,
+     "face": EYE2("eye_dead", 0.4, 0.32, 0.8) + [("mouthE", 0, 0.68, 0.8)]},
+    {"id": "hamigaki", "color": "white", "body": "C", "legs": "E", "arms": "B", "arm_color": "blue",
+     "face": EYE2("eye_human", 0.32, 0.3, 0.75) + [("mouth_closed_teeth", 0, 0.62)]},
+    {"id": "piyo", "color": "yellow", "body": "E", "legs": "D", "leg_x": 0.2,
+     "head": [("detail_$_antenna_small", 0.25, -0.04, 0.9)],
+     "face": EYE2("eye_cute_light", 0.3, 0.42, 0.55) + [("nose_red", 0, 0.46, 0.55), ("mouth_closed_happy", 0, 0.64, 0.6)]},
     # ---- R ----
     {"id": "tsunotsuno", "color": "red", "body": "E", "legs": "A", "arms": "C", "arm_color": "white", "arm_y": 0.45,
      "head": [("detail_$_horn_large", 0.7, 0.02)],
@@ -119,6 +126,15 @@ MONSTERS = [
      "face": [("nose_brown", 0, 0.45, 0.9), ("mouthH", 0, 0.68, 0.8), ("eye_yellow", -0.35, 0.28, 0.7), ("eye_yellow", 0.35, 0.28, 0.7, True)]},
     {"id": "gerogero", "color": "green", "body": "F", "legs": "C", "arms": "B", "arm_y": 0.55,
      "face": [("eye_red", 0, 0.24, 1.1), ("mouthJ", 0, 0.5), ("nose_green", 0, 0.38, 0.6)]},
+    {"id": "kibakiba", "color": "green", "body": "E", "legs": "B", "arms": "C",
+     "head": [("detail_$_horn_small", 0.6, 0.0)],
+     "face": EYE2("eye_angry_green", 0.3, 0.3, 0.8) + [("mouth_closed_fangs", 0, 0.62)]},
+    {"id": "dekamimi", "color": "blue", "body": "B", "legs": "C", "arms": "E",
+     "head": [("detail_$_ear", 0.85, 0.05, 1.3)],
+     "face": EYE2("eye_human_blue", 0.4, 0.3, 0.7) + [("nose_yellow", 0, 0.52, 0.7), ("mouthB", 0, 0.72, 0.7)]},
+    {"id": "gyorome", "color": "dark", "body": "B", "legs": "A", "arms": "D",
+     "head": [("detail_$_antenna_large", 0.3, -0.06)],
+     "face": [("eye_human_red", 0, 0.34, 1.2), ("mouthI", 0, 0.7, 0.8)]},
     # ---- SR ----
     {"id": "kirikiri", "color": "white", "body": "F", "legs": "A", "arms": "D", "arm_color": "dark", "arm_y": 0.45,
      "head": [("detail_$_horn_small", 0.75, 0.02, 1.2), ("detail_$_antenna_large", 0.35, -0.08)],
@@ -130,6 +146,12 @@ MONSTERS = [
      "head": [("detail_$_eye", 0.6, -0.04, 1.0, 15)],
      "face": [("eye_human_green", -0.42, 0.32, 0.6), ("eye_human_green", 0.42, 0.32, 0.6, True), ("eye_human_green", 0, 0.24, 0.75),
               ("eye_human_green", -0.22, 0.48, 0.5), ("eye_human_green", 0.22, 0.48, 0.5, True), ("mouthB", 0, 0.72, 0.8)]},
+    {"id": "debirun", "color": "dark", "body": "F", "legs": "A", "arms": "A", "arm_color": "red", "arm_y": 0.45,
+     "head": [("detail_red_horn_large", 0.75, 0.0, 1.2)],
+     "face": EYE2("eye_angry_red", 0.27, 0.3, 0.85) + [("mouth_closed_fangs", 0, 0.5), ("eyebrowC", -0.3, 0.16, 0.8), ("eyebrowC", 0.3, 0.16, 0.8, True)]},
+    {"id": "yukidaruma", "color": "white", "body": "A", "legs": "C", "arms": "D", "arm_color": "dark",
+     "head": [("detail_blue_ear_round", 0.7, 0.05, 0.9)],
+     "face": EYE2("eye_cute_dark", 0.34, 0.32, 0.8) + [("nose_red", 0, 0.52, 0.8), ("mouth_closed_happy", 0, 0.72, 0.8)]},
     # ---- SSR ----
     {"id": "daimaou", "color": "red", "body": "F", "legs": "E", "arms": "C", "arm_color": "dark", "arm_y": 0.4,
      "head": [("detail_dark_horn_large", 0.8, 0.0, 1.5), ("detail_yellow_antenna_large", 0.3, -0.12, 1.1)],
@@ -138,6 +160,9 @@ MONSTERS = [
      "head": [("detail_red_horn_large", 0.65, 0.02, 1.3), ("detail_yellow_antenna_large", 0.3, -0.1), ("detail_green_ear_round", 0.9, 0.12, 0.9)],
      "face": [("eye_cute_dark", -0.3, 0.32, 0.8), ("eye_cute_dark", 0.3, 0.32, 0.8, True), ("eye_human_blue", 0, 0.16, 0.6),
               ("mouthJ", 0, 0.66, 0.9), ("nose_red", 0, 0.48, 0.6)]},
+    {"id": "jackpot", "color": "yellow", "body": "F", "legs": "E", "arms": "C", "arm_color": "red", "arm_y": 0.42,
+     "head": [("detail_$_horn_large", 0.8, 0.0, 1.4), ("detail_red_antenna_large", 0.32, -0.12, 1.1)],
+     "face": EYE2("eye_psycho_light", 0.27, 0.3, 0.9) + [("mouthJ", 0, 0.54, 1.1), ("eyebrowA", -0.3, 0.16), ("eyebrowA", 0.3, 0.16, 1.0, True)]},
 ]
 
 if __name__ == "__main__":

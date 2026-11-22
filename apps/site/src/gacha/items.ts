@@ -51,6 +51,21 @@ export const ITEMS: readonly Item[] = [
     flavor: { ja: "目がボタンでできている。", en: "Its eyes are made of buttons." }
   },
   {
+    id: "hetoheto", rarity: "N",
+    name: { ja: "へとへと", en: "Wornout" },
+    flavor: { ja: "ガチャを 100 回引いたあとの顔。", en: "The face of someone who just pulled 100 times." }
+  },
+  {
+    id: "hamigaki", rarity: "N",
+    name: { ja: "はみがきん", en: "Brushy" },
+    flavor: { ja: "歯並びだけが自慢。1 日 5 回みがく。", en: "Proud of its teeth. Brushes five times a day." }
+  },
+  {
+    id: "piyo", rarity: "N",
+    name: { ja: "ぴよなが", en: "Longpeep" },
+    flavor: { ja: "寝るたびに少しずつ縦に伸びる。", en: "Grows a little taller every time it sleeps." }
+  },
+  {
     id: "tsunotsuno", rarity: "R",
     name: { ja: "ツノピン", en: "Hornpin" },
     flavor: { ja: "腕だけ借り物。", en: "Only the arms are borrowed." }
@@ -71,6 +86,21 @@ export const ITEMS: readonly Item[] = [
     flavor: { ja: "鳴き声は 1 オクターブ低い。", en: "Croaks one octave lower." }
   },
   {
+    id: "kibakiba", rarity: "R",
+    name: { ja: "キバキバ", en: "Fangfang" },
+    flavor: { ja: "キバは立派だが、好物はプリン。", en: "Impressive fangs. Favorite food: pudding." }
+  },
+  {
+    id: "dekamimi", rarity: "R",
+    name: { ja: "デカミミ", en: "Bigears" },
+    flavor: { ja: "自分の悪口だけはよく聞こえる。", en: "Hears every bad thing said about it. Only those." }
+  },
+  {
+    id: "gyorome", rarity: "R",
+    name: { ja: "ギョロメ", en: "Glarebug" },
+    flavor: { ja: "あなたのガチャ結果をずっと見ている。", en: "Keeps staring at your gacha results." }
+  },
+  {
     id: "kirikiri", rarity: "SR",
     name: { ja: "キリキリ", en: "Kirikiri" },
     flavor: { ja: "いつも何かに怒っている。たぶん締め切り。", en: "Always angry about something. Probably a deadline." }
@@ -86,6 +116,16 @@ export const ITEMS: readonly Item[] = [
     flavor: { ja: "目が 7 つある。全部ちがう方向を見ている。", en: "Has seven eyes, each looking a different way." }
   },
   {
+    id: "debirun", rarity: "SR",
+    name: { ja: "デビルン", en: "Devilin" },
+    flavor: { ja: "大魔王の部下。まだ見習いなので定時で帰る。", en: "The overlord's minion. Still a trainee, so it leaves on time." }
+  },
+  {
+    id: "yukidaruma", rarity: "SR",
+    name: { ja: "ゆきんこ", en: "Snowpup" },
+    flavor: { ja: "夏のあいだはガチャから出てこない。", en: "Refuses to come out of the gacha in summer." }
+  },
+  {
     id: "daimaou", rarity: "SSR",
     name: { ja: "大魔王ガチャラ", en: "Gacharoth the Overlord" },
     flavor: { ja: "ガチャの底に住む魔王。引いた人の財布を見ている。", en: "The overlord at the bottom of the gacha. It is watching your wallet." }
@@ -94,6 +134,11 @@ export const ITEMS: readonly Item[] = [
     id: "nijiiro", rarity: "SSR",
     name: { ja: "にじいろキメラ", en: "Rainbow Chimera" },
     flavor: { ja: "いろんなモンスターの良いところを集めた。性格以外。", en: "Made from the best parts of many monsters. Except the personality." }
+  },
+  {
+    id: "jackpot", rarity: "SSR",
+    name: { ja: "ジャックポット", en: "Jackpot" },
+    flavor: { ja: "出た瞬間、なぜかジェムが減った気がする。", en: "The moment it appears, your gems somehow feel lighter." }
   },
 ];
 
