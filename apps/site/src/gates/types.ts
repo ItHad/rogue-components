@@ -5,9 +5,17 @@ import type { Messages } from "../i18n";
 /** 操作の種類。関門はどの操作の前に割り込むかをこれで指定する。 */
 export type Action = "visit" | "pull" | "charge";
 
+/** 操作の中身 (関門の難しさを変えるのに使う) */
+export interface GateRequest {
+  /** ショップで買おうとしているパック数 */
+  quantity?: number;
+}
+
 export interface GateProps {
   /** いまのゲーム状態 (保存済みのパスワードや CAPTCHA の進み具合を見るため) */
   state: GameState;
+  /** いま関門をくぐろうとしている操作の中身 */
+  request: GateRequest;
   /** 関門を突破したときに呼ぶ。patch はゲーム状態に書き込まれる。 */
   onPass: (patch?: Partial<GameState>) => void;
 }

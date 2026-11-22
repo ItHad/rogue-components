@@ -14,7 +14,7 @@ export { SafeDial, DIAL_CHARS } from "./SafeDial/SafeDial";
 export type { SafeDialProps } from "./SafeDial/SafeDial";
 
 export { PasswordBoss, passwordStrength } from "./PasswordBoss/PasswordBoss";
-export type { PasswordBossProps } from "./PasswordBoss/PasswordBoss";
+export type { PasswordBossProps, PasswordRule } from "./PasswordBoss/PasswordBoss";
 
 export { EpochDatePicker } from "./EpochDatePicker/EpochDatePicker";
 export type { EpochDatePickerProps } from "./EpochDatePicker/EpochDatePicker";

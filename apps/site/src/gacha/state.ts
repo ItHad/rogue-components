@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 export const PULL_COST = 100;
+/** ショップで 1 パック買うと増えるジェム */
+export const GEM_PACK = 100;
 const INITIAL_GEMS = 500;
 const STORAGE_KEY = "monster-gacha:v1";
 
@@ -14,6 +16,8 @@ export interface GameState {
   consentChoice: "accept" | "reject" | null;
   /** 決済パスワードの SHA-256 (平文は保存しない) */
   passwordHash: string | null;
+  /** 決済パスワードを設定したときの強さの段階。これより欲張ると設定し直しになる */
+  passwordTier: number;
   /** 年齢確認で入力した生年月日 (YYYY-MM-DD) */
   birthdate: string | null;
   /** 突破した CAPTCHA の数。質問はこれに応じて哲学的になる */
@@ -32,6 +36,7 @@ const INITIAL_STATE: GameState = {
   pulls: 0,
   consentChoice: null,
   passwordHash: null,
+  passwordTier: 0,
   birthdate: null,
   captchaLevel: 0,
   pullsSinceCaptcha: CAPTCHA_EVERY,

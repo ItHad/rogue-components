@@ -8,4 +8,4 @@ import type { Gate } from "./types";
 /** 関門は上から順に出てくる (その操作に関係するものだけ)。 */
 export const GATES: readonly Gate[] = [consentGate, termsGate, ageGate, captchaGate, paymentGate];
 
-export type { Action, Gate, GateProps } from "./types";
+export type { Action, Gate, GateProps, GateRequest } from "./types";

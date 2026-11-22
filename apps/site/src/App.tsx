@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { roll, type Item } from "./gacha/items";
-import { PULL_COST, useGameState } from "./gacha/state";
+import { GEM_PACK, PULL_COST, useGameState } from "./gacha/state";
 import { useGates } from "./gates/useGates";
 import { useI18n } from "./i18n";
 import { CollectionView } from "./views/CollectionView";
@@ -44,9 +44,9 @@ export function App() {
     return results;
   };
 
-  const charge = async (amount: number) => {
-    if (!(await runGates("charge"))) return false;
-    setState((s) => ({ ...s, gems: s.gems + amount }));
+  const charge = async (quantity: number) => {
+    if (!(await runGates("charge", { quantity }))) return false;
+    setState((s) => ({ ...s, gems: s.gems + quantity * GEM_PACK }));
     return true;
   };
 

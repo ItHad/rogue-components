@@ -912,8 +912,41 @@ p {
   font-weight: 700;
 }
 
-.product .rc-fs {
-  --rc-fs-accent: var(--accent);
+.qty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  inline-size: 100%;
+  max-inline-size: 320px;
+}
+
+.qty__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qty__label {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.qty__value {
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.qty__buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.qty__btn {
+  padding-inline: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- result modal ---------- */

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PasswordBoss, passwordStrength, SafeDial } from "rogue-components";
 import { useI18n } from "../i18n";
+import { bossName, passwordRules, passwordTierFor } from "./paymentTiers";
 import type { Gate, GateProps } from "./types";
 
 async function sha256(text: string): Promise<string> {
@@ -8,9 +9,19 @@ async function sha256(text: string): Promise<string> {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-/** 初回: ボスを倒せる強さのパスワードを決め、逆回転ダイヤルで確認入力する */
-function SetupView({ onPass }: GateProps) {
+interface SetupViewProps extends GateProps {
+  tier: number;
+  /** 前のパスワードでは弱すぎて、設定し直しになったとき */
+  reset: boolean;
+}
+
+/**
+ * 初回 (または欲張ったとき): ボスを倒せる強さのパスワードを決め、逆回転ダイヤルで確認入力する。
+ * ボスの強さは購入数で決まる。
+ */
+function SetupView({ onPass, tier, reset }: SetupViewProps) {
   const { t } = useI18n();
+  const rules = passwordRules(tier, t);
   const [step, setStep] = useState<"set" | "confirm">("set");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -19,13 +30,13 @@ function SetupView({ onPass }: GateProps) {
   if (step === "set") {
     return (
       <div className="gate">
-        <p className="gate__lead">{t.payment.setLead}</p>
+        <p className="gate__lead">{reset ? t.payment.resetLead : t.payment.setLead}</p>
         <SafeDial label={t.payment.label} value={password} onChange={setPassword} />
-        <PasswordBoss password={password} />
+        <PasswordBoss password={password} rules={rules} name={bossName(tier, t)} />
         <button
           type="button"
           className="btn btn--primary"
-          disabled={passwordStrength(password) < 100}
+          disabled={passwordStrength(password, rules) < 100}
           onClick={() => setStep("confirm")}
         >
           {t.payment.next}
@@ -40,7 +51,7 @@ function SetupView({ onPass }: GateProps) {
       setConfirm("");
       return;
     }
-    onPass({ passwordHash: await sha256(password) });
+    onPass({ passwordHash: await sha256(password), passwordTier: tier });
   };
 
   return (
@@ -95,7 +106,11 @@ function VerifyView({ state, onPass }: GateProps) {
 }
 
 function PaymentGateView(props: GateProps) {
-  return props.state.passwordHash ? <VerifyView {...props} /> : <SetupView {...props} />;
+  const tier = passwordTierFor(props.request.quantity ?? 0);
+  const { passwordHash, passwordTier } = props.state;
+  // いまのパスワードより強い段階のチャージなら、パスワードを設定し直させる
+  if (passwordHash && tier <= passwordTier) return <VerifyView {...props} />;
+  return <SetupView {...props} tier={tier} reset={passwordHash !== null} />;
 }
 
 export const paymentGate: Gate = {
