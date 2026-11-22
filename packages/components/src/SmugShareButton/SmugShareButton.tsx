@@ -116,6 +116,9 @@ export function SmugShareButton({
 
   const canNativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
   const fullText = brag ? `${text}\n${brag}` : text;
+  // X 以外（共有シート・コピー）では本文の後ろにタグを書き足す
+  const tagLine = hashtags && hashtags.length > 0 ? hashtags.map((t) => `#${t}`).join(" ") : "";
+  const textWithTags = [fullText, tagLine].filter(Boolean).join("\n");
 
   const toggle = () => {
     if (open) {
@@ -155,7 +158,7 @@ export function SmugShareButton({
 
   const shareNative = async () => {
     try {
-      await navigator.share({ text: fullText, url });
+      await navigator.share({ text: textWithTags, url });
       done("native");
     } catch {
       // キャンセルされたときは何もしない
@@ -163,8 +166,7 @@ export function SmugShareButton({
   };
 
   const copy = async () => {
-    const tags = hashtags?.map((t) => `#${t}`).join(" ");
-    const body = [fullText, tags, url].filter(Boolean).join("\n");
+    const body = [textWithTags, url].filter(Boolean).join("\n");
     try {
       await navigator.clipboard.writeText(body);
       setCopied(true);
