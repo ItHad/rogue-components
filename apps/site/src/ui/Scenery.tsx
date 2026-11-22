@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 /**
  * サイト全体の背景。夕暮れの平原と丘を、遠くのドラゴンが横切っていく。
  * 画面の縦横比が変わっても地平線と丘がずれないよう、空も含めて 1 枚の SVG で描き、下端に合わせて切り抜く。
@@ -79,12 +81,48 @@ const FAR_TREES: { x: number; y: number; s: number; pine?: boolean }[] = [
   { x: 1255, y: 703, s: 0.5, pine: true },
 ];
 
+interface Meteor {
+  id: number;
+  /** 画面に対する流れ始めの位置 (%) */
+  top: number;
+  left: number;
+}
+
+/**
+ * 6〜16 秒おきに、空の上のほうのどこかに流れ星を 1 つ流す。
+ * 動きを減らす設定のときは流さない。
+ */
+function useMeteors(): Meteor[] {
+  const [meteors, setMeteors] = useState<Meteor[]>([]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let id = 0;
+    let timer: number;
+    const schedule = () => {
+      timer = window.setTimeout(() => {
+        const meteor = { id: ++id, top: 3 + Math.random() * 18, left: 25 + Math.random() * 70 };
+        setMeteors((list) => [...list, meteor]);
+        // 流れ終わったら取り除く (アニメーションは 1.2 秒)
+        window.setTimeout(() => setMeteors((list) => list.filter((m) => m.id !== meteor.id)), 1500);
+        schedule();
+      }, 6000 + Math.random() * 10000);
+    };
+    schedule();
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return meteors;
+}
+
 // 丘の形。塗りと、その丘の上を通る道の切り抜きの両方に使う
 const FAR_HILL = "M720 660 C 820 576, 1000 548, 1100 566 S 1300 610, 1380 660 Z";
 const MID_HILL = "M0 640 C 180 580, 360 584, 520 628 S 820 612, 980 618 S 1300 568, 1440 612 L1440 900 L0 900 Z";
 const NEAR_HILL = "M0 724 C 200 664, 420 666, 620 708 S 1000 690, 1200 698 S 1380 676, 1440 690 L1440 900 L0 900 Z";
 
 export function Scenery() {
+  const meteors = useMeteors();
+
   return (
     <div className="scenery" aria-hidden="true">
       <svg className="scenery__land" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
@@ -231,6 +269,12 @@ export function Scenery() {
           )}
         </g>
       </svg>
+
+      {meteors.map((m) => (
+        <div key={m.id} className="scenery__meteor" style={{ top: `${m.top}%`, left: `${m.left}%` }}>
+          <span className="scenery__meteor-trail" />
+        </div>
+      ))}
 
       {/* 遠くを飛ぶドラゴン。横移動・上下のゆれ・羽ばたきを別々の要素で動かす */}
       <div className="scenery__dragon">

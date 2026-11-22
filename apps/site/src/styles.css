@@ -170,6 +170,49 @@ p {
   }
 }
 
+/* 流れ星: 外側の要素で左下向きに傾け、内側の尾をその向きに走らせる */
+.scenery__meteor {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  transform: rotate(146deg);
+}
+
+.scenery__meteor-trail {
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: 0;
+  inline-size: 110px;
+  block-size: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #c7cdfc88 60%, #fff);
+  box-shadow: 0 0 6px #fdf6d8aa;
+  opacity: 0;
+  transform-origin: right center;
+  animation: scenery-meteor 1.2s ease-in forwards;
+}
+
+@keyframes scenery-meteor {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scaleX(0.2);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+    transform: translateX(240px) scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(300px) scaleX(0.6);
+  }
+}
+
 /* 遠くにいるので小さく、少しかすませる */
 .scenery__dragon {
   position: absolute;
