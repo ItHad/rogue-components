@@ -1469,3 +1469,18 @@ p {
   font-size: 0.9em;
   text-align: center;
 }
+
+/* PC の低いウィンドウでも、撮影ボタンまで 1 画面に収める */
+.photo .rc-gp__stage {
+  inline-size: min(100%, max(260px, calc((100dvh - 340px) * 4 / 3)));
+}
+
+.photo .rc-gp__print {
+  inline-size: min(420px, 100%, max(240px, calc((100dvh - 330px) * 1.25)));
+}
+
+@media (max-width: 600px) {
+  .photo .rc-gp__stage {
+    inline-size: min(100%, max(260px, calc(100dvh - 340px)));
+  }
+}
