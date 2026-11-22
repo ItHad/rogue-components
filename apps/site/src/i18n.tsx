@@ -75,6 +75,13 @@ const ja = {
     proceed: "同意してガチャへ進む",
   },
 
+  review: {
+    title: "このアプリを評価してください",
+    lead: "図鑑を開く前に、ひとつだけお願いがあります。",
+    label: "モンスターガチャの評価",
+    proceed: "図鑑を見る",
+  },
+
   consent: {
     title: "Coookie の使用について",
     message: "🍪 当サイトでは、より快適にご利用いただくために Coookie を使用しています。",
@@ -262,6 +269,13 @@ const en: Messages = {
     ],
     agree: "I agree to the Terms of Service",
     proceed: "Agree and continue",
+  },
+
+  review: {
+    title: "Enjoying Monster Gacha?",
+    lead: "Before you open your collection, just one small favor.",
+    label: "Rate Monster Gacha",
+    proceed: "Open the collection",
   },
 
   consent: {

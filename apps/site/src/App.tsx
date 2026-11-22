@@ -51,6 +51,11 @@ export function App() {
     return results;
   };
 
+  const go = async (next: View) => {
+    if (next === "collection" && !(await runGates("collection"))) return;
+    setView(next);
+  };
+
   const charge = async (quantity: number) => {
     if (!(await runGates("charge", { quantity }))) return false;
     setState((s) => ({ ...s, gems: s.gems + quantity * GEM_PACK }));
@@ -72,7 +77,7 @@ export function App() {
               type="button"
               className="topbar__link"
               aria-current={view === id ? "page" : undefined}
-              onClick={() => setView(id)}
+              onClick={() => void go(id)}
             >
               {t.nav[id]}
             </button>
@@ -141,7 +146,7 @@ export function App() {
             type="button"
             className="tabbar__tab"
             aria-current={view === id ? "page" : undefined}
-            onClick={() => setView(id)}
+            onClick={() => void go(id)}
           >
             <img className="tabbar__icon" src={`/monsters/${TAB_ICON[id]}.png`} alt="" width="28" height="28" />
             {t.nav[id]}

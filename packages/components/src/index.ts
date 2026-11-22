@@ -41,5 +41,8 @@ export type { SmugShareButtonProps, ShareTarget } from "./SmugShareButton/SmugSh
 export { BurgerMenu } from "./BurgerMenu/BurgerMenu";
 export type { BurgerMenuProps, BurgerMenuItem } from "./BurgerMenu/BurgerMenu";
 
+export { RiggedRating } from "./RiggedRating/RiggedRating";
+export type { RiggedRatingProps } from "./RiggedRating/RiggedRating";
+
 export { BellowsAccordion } from "./BellowsAccordion/BellowsAccordion";
 export type { BellowsAccordionProps } from "./BellowsAccordion/BellowsAccordion";

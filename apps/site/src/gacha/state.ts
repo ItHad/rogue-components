@@ -24,6 +24,8 @@ export interface GameState {
   captchaLevel: number;
   /** 前回の CAPTCHA から何回ガチャを引こうとしたか */
   pullsSinceCaptcha: number;
+  /** 図鑑を開く前のレビュー依頼で ★5 を付けたか */
+  rated: boolean;
 }
 
 /** CAPTCHA は何回のガチャ操作ごとに出すか */
@@ -40,6 +42,7 @@ const INITIAL_STATE: GameState = {
   birthdate: null,
   captchaLevel: 0,
   pullsSinceCaptcha: CAPTCHA_EVERY,
+  rated: false,
 };
 
 function load(): GameState {
