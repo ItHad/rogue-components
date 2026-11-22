@@ -25,10 +25,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 50% -10%, #2a2f6b 0%, transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  /* 景色は Scenery が描く。これは読み込み前と景色の外側の色 */
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
   line-height: 1.7;
@@ -115,6 +113,142 @@ p {
   font: inherit;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* ---------- scenery (背景の平原とドラゴン) ---------- */
+
+.scenery {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scenery__land {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/*
+ * 縦長の画面 (スマホ): 中央で切り抜くと右寄りの月とお城が見えなくなるので、
+ * 景色を画面の高さに合わせて描き、お城 (景色の左から 72.2%) が画面幅の 84% に来るよう左へずらす。
+ * 月はそのままだと画面の外なので、お城の上空へ寄せる。
+ */
+@media (orientation: portrait) {
+  .scenery__land {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    inline-size: auto;
+    block-size: 100%;
+    aspect-ratio: 1440 / 900;
+    transform: translateX(calc(84vw - 72.2%));
+  }
+
+  /* 説明文と重ならないよう、ガチャの球の右横あたりまで下げる */
+  .scenery__moon {
+    transform: translate(-60px, 200px);
+  }
+}
+
+.scenery__road {
+  fill: none;
+  stroke: #3c5a45;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.scenery__twinkle {
+  animation: scenery-twinkle 4s ease-in-out infinite;
+}
+
+@keyframes scenery-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* 遠くにいるので小さく、少しかすませる */
+.scenery__dragon {
+  position: absolute;
+  top: 24%;
+  left: 0;
+  inline-size: clamp(54px, 6vw, 90px);
+  opacity: 0.85;
+  animation: scenery-dragon-fly 46s linear infinite;
+  animation-delay: -8s;
+}
+
+.scenery__dragon-bob {
+  animation: scenery-dragon-bob 3.2s ease-in-out infinite alternate;
+}
+
+.scenery__dragon-body {
+  display: block;
+  overflow: visible;
+  fill: #4b3d7e;
+}
+
+.scenery__wing {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: scenery-wing 0.9s ease-in-out infinite;
+}
+
+.scenery__wing--far {
+  fill: #3a2f66;
+  animation-delay: -0.06s;
+}
+
+.scenery__wing--near {
+  fill: #5a4a92;
+}
+
+/* 左から右へ横切り、しばらく姿を消してからまた現れる */
+@keyframes scenery-dragon-fly {
+  0% {
+    transform: translate(-120px, 0);
+  }
+
+  70% {
+    transform: translate(calc(100vw + 40px), -6vh);
+  }
+
+  100% {
+    transform: translate(calc(100vw + 40px), -6vh);
+  }
+}
+
+@keyframes scenery-dragon-bob {
+  from {
+    transform: translateY(-10px) rotate(-3deg);
+  }
+
+  to {
+    transform: translateY(10px) rotate(3deg);
+  }
+}
+
+@keyframes scenery-wing {
+  50% {
+    transform: scaleY(-0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenery__twinkle,
+  .scenery__dragon-bob,
+  .scenery__wing {
+    animation: none;
+  }
+
+  /* 動きを減らす設定では、空の一点に止まって見える */
+  .scenery__dragon {
+    animation: none;
+    transform: translateX(58vw);
+  }
 }
 
 /* ---------- layout ---------- */
@@ -699,7 +833,8 @@ p {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* トップバー (110) より前に出す。モーダルは閉じられるので、言語切り替えは閉じてからでよい */
+  z-index: 120;
   display: grid;
   place-items: center;
   padding: 16px;
@@ -711,7 +846,10 @@ p {
 .modal {
   width: min(480px, 100%);
   max-height: calc(100vh - 32px);
+  /* スマホのアドレスバーぶんを除いた、実際に見えている高さに収める */
+  max-height: calc(100dvh - 32px);
   overflow: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--bg-2);
@@ -723,7 +861,12 @@ p {
   outline: none;
 }
 
+/* 中身が長くなってスクロールしても、閉じるボタンは常に見えるようにする */
 .modal__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -829,8 +972,7 @@ p {
 .gate-banner-backdrop {
   position: fixed;
   inset: 0;
-  /* トップバー (110) より前に出す。モーダルは閉じられるので、言語切り替えは閉じてからでよい */
-  z-index: 120;
+  z-index: 100;
   display: flex;
   align-items: flex-end;
   background: #05061088;
@@ -846,10 +988,7 @@ p {
   background: var(--bg-2);
   box-shadow: 0 -20px 60px -10px #000;
   animation: banner-in 0.4s cubic-bezier(0.3, 1.3, 0.5, 1);
-  /* スマホのアドレスバーぶんを除いた、実際に見えている高さに収める */
-  max-height: calc(100dvh - 32px);
 }
-  overscroll-behavior: contain;
 
 .gate-banner .gate {
   max-width: 720px;
@@ -861,12 +1000,7 @@ p {
 }
 
 @keyframes banner-in {
-/* 中身が長くなってスクロールしても、閉じるボタンは常に見えるようにする */
   from {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--bg-2);
     transform: translateY(100%);
   }
 }

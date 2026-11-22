@@ -3,6 +3,7 @@ import { roll, type Item } from "./gacha/items";
 import { GEM_PACK, PULL_COST, useGameState } from "./gacha/state";
 import { useGates } from "./gates/useGates";
 import { useI18n } from "./i18n";
+import { Scenery } from "./ui/Scenery";
 import { CollectionView } from "./views/CollectionView";
 import { GachaView } from "./views/GachaView";
 import { ShopView } from "./views/ShopView";
@@ -52,6 +53,7 @@ export function App() {
 
   return (
     <div className="app">
+      <Scenery />
       <header className="topbar">
         <button type="button" className="topbar__logo" onClick={() => setView("gacha")}>
           <img className="topbar__logo-icon" src="/monsters/puni.png" alt="" width="28" height="28" />
