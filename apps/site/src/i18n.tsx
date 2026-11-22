@@ -15,6 +15,15 @@ const ja = {
   switchTo: "English",
   modalClose: "閉じる",
 
+  menu: {
+    label: "メニュー",
+    reset: "初めから",
+    resetHint: "3 口で完食すると記録が消えます",
+    share: "ゲームを共有",
+    shareText: "入力ひとつに全力をかけるガチャサイト「モンスターガチャ」で遊んでいます。",
+    author: "作者の X",
+  },
+
   gacha: {
     eyebrow: "期間限定ではないガチャ",
     lead: "ダンジョンの奥からモンスターが飛び出してきます。だいたいは弱いです。",
@@ -184,6 +193,15 @@ const en: Messages = {
   language: "Language",
   switchTo: "日本語",
   modalClose: "Close",
+
+  menu: {
+    label: "Menu",
+    reset: "Start over",
+    resetHint: "Eat it in 3 bites to wipe your progress",
+    share: "Share the game",
+    shareText: "I'm playing Monster Gacha, a gacha site where every input takes everything you've got.",
+    author: "Creator on X",
+  },
 
   gacha: {
     eyebrow: "A Not-Limited-Time Gacha",

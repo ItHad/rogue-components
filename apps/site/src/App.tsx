@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { BurgerMenu, SmugShareButton } from "rogue-components";
 import { roll, type Item } from "./gacha/items";
-import { GEM_PACK, PULL_COST, useGameState } from "./gacha/state";
+import { GEM_PACK, PULL_COST, resetEverything, useGameState } from "./gacha/state";
 import { DragonTrial } from "./dragon/DragonTrial";
 import { SECRET_ITEMS } from "./gacha/items";
 import { useGates } from "./gates/useGates";
@@ -14,6 +15,7 @@ type View = "gacha" | "collection" | "shop";
 
 const NAV: View[] = ["gacha", "collection", "shop"];
 const TAB_ICON: Record<View, string> = { gacha: "puni", collection: "hakase", shop: "gogogo" };
+const AUTHOR_X = "files3333";
 
 export function App() {
   const { locale, setLocale, t } = useI18n();
@@ -87,6 +89,38 @@ export function App() {
         >
           {t.switchTo}
         </button>
+        <BurgerMenu
+          className="topbar__menu"
+          label={t.menu.label}
+          items={[
+            {
+              id: "reset",
+              label: t.menu.reset,
+              description: t.menu.resetHint,
+              bites: 3,
+              onSelect: () => void resetEverything(),
+            },
+            {
+              id: "share",
+              label: t.menu.share,
+              render: () => (
+                <SmugShareButton
+                  className="topbar__menu-share"
+                  label={t.menu.share}
+                  text={t.menu.shareText}
+                  url={window.location.origin}
+                  hashtags={[t.collection.shareTag]}
+                />
+              ),
+            },
+            {
+              id: "author",
+              label: t.menu.author,
+              description: `@${AUTHOR_X}`,
+              href: `https://x.com/${AUTHOR_X}`,
+            },
+          ]}
+        />
       </header>
 
       <main className="main">

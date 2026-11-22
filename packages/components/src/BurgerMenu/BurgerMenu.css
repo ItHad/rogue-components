@@ -1,0 +1,402 @@
+.rc-bm {
+  --rc-bm-bun: #e9a95c;
+  --rc-bm-bun-shade: #c47f36;
+  --rc-bm-bun-ink: #3b2200;
+  --rc-bm-sesame: #fff4dc;
+  --rc-bm-patty: #6e3b22;
+  --rc-bm-patty-shade: #4a2414;
+  --rc-bm-patty-ink: #fff1e0;
+  --rc-bm-lettuce: #5cc45a;
+  --rc-bm-cheese: #fcd34d;
+  --rc-bm-tomato: #ef4444;
+  --rc-bm-plate: #e5e7f5;
+  --rc-bm-focus: #fcd34d;
+  --rc-bm-width: min(280px, calc(100vw - 24px));
+  position: relative;
+  display: inline-block;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- 開くボタン ---------- */
+
+.rc-bm__trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 40px;
+  block-size: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rc-bm__trigger:focus-visible,
+.rc-bm__action:focus-visible {
+  outline: 3px solid var(--rc-bm-focus);
+  outline-offset: 2px;
+}
+
+.rc-bm__icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  inline-size: 26px;
+}
+
+.rc-bm__bar {
+  display: block;
+  inline-size: 100%;
+  transition: transform 0.25s cubic-bezier(0.5, -0.4, 0.7, 1), opacity 0.2s;
+}
+
+.rc-bm__bar--top {
+  block-size: 8px;
+  border-radius: 12px 12px 2px 2px;
+  background:
+    radial-gradient(1px 1px at 30% 45%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(1px 1px at 55% 30%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(1px 1px at 75% 55%, var(--rc-bm-sesame) 99%, transparent),
+    var(--rc-bm-bun);
+}
+
+.rc-bm__bar--mid {
+  block-size: 5px;
+  inline-size: 110%;
+  border-radius: 3px;
+  background: var(--rc-bm-patty);
+  box-shadow: 0 -1.5px 0 var(--rc-bm-lettuce);
+}
+
+.rc-bm__bar--bottom {
+  block-size: 5px;
+  border-radius: 2px 2px 5px 5px;
+  background: var(--rc-bm-bun);
+}
+
+/* お腹がすいてそわそわする */
+.rc-bm__trigger:hover .rc-bm__bar--top {
+  transform: translateY(-2px) rotate(-4deg);
+}
+
+.rc-bm__trigger:hover .rc-bm__bar--mid {
+  transform: translateX(1px);
+}
+
+/* 開いている間は、具がメニューのほうへ落ちていって空っぽになる */
+.rc-bm[data-phase="open"] .rc-bm__bar {
+  opacity: 0;
+  transform: translateY(18px) scale(0.6);
+}
+
+.rc-bm[data-phase="open"] .rc-bm__bar--mid {
+  transition-delay: 0.05s;
+}
+
+.rc-bm[data-phase="open"] .rc-bm__bar--top {
+  transition-delay: 0.1s;
+}
+
+.rc-bm__trigger::after {
+  content: "×";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--rc-bm-bun);
+  font-size: 26px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.4) rotate(-90deg);
+  transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  pointer-events: none;
+}
+
+.rc-bm[data-phase="open"] .rc-bm__trigger::after {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.15s;
+}
+
+/* ---------- 積み上がったメニュー ---------- */
+
+.rc-bm__stack {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  inline-size: var(--rc-bm-width);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+}
+
+.rc-bm__layer {
+  position: relative;
+  transform-origin: 50% 100%;
+}
+
+.rc-bm[data-phase="open"] .rc-bm__layer {
+  animation: rc-bm-drop 0.55s cubic-bezier(0.4, 0, 0.6, 1) both;
+  animation-delay: calc(var(--from-bottom) * 75ms);
+}
+
+.rc-bm[data-phase="closing"] .rc-bm__layer {
+  animation: rc-bm-lift 0.26s cubic-bezier(0.5, 0, 0.9, 0.4) both;
+  animation-delay: calc(var(--pos) * 30ms);
+}
+
+.rc-bm__food {
+  position: relative;
+}
+
+.rc-bm__action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  inline-size: 100%;
+  min-block-size: 48px;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rc-bm__hint {
+  font-size: 0.75em;
+  font-weight: normal;
+  opacity: 0.8;
+}
+
+.rc-bm__item:hover .rc-bm__food {
+  transform: translateX(3px) rotate(0.6deg);
+}
+
+.rc-bm__food {
+  transition: transform 0.15s;
+}
+
+/* 上のバンズ: ごまつきのドーム */
+.rc-bm__item--bun-top .rc-bm__food {
+  border-radius: 50% 50% 12px 12px / 70% 70% 12px 12px;
+  background:
+    radial-gradient(2px 3.5px at 22% 30%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(2px 3.5px at 38% 16%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(2px 3.5px at 50% 34%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(2px 3.5px at 63% 14%, var(--rc-bm-sesame) 99%, transparent),
+    radial-gradient(2px 3.5px at 78% 30%, var(--rc-bm-sesame) 99%, transparent),
+    linear-gradient(to bottom, var(--rc-bm-bun) 70%, var(--rc-bm-bun-shade));
+  color: var(--rc-bm-bun-ink);
+}
+
+.rc-bm__item--bun-top .rc-bm__action {
+  min-block-size: 64px;
+  padding-top: 20px;
+}
+
+.rc-bm__item--patty .rc-bm__food {
+  margin-inline: -6px;
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(100deg, transparent 0 14px, rgba(0, 0, 0, 0.12) 14px 17px),
+    linear-gradient(to bottom, var(--rc-bm-patty), var(--rc-bm-patty-shade));
+  color: var(--rc-bm-patty-ink);
+}
+
+.rc-bm__item--bun-bottom .rc-bm__food {
+  border-radius: 8px 8px 22px 22px;
+  background: linear-gradient(to bottom, var(--rc-bm-bun-shade), var(--rc-bm-bun) 30%);
+  color: var(--rc-bm-bun-ink);
+}
+
+.rc-bm__custom {
+  display: flex;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+/* ---------- 具 ---------- */
+
+.rc-bm__filling {
+  pointer-events: none;
+}
+
+.rc-bm__filling--lettuce {
+  z-index: 1;
+  block-size: 10px;
+  margin: -3px -6px;
+  background: var(--rc-bm-lettuce);
+  -webkit-mask: radial-gradient(7px 6px at 50% 100%, transparent 98%, #000) 0 0 / 14px 100%;
+  mask: radial-gradient(7px 6px at 50% 100%, transparent 98%, #000) 0 0 / 14px 100%;
+  border-radius: 6px 6px 0 0;
+}
+
+.rc-bm__filling--cheese {
+  z-index: 1;
+  block-size: 14px;
+  margin: -4px -2px -8px;
+  background: var(--rc-bm-cheese);
+  clip-path: polygon(
+    0 0, 100% 0, 100% 40%, 92% 40%, 86% 100%, 80% 40%, 58% 40%, 52% 85%, 46% 40%,
+    24% 40%, 17% 100%, 10% 40%, 0 40%
+  );
+}
+
+.rc-bm__filling--tomato {
+  z-index: 1;
+  block-size: 8px;
+  margin: -2px 6px;
+  border-radius: 4px;
+  background: var(--rc-bm-tomato);
+}
+
+.rc-bm__plate {
+  block-size: 14px;
+  margin: 2px -12px 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, #fff, var(--rc-bm-plate) 60%, #b6bad6);
+  pointer-events: none;
+}
+
+/* ---------- かじる ---------- */
+
+.rc-bm__chomp {
+  position: absolute;
+  right: -4px;
+  top: -10px;
+  z-index: 2;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #3b2200;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: rc-bm-chomp 0.8s ease-out both;
+}
+
+.rc-bm__crumbs {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  pointer-events: none;
+}
+
+.rc-bm__crumb {
+  position: absolute;
+  inline-size: 5px;
+  block-size: 4px;
+  border-radius: 2px;
+  background: var(--rc-bm-bun-shade);
+  animation: rc-bm-crumb 0.6s cubic-bezier(0.3, 0, 0.8, 1) both;
+}
+
+.rc-bm__item[data-eaten] .rc-bm__food {
+  animation: rc-bm-eaten 0.5s ease-in both;
+}
+
+@keyframes rc-bm-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(-60px - var(--pos) * 40px)) scale(0.35);
+  }
+  15% {
+    opacity: 1;
+  }
+  55% {
+    transform: translateY(0) scale(1, 1);
+  }
+  68% {
+    transform: translateY(0) scale(1.08, 0.78);
+  }
+  84% {
+    transform: translateY(-5px) scale(0.97, 1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rc-bm-lift {
+  to {
+    opacity: 0;
+    transform: translateY(calc(-50px - var(--pos) * 40px)) scale(0.3);
+  }
+}
+
+@keyframes rc-bm-chomp {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6) rotate(-8deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15) rotate(4deg);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1);
+  }
+}
+
+@keyframes rc-bm-crumb {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(200deg);
+  }
+}
+
+@keyframes rc-bm-eaten {
+  30% {
+    transform: scale(1.05, 0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-bm__bar,
+  .rc-bm__trigger::after,
+  .rc-bm__food {
+    transition: none;
+  }
+
+  .rc-bm[data-phase="open"] .rc-bm__layer,
+  .rc-bm[data-phase="closing"] .rc-bm__layer,
+  .rc-bm__chomp,
+  .rc-bm__crumb,
+  .rc-bm__item[data-eaten] .rc-bm__food {
+    animation: none;
+  }
+
+  .rc-bm__crumbs {
+    display: none;
+  }
+}

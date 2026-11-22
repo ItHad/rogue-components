@@ -37,3 +37,6 @@ export type { HoardSelectProps, HoardOption } from "./HoardSelect/HoardSelect";
 
 export { SmugShareButton } from "./SmugShareButton/SmugShareButton";
 export type { SmugShareButtonProps, ShareTarget } from "./SmugShareButton/SmugShareButton";
+
+export { BurgerMenu } from "./BurgerMenu/BurgerMenu";
+export type { BurgerMenuProps, BurgerMenuItem } from "./BurgerMenu/BurgerMenu";

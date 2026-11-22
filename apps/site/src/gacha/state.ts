@@ -66,3 +66,24 @@ export function useGameState() {
 
   return [state, setState] as const;
 }
+
+/** 保存した進行状況とキャッシュを消して、最初から読み込み直す。表示言語だけは残す。 */
+export async function resetEverything() {
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith("monster-gacha:") && key !== "monster-gacha:locale") localStorage.removeItem(key);
+    }
+    sessionStorage.clear();
+  } catch {
+    // 保存できない環境ではもともと何も残っていない
+  }
+  try {
+    if ("caches" in window) {
+      const names = await caches.keys();
+      await Promise.all(names.map((n) => caches.delete(n)));
+    }
+  } catch {
+    // キャッシュが使えなくても読み込み直しはする
+  }
+  window.location.reload();
+}

@@ -381,6 +381,27 @@ p {
   color: var(--ink);
 }
 
+.topbar__menu {
+  --rc-bm-focus: var(--accent);
+  flex: none;
+}
+
+.topbar__menu-share {
+  --rc-ssb-accent: var(--accent);
+  --rc-ssb-accent-ink: var(--accent-ink);
+  --rc-ssb-bg: #00000033;
+  --rc-ssb-line: #ffe6c866;
+  --rc-ssb-muted: #ffe6c8cc;
+  inline-size: 100%;
+  align-items: center;
+  font-size: 14px;
+}
+
+.topbar__menu-share .rc-ssb__panel {
+  background: #2a140acc;
+  text-align: left;
+}
+
 .tabbar {
   display: none;
 }
