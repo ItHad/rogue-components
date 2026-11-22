@@ -45,6 +45,8 @@ const ja = {
     shareTag: "モンスターガチャ",
     shareText: (found: number, total: number) =>
       `私はモンスターガチャで ${found} 体のモンスターを開放しました！（全 ${total} 種）`,
+    shareSecret: (n: number) =>
+      n > 1 ? `さらに、宵の古竜から我が子を ${n} 頭も託されています🐉` : "さらに、宵の古竜から我が子を託されました🐉",
   },
 
   shop: {
@@ -230,6 +232,10 @@ const en: Messages = {
     shareTag: "MonsterGacha",
     shareText: (found: number, total: number) =>
       `I've unlocked ${found} monsters in Monster Gacha! (${total} in total)`,
+    shareSecret: (n: number) =>
+      n > 1
+        ? `Plus, the Elder Dusk Dragon has entrusted me with ${n} of its hatchlings 🐉`
+        : "Plus, the Elder Dusk Dragon entrusted me with its hatchling 🐉",
   },
 
   shop: {

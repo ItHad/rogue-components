@@ -10,6 +10,14 @@ interface CollectionViewProps {
 export function CollectionView({ owned }: CollectionViewProps) {
   const { t } = useI18n();
   const found = ITEMS.filter((i) => (owned[i.id] ?? 0) > 0).length;
+  // シークレットは「全 n 種」に数えず、見つけたときだけ一言添える
+  const hatchlings = SECRET_ITEMS.reduce((sum, i) => sum + (owned[i.id] ?? 0), 0);
+  const shareText = [
+    t.collection.shareText(found, ITEMS.length),
+    hatchlings > 0 ? t.collection.shareSecret(hatchlings) : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   return (
     <section className="page">
@@ -20,7 +28,7 @@ export function CollectionView({ owned }: CollectionViewProps) {
       <SmugShareButton
         className="collection__share"
         label={t.collection.share}
-        text={t.collection.shareText(found, ITEMS.length)}
+        text={shareText}
         url={window.location.origin}
         hashtags={[t.collection.shareTag]}
       />
