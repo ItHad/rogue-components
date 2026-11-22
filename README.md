@@ -15,6 +15,7 @@
 | `EpochDatePicker` | 日付欄 | 1970/01/01 から 1 日ずつしか動かない。長押しで加速するが過熱する |
 | `PhilosophicalCaptcha` | 「私はロボットではありません」 | 人間であることを哲学的な問いで証明させられる |
 | `DvdModal` | モーダル | 閉じる × が DVD のロゴのように跳ね回り、角に当たった瞬間しか押せない |
+| `BuzzWireToggle` | トグルスイッチ | オンにしようとすると溝が迷路のように伸びる。スイッチの丸を壁に触れずにゴールまで運ばないとオンにならず、壁に触れると縮んで元に戻る |
 
 ## 使い方
 
@@ -49,10 +50,11 @@ function SignUp() {
 | `ConsentBattle` | `onChange(choice: "accept" \| "reject")`（決着時） | `message`, `detailsHref`, `detailsLabel` |
 | `FibonacciStepper` | `value` / `onChange(value: number)` | `min`, `max`, `label`, `disabled` |
 | `SafeDial` | `value` / `onChange(value: string)` | `reverse`, `maxLength`, `label`, `disabled` |
-| `PasswordBoss` | `password: string` | `onDefeat()`（強度 100 で呼ばれる）, `name` |
+| `PasswordBoss` | `password: string` | `onDefeat()`（強度 100 で呼ばれる）, `name`, `rules`（倒すための条件のリスト。すべて満たすまで倒れない） |
 | `EpochDatePicker` | `value` / `onChange(value: string)`（`YYYY-MM-DD`） | `label`, `disabled` |
 | `PhilosophicalCaptcha` | `value` / `onChange(verified: boolean)` | `level`, `questions` |
 | `DvdModal` | `open` / `onClose()` | `title`, `children`, `closeOnEscape`（既定は `true`） |
+| `BuzzWireToggle` | `checked` / `onChange(checked: boolean)` | `label`, `disabled` |
 
 ### 日本語と英語
 

@@ -28,3 +28,6 @@ export type {
 
 export { DvdModal } from "./DvdModal/DvdModal";
 export type { DvdModalProps } from "./DvdModal/DvdModal";
+
+export { BuzzWireToggle } from "./BuzzWireToggle/BuzzWireToggle";
+export type { BuzzWireToggleProps } from "./BuzzWireToggle/BuzzWireToggle";
