@@ -9,8 +9,18 @@ const DAY_MS = 86_400_000;
 const MAX_SPEED = 365;
 /** 長押しを始めてから加速が始まるまで (ms) */
 const HOLD_DELAY_MS = 300;
-/** 最高速度で回し続けたときの 1 秒あたりの温度上昇 (%) */
+/** 最高速度で加速し続けたときの 1 秒あたりの温度上昇 (%)。惰性やブレーキでは上がらない */
 const HEAT_PER_SEC_AT_MAX = 45;
+/** 動き始めの速度 (日/秒) */
+const BASE_SPEED = 3;
+/** 加速中は 1 秒で速度が 2^ACCEL 倍になる */
+const ACCEL = 1.5;
+/** 逆の矢印を押している間は 1 秒で速度が 1/2^BRAKE になる */
+const BRAKE = 4;
+/** 離したあとは 1 秒で速度が 1/2^FRICTION になる (惰性で進む) */
+const FRICTION = 1;
+/** これより遅くなったら止まる (日/秒) */
+const STOP_SPEED = 1;
 /** 1 日ずつ送ったときの温度上昇 (%) */
 const HEAT_PER_STEP = 1.5;
 /** 冷却速度 (%/秒) */
@@ -48,15 +58,10 @@ function toIso(day: number): string {
   return new Date(day * DAY_MS).toISOString().slice(0, 10);
 }
 
-/** 加速カーブ: 押し続けた秒数 → 日/秒 */
-function speedAt(heldSec: number, maxSpeed: number) {
-  return Math.min(maxSpeed, 3 * 2 ** (heldSec * 1.5));
-}
-
 interface Hold {
   dir: 1 | -1;
+  /** この時刻から加速・ブレーキが効き始める */
   start: number;
-  carry: number;
 }
 
 export interface EpochDatePickerProps {
@@ -65,7 +70,7 @@ export interface EpochDatePickerProps {
   defaultValue?: string;
   onChange?: (value: string) => void;
   label?: ReactNode;
-  /** 長押しの最高速度 (日/秒)。最高速度で回し続けたときの過熱の速さは変わらない */
+  /** 長押しの最高速度 (日/秒)。最高速度で加速し続けたときの過熱の速さは変わらない */
   maxSpeed?: number;
   disabled?: boolean;
   className?: string;
@@ -73,7 +78,8 @@ export interface EpochDatePickerProps {
 
 /**
  * 一見ふつうの日付欄。開くと 1970 年 1 月 1 日から始まり、矢印で 1 日ずつしか動かせない。
- * 長押しで加速するが、速すぎるとカレンダーが過熱して冷却時間が必要になる。
+ * 長押しで加速し、離しても惰性で進み続ける。止めるには逆の矢印でブレーキをかける。
+ * 加速しすぎるとカレンダーが過熱して冷却時間が必要になり、その間はブレーキも効かない。
  */
 export function EpochDatePicker({
   value: valueProp,
@@ -90,12 +96,16 @@ export function EpochDatePicker({
   const [overheated, setOverheated] = useState(false);
   const [open, setOpen] = useState(false);
   const [holding, setHolding] = useState(false);
+  const [moving, setMoving] = useState(false);
   const labelId = useId();
 
   const dayRef = useRef(toDay(value));
   const heatRef = useRef(0);
   const overheatedRef = useRef(false);
   const holdRef = useRef<Hold | null>(null);
+  /** 速度 (日/秒、符号つき) と、まだ 1 日に満たない移動量 */
+  const velRef = useRef(0);
+  const carryRef = useRef(0);
   const setValueRef = useRef(setValue);
   useEffect(() => {
     setValueRef.current = setValue;
@@ -119,8 +129,14 @@ export function EpochDatePicker({
     setValueRef.current(toIso(dayRef.current));
   };
 
-  // 長押し中の加速と、温度の上昇・冷却
-  const looping = holding || heat > 0;
+  const setVelocity = (v: number) => {
+    velRef.current = v;
+    if (v === 0) carryRef.current = 0;
+    setMoving(v !== 0);
+  };
+
+  // 加速・ブレーキ・惰性と、温度の上昇・冷却
+  const looping = holding || moving || heat > 0;
   useEffect(() => {
     if (!looping) return;
     let raf = 0;
@@ -128,15 +144,29 @@ export function EpochDatePicker({
     const tick = (now: number) => {
       const dt = (now - last) / 1000;
       last = now;
-      const hold = holdRef.current;
-      if (hold && !overheatedRef.current) {
-        const held = (now - hold.start) / 1000;
-        const v = held > 0 ? speedAt(held, maxSpeed) : 0;
-        hold.carry += v * dt;
-        const steps = Math.floor(hold.carry);
-        hold.carry -= steps;
-        move(steps * hold.dir);
-        addHeat((v / maxSpeed) * HEAT_PER_SEC_AT_MAX * dt);
+      const hold = overheatedRef.current ? null : holdRef.current;
+      let v = velRef.current;
+      let accelerating = false;
+      if (hold && now >= hold.start) {
+        if (v === 0 || Math.sign(v) === hold.dir) {
+          v = hold.dir * Math.min(maxSpeed, Math.max(Math.abs(v), BASE_SPEED) * 2 ** (ACCEL * dt));
+          accelerating = true;
+        } else {
+          const speed = Math.abs(v) * 2 ** (-BRAKE * dt);
+          v = speed < BASE_SPEED ? 0 : Math.sign(v) * speed;
+        }
+      } else if (!hold && v !== 0) {
+        const speed = Math.abs(v) * 2 ** (-FRICTION * dt);
+        v = speed < STOP_SPEED ? 0 : Math.sign(v) * speed;
+      }
+      if (v !== velRef.current) setVelocity(v);
+      carryRef.current += v * dt;
+      const steps = Math.trunc(carryRef.current);
+      carryRef.current -= steps;
+      move(steps);
+
+      if (accelerating) {
+        addHeat((Math.abs(v) / maxSpeed) * HEAT_PER_SEC_AT_MAX * dt);
       } else {
         heatRef.current = Math.max(0, heatRef.current - COOL_PER_SEC * dt);
         if (heatRef.current === 0 && overheatedRef.current) {
@@ -160,9 +190,28 @@ export function EpochDatePicker({
 
   const startHold = (dir: 1 | -1) => {
     if (disabled || overheatedRef.current) return;
-    step(dir);
-    holdRef.current = { dir, start: performance.now() + HOLD_DELAY_MS, carry: 0 };
+    // 止まっているときは 1 日送ってから加速を待つ。動いているときはすぐ加速・ブレーキする
+    const still = velRef.current === 0;
+    if (still) step(dir);
+    holdRef.current = { dir, start: performance.now() + (still ? HOLD_DELAY_MS : 0) };
     setHolding(true);
+  };
+
+  /** キーボードでの操作。止まっていれば 1 日送り、押し続ける (リピート) と動き出す */
+  const nudge = (dir: 1 | -1, repeat: boolean) => {
+    if (disabled || overheatedRef.current) return;
+    const v = velRef.current;
+    if (v === 0) {
+      step(dir);
+      if (repeat) setVelocity(dir * BASE_SPEED);
+    } else if (Math.sign(v) === dir) {
+      const speed = Math.min(maxSpeed, Math.abs(v) * 1.25);
+      setVelocity(dir * speed);
+      addHeat((speed / maxSpeed) * HEAT_PER_SEC_AT_MAX * 0.1);
+    } else {
+      const speed = Math.abs(v) / 2;
+      setVelocity(speed < BASE_SPEED ? 0 : Math.sign(v) * speed);
+    }
   };
 
   const endHold = () => {
@@ -173,7 +222,7 @@ export function EpochDatePicker({
   const onKeyDown = (dir: 1 | -1) => (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      step(dir);
+      nudge(dir, e.repeat);
     }
   };
 
@@ -228,7 +277,7 @@ export function EpochDatePicker({
       {open && (
         <div className="rc-edp__row">
           {arrow(-1)}
-          <time className="rc-edp__page" dateTime={value} aria-live={holding ? "off" : "polite"}>
+          <time className="rc-edp__page" dateTime={value} aria-live={holding || moving ? "off" : "polite"}>
             <span className="rc-edp__ym">
               {t.yearMonth(date.getUTCFullYear(), date.getUTCMonth() + 1)}
             </span>

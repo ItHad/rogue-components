@@ -13,7 +13,7 @@ function ageOf(birthdate: string, today = new Date()): number {
 /** 最初に入っている生年月日。ここから 0〜120 歳の範囲まで送ってもらう */
 const INITIAL_BIRTHDATE = "1000-01-01";
 const MAX_AGE = 120;
-/** 長押しの最高速度 (日/秒)。毎秒およそ 100 年。120 年の範囲を 1 秒ほどで通り過ぎる */
+/** 長押しの最高速度 (日/秒)。毎秒およそ 100 年。最高速度で離すと惰性で 140 年ほど進んでしまう */
 const MAX_SPEED = 36_500;
 
 function AgeGateView({ onPass }: GateProps) {
