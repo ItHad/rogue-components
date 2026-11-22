@@ -545,18 +545,16 @@ p {
 }
 
 .gacha__rates {
+  inline-size: min(760px, 100%);
   color: var(--ink-muted);
   font-size: 13px;
 }
 
-.gacha__rates summary {
-  cursor: pointer;
-}
-
 .gacha__rates ul {
   display: flex;
-  gap: 16px;
-  margin: 8px 0 0;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
   padding: 0;
   list-style: none;
 }

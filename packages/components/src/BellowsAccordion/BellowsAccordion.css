@@ -1,0 +1,192 @@
+.rc-acc {
+  --rc-acc-bellows: #b91c1c;
+  --rc-acc-bellows-dark: #5f0f0f;
+  --rc-acc-board: #1f2937;
+  --rc-acc-board-edge: #9ca3af;
+  --rc-acc-paper: color-mix(in srgb, Canvas 86%, transparent);
+  --rc-acc-accent: #fcd34d;
+  position: relative;
+  font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-acc__row {
+  display: flex;
+  align-items: center;
+}
+
+.rc-acc__summary {
+  flex: none;
+  padding: 4px 6px 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rc-acc__summary:focus-visible {
+  outline: 3px solid var(--rc-acc-accent);
+  outline-offset: 2px;
+}
+
+/* › の持ち手。開いている間は蛇腹の端の板になる */
+.rc-acc__handle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  inline-size: 28px;
+  min-block-size: 28px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: grab;
+  /* 縦のスクロールは残し、横に引っぱる操作だけ受け取る */
+  touch-action: pan-y;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.rc-acc[data-open] .rc-acc__handle {
+  border-color: var(--rc-acc-board-edge);
+  border-radius: 3px 8px 8px 3px;
+  background: var(--rc-acc-board);
+}
+
+.rc-acc[data-held] .rc-acc__handle {
+  cursor: grabbing;
+}
+
+/* 普通のアコーディオンの › 。広げた分だけ下を向く */
+.rc-acc__chevron {
+  inline-size: 0.5em;
+  block-size: 0.5em;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(calc(-45deg + var(--rc-acc-ratio) * 90deg));
+}
+
+.rc-acc__bellows {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  padding-block: 10px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--rc-acc-bellows-dark) 0,
+      var(--rc-acc-bellows) 35%,
+      var(--rc-acc-bellows) 65%,
+      var(--rc-acc-bellows-dark) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  border-block: 3px solid var(--rc-acc-board);
+}
+
+/* 閉じている間も中身の幅を測れるよう、見えない形で置いておく */
+.rc-acc:not([data-open]) .rc-acc__bellows {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 中身はいつも全開の幅で置いておき、蛇腹が伸びた分だけ左から見せる */
+.rc-acc__content {
+  inline-size: max-content;
+  max-inline-size: var(--rc-acc-room, 100%);
+  box-sizing: border-box;
+  padding: 8px 14px;
+  background: var(--rc-acc-paper);
+  color: CanvasText;
+  opacity: clamp(0, calc((var(--rc-acc-ratio) - 0.2) / 0.4), 1);
+}
+
+/* 折り目の陰。中身の上にもうっすら重ねる */
+.rc-acc__folds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.35) 0,
+      transparent 20%,
+      transparent 80%,
+      rgb(255 255 255 / 0.12) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  opacity: calc(1 - var(--rc-acc-ratio) * 0.6);
+}
+
+/* 叱る吹き出し。見出しの上に重ねて、レイアウトは動かさない */
+.rc-acc__status {
+  position: absolute;
+  inset-block-end: calc(100% + 4px);
+  inset-inline: 0;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.rc-acc__status > span {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--rc-acc-paper);
+  color: CanvasText;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.rc-acc__status > span[data-nag] {
+  animation: rc-acc-shake 0.4s ease-in-out;
+}
+
+@keyframes rc-acc-shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.rc-acc__puff {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  font-weight: 700;
+  font-size: 0.9em;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+  pointer-events: none;
+  animation: rc-acc-puff 0.8s ease-out forwards;
+}
+
+@keyframes rc-acc-puff {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -160%) scale(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-acc__status > span[data-nag] {
+    animation: none;
+  }
+
+  .rc-acc__puff {
+    animation: none;
+    opacity: 0;
+  }
+}
