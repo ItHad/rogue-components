@@ -2,7 +2,7 @@
 // 今は Worker スクリプトを持たず、dist を配信するだけ。
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "monster-gacha",
+  "name": "gacha",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
