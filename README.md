@@ -18,6 +18,7 @@
 | `BuzzWireToggle` | トグルスイッチ | オンにしようとすると溝が迷路のように伸びる。スイッチの丸を壁に触れずにゴールまで運ばないとオンにならず、壁に触れると縮んで元に戻る |
 | `SmugShareButton` | 共有ボタン | ちゃんと共有できるが、文面の最後に自分を褒める一言を勝手に書き足す。プレビューで消せるが、消すとしょんぼりする |
 | `BurgerMenu` | ハンバーガーメニュー | 開くと本物のバンズや具が落ちてきて積み上がり、それがメニューになる。`danger` の項目は真っ赤なトマトになり、`bites` を付けた項目はかじって完食しないと選べない |
+| `RiggedRating` | 「このアプリを評価してください ★★★★★」 | ★1〜★4 はカーソルや指が近づくと悲鳴を上げて逃げ回り、絶対に押せない。押せるのは ★5 だけ |
 | `BellowsAccordion` | › の付いたアコーディオンの見出し | 押しても「アコーディオンなんだから、ひっぱらないと」と言われて開かない。› をつかんで右へ引っぱると、見出しとの間に蛇腹が広がって中身が見える。空気が抜け続けるので、引っぱり続けないと閉じてしまう |
 
 ## 使い方
@@ -60,6 +61,7 @@ function SignUp() {
 | `BuzzWireToggle` | `checked` / `onChange(checked: boolean)` | `label`, `disabled` |
 | `SmugShareButton` | `text: string` / `onShare(target: "x" \| "native" \| "copy", text: string)` | `url`, `hashtags`, `brags`（書き足す一言の候補）, `label`, `disabled` |
 | `BurgerMenu` | `items`（`id`, `label`, `onSelect`, `href`, `bites`, `danger`, `keepOpen`, `render` を持つ項目のリスト。上から順に上のバンズ、パティ、下のバンズになる） | `label` |
+| `RiggedRating` | `value` / `onChange(stars: number)`（押せるのは 5 だけ） | `label` |
 | `BellowsAccordion` | `children`（蛇腹を広げると見える中身） | `label` |
 
 ### 日本語と英語

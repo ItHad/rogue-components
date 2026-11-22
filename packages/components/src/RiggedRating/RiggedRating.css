@@ -1,0 +1,117 @@
+.rc-rr {
+  --rc-rr-star: #fbbf24;
+  --rc-rr-empty: color-mix(in srgb, currentColor 35%, transparent);
+  --rc-rr-accent: #fcd34d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-rr__label {
+  margin: 0;
+  font-weight: 700;
+}
+
+.rc-rr__arena {
+  position: relative;
+  inline-size: min(320px, 100%);
+  block-size: 140px;
+  /* 指で星を追いかけてもページがスクロールしないようにする */
+  touch-action: none;
+}
+
+.rc-rr__star {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rc-rr-empty);
+  font: inherit;
+  font-size: 32px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+}
+
+.rc-rr__star--shy {
+  cursor: not-allowed;
+}
+
+.rc-rr__star--five {
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    transform 0.15s;
+}
+
+.rc-rr__star--five:hover,
+.rc-rr__star--five:focus-visible {
+  color: var(--rc-rr-star);
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.rc-rr__star--five:focus-visible {
+  outline: 3px solid var(--rc-rr-accent);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.rc-rr[data-rated] .rc-rr__star {
+  color: var(--rc-rr-star);
+  cursor: default;
+  transition:
+    left 0.4s ease-out,
+    top 0.4s ease-out,
+    color 0.4s;
+}
+
+.rc-rr__yelp {
+  position: absolute;
+  inset-block-end: 100%;
+  inset-inline-start: 50%;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, Canvas 86%, transparent);
+  color: CanvasText;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: rc-rr-yelp 0.7s ease-out forwards;
+}
+
+@keyframes rc-rr-yelp {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+}
+
+.rc-rr__hint {
+  margin: 0;
+  min-block-size: 1.7em;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-rr__yelp {
+    animation: none;
+  }
+
+  .rc-rr[data-rated] .rc-rr__star {
+    transition: none;
+  }
+}

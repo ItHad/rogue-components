@@ -3,7 +3,7 @@ import type { GameState } from "../gacha/state";
 import type { Messages } from "../i18n";
 
 /** 操作の種類。関門はどの操作の前に割り込むかをこれで指定する。 */
-export type Action = "visit" | "pull" | "charge";
+export type Action = "visit" | "pull" | "charge" | "collection";
 
 /** 操作の中身 (関門の難しさを変えるのに使う) */
 export interface GateRequest {
