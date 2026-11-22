@@ -45,8 +45,6 @@ const KEY_HOLD_MS = 220;
 const CLICK_SLOP_PX = 6;
 const NAG_MS = 2600;
 const FOLDS = 12;
-/** 閉じているときは見出しを真ん中に置くが、蛇腹が伸びる余地はこれだけ残す */
-const MIN_ROOM_PX = 300;
 
 /**
  * 見た目は普通のアコーディオン (› の付いた見出し)。押しても開かず、› をつかんで右へ引っぱると、見出しとの間に蛇腹が広がって中身が見える。
@@ -58,6 +56,7 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
   const rootRef = useRef<HTMLDivElement>(null);
   const summaryRef = useRef<HTMLButtonElement>(null);
   const handleRef = useRef<HTMLSpanElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [max, setMax] = useState(240);
   const [offset, setOffset] = useState(0);
   const [width, setWidth] = useState(0);
@@ -77,18 +76,18 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
     setWidth(clamped);
   };
 
-  // 蛇腹が広がれるのは、見出しと › の右側に残った幅まで
+  // 蛇腹は中身がちょうど収まる幅まで広がる。全開にしたとき全体が真ん中に来るよう、閉じているときの見出しは左に寄せておく
   useLayoutEffect(() => {
     const root = rootRef.current;
     const summary = summaryRef.current;
     const handle = handleRef.current;
-    if (!root || !summary || !handle) return;
+    const content = contentRef.current;
+    if (!root || !summary || !handle || !content) return;
     const measure = () => {
-      const rest = summary.offsetWidth + handle.offsetWidth;
-      const room = root.clientWidth - rest;
-      const left = Math.max(0, Math.min(room / 2, room - MIN_ROOM_PX));
-      const next = Math.max(60, room - left);
-      setOffset(left);
+      const room = root.clientWidth - summary.offsetWidth - handle.offsetWidth;
+      root.style.setProperty("--rc-acc-room", `${Math.max(60, room)}px`);
+      const next = Math.max(60, Math.min(room, content.offsetWidth));
+      setOffset(Math.max(0, (room - next) / 2));
       setMax(next);
       if (widthRef.current > next) setStretch(next);
     };
@@ -96,6 +95,7 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
     const ro = new ResizeObserver(measure);
     ro.observe(root);
     ro.observe(summary);
+    ro.observe(content);
     return () => ro.disconnect();
   }, []);
 
@@ -177,7 +177,6 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
       style={
         {
           "--rc-acc-ratio": ratio,
-          "--rc-acc-full": `${max}px`,
           "--rc-acc-folds": FOLDS,
         } as CSSProperties
       }
@@ -202,8 +201,8 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
         >
           {label}
         </button>
-        <div id={contentId} className="rc-acc__bellows" style={{ width }} hidden={!open}>
-          <div className="rc-acc__content" aria-hidden={!readable}>
+        <div id={contentId} className="rc-acc__bellows" style={{ width }}>
+          <div ref={contentRef} className="rc-acc__content" aria-hidden={!readable}>
             {children}
           </div>
           <span className="rc-acc__folds" aria-hidden="true" />

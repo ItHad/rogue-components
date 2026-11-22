@@ -87,13 +87,18 @@
   border-block: 3px solid var(--rc-acc-board);
 }
 
-.rc-acc__bellows[hidden] {
-  display: none;
+/* 閉じている間も中身の幅を測れるよう、見えない形で置いておく */
+.rc-acc:not([data-open]) .rc-acc__bellows {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* 中身はいつも全開の幅で置いておき、蛇腹が伸びた分だけ左から見せる */
 .rc-acc__content {
-  inline-size: var(--rc-acc-full);
+  inline-size: max-content;
+  max-inline-size: var(--rc-acc-room, 100%);
+  box-sizing: border-box;
   padding: 8px 14px;
   background: var(--rc-acc-paper);
   color: CanvasText;
