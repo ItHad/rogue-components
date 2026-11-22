@@ -40,3 +40,6 @@ export type { SmugShareButtonProps, ShareTarget } from "./SmugShareButton/SmugSh
 
 export { BurgerMenu } from "./BurgerMenu/BurgerMenu";
 export type { BurgerMenuProps, BurgerMenuItem } from "./BurgerMenu/BurgerMenu";
+
+export { BellowsAccordion } from "./BellowsAccordion/BellowsAccordion";
+export type { BellowsAccordionProps } from "./BellowsAccordion/BellowsAccordion";

@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from "react";
-import { DvdModal } from "rogue-components";
+import { BellowsAccordion, DvdModal } from "rogue-components";
 import { highestRarity, RARITY_ORDER, RARITY_RATE, type Item } from "../gacha/items";
 import { PULL_COST } from "../gacha/state";
 import { useI18n } from "../i18n";
@@ -119,8 +119,7 @@ export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
         </p>
       )}
 
-      <details className="gacha__rates">
-        <summary>{t.gacha.rates}</summary>
+      <BellowsAccordion className="gacha__rates" label={t.gacha.rates}>
         <ul>
           {[...RARITY_ORDER].reverse().map((r) => (
             <li key={r}>
@@ -128,7 +127,7 @@ export function GachaView({ gems, onPull, onGoShop }: GachaViewProps) {
             </li>
           ))}
         </ul>
-      </details>
+      </BellowsAccordion>
     </section>
   );
 }

@@ -1,0 +1,153 @@
+.rc-acc {
+  --rc-acc-bellows: #b91c1c;
+  --rc-acc-bellows-dark: #5f0f0f;
+  --rc-acc-board: #1f2937;
+  --rc-acc-board-edge: #9ca3af;
+  --rc-acc-paper: color-mix(in srgb, Canvas 86%, transparent);
+  --rc-acc-accent: #fcd34d;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-acc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 10px;
+  margin: 0;
+}
+
+.rc-acc__label {
+  font-weight: 700;
+}
+
+.rc-acc__status {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.rc-acc__track {
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+}
+
+.rc-acc__instrument {
+  display: flex;
+  align-items: stretch;
+}
+
+.rc-acc__handle {
+  position: relative;
+  flex: none;
+  inline-size: 28px;
+  min-block-size: 56px;
+  border: 2px solid var(--rc-acc-board-edge);
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 9px,
+      color-mix(in srgb, var(--rc-acc-board-edge) 55%, transparent) 9px 11px
+    )
+    center / 10px 60% no-repeat,
+    var(--rc-acc-board);
+  cursor: grab;
+  touch-action: none;
+}
+
+.rc-acc__handle--left {
+  border-radius: 8px 3px 3px 8px;
+}
+
+.rc-acc__handle--right {
+  border-radius: 3px 8px 8px 3px;
+}
+
+.rc-acc[data-held] .rc-acc__handle {
+  cursor: grabbing;
+}
+
+.rc-acc__handle:focus-visible {
+  outline: 3px solid var(--rc-acc-accent);
+  outline-offset: 2px;
+}
+
+.rc-acc__bellows {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  padding-block: 10px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--rc-acc-bellows-dark) 0,
+      var(--rc-acc-bellows) 35%,
+      var(--rc-acc-bellows) 65%,
+      var(--rc-acc-bellows-dark) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  border-block: 3px solid var(--rc-acc-board);
+}
+
+/* 中身はいつも全開の幅で置いておき、蛇腹の幅で真ん中から見せる */
+.rc-acc__content {
+  inline-size: var(--rc-acc-full);
+  margin-inline-start: calc((100% - var(--rc-acc-full)) / 2);
+  padding: 8px 14px;
+  background: var(--rc-acc-paper);
+  color: CanvasText;
+  opacity: clamp(0, calc((var(--rc-acc-ratio) - 0.2) / 0.4), 1);
+}
+
+/* 折り目の陰。中身の上にもうっすら重ねる */
+.rc-acc__folds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.35) 0,
+      transparent 20%,
+      transparent 80%,
+      rgb(255 255 255 / 0.12) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  opacity: calc(1 - var(--rc-acc-ratio) * 0.6);
+}
+
+.rc-acc__puff {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  font-weight: 700;
+  font-size: 0.9em;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+  pointer-events: none;
+  animation: rc-acc-puff 0.8s ease-out forwards;
+}
+
+@keyframes rc-acc-puff {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -160%) scale(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-acc__puff {
+    animation: none;
+    opacity: 0;
+  }
+}
