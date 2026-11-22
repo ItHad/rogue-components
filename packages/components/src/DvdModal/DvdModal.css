@@ -8,6 +8,13 @@
   background: rgba(5, 6, 16, 0.7);
   backdrop-filter: blur(4px);
   animation: rc-dvd-fade 0.2s;
+  /* × を狙って連打しても、文字が選択されたりドラッグが始まったりしないようにする */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rc-dvd-backdrop img {
+  -webkit-user-drag: none;
 }
 
 .rc-dvd {

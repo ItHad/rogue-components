@@ -137,10 +137,13 @@ export function DvdModal({ open, title, onClose, children, closeOnEscape = true,
         aria-labelledby={titleId}
         tabIndex={-1}
         onPointerDown={(e) => {
+          // 動かしながら連打すると文字が選択され、選択した文字や画像のドラッグが始まると次のクリックが届かなくなる
+          getSelection()?.removeAllRanges();
           if (!isNearButton(e.clientX, e.clientY)) return;
           e.preventDefault();
           tryClose();
         }}
+        onDragStart={(e) => e.preventDefault()}
       >
         <div className="rc-dvd__content">
           <h2 id={titleId} className="rc-dvd__title">
