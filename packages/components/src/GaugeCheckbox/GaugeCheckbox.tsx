@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useMessages } from "../locale";
 import { useControllable } from "../useControllable";
 import "./GaugeCheckbox.css";
@@ -12,6 +12,9 @@ const MESSAGES = {
 const CLICKS = 20;
 /** 放置したときに 1 秒あたり減るクリック数 */
 const DECAY_PER_SEC = 4;
+/** 指で押しているときの、切り替えに必要なタップ数と 1 秒あたりの減り方 (指の連打はマウスより遅い) */
+const TOUCH_CLICKS = 12;
+const TOUCH_DECAY_PER_SEC = 2.4;
 /** チェックが入ってから維持費の請求が来るまでの間隔 (ms) */
 const UPKEEP_EVERY_MS = 9000;
 /** 維持費の支払いに必要なクリック数 */
@@ -63,6 +66,9 @@ export function GaugeCheckbox({
   const [bill, setBill] = useState<Bill | null>(null);
   const [now, setNow] = useState(() => performance.now());
   const [hits, setHits] = useState(0);
+  const [touch, setTouch] = useState(false);
+  const touchRef = useRef(false);
+  const clicks = touch ? TOUCH_CLICKS : CLICKS;
   const labelId = useId();
 
   // ゲージの自然減少と請求の残り時間表示のためのアニメーションループ
@@ -75,7 +81,7 @@ export function GaugeCheckbox({
       const dt = (t - last) / 1000;
       last = t;
       if (gaugeRef.current > 0 && t >= decayFromRef.current) {
-        gaugeRef.current = Math.max(0, gaugeRef.current - DECAY_PER_SEC * dt);
+        gaugeRef.current = Math.max(0, gaugeRef.current - (touchRef.current ? TOUCH_DECAY_PER_SEC : DECAY_PER_SEC) * dt);
         setGauge(gaugeRef.current);
       }
       setNow(t);
@@ -107,12 +113,24 @@ export function GaugeCheckbox({
     return () => clearTimeout(id);
   }, [checked, bill, setChecked]);
 
+  // 押した手段を覚えておく (click より先に届く)。キーボードのときは直前のままにする
+  const notePointer = (e: PointerEvent<HTMLElement>) => {
+    const isTouch = e.pointerType === "touch";
+    if (isTouch === touchRef.current) return;
+    // 途中で持ち替えたら、溜まっている割合はそのままで回数を付け替える
+    const needed = isTouch ? TOUCH_CLICKS : CLICKS;
+    gaugeRef.current = (gaugeRef.current / (touchRef.current ? TOUCH_CLICKS : CLICKS)) * needed;
+    touchRef.current = isTouch;
+    setTouch(isTouch);
+    setGauge(gaugeRef.current);
+  };
+
   const hit = () => {
     if (disabled) return;
     setHits((h) => h + 1);
     if (gaugeRef.current === 0) decayFromRef.current = performance.now() + FIRST_HIT_HOLD_MS;
     const next = gaugeRef.current + 1;
-    if (next >= CLICKS) {
+    if (next >= (touchRef.current ? TOUCH_CLICKS : CLICKS)) {
       gaugeRef.current = 0;
       setGauge(0);
       setChecked(!checked);
@@ -127,7 +145,7 @@ export function GaugeCheckbox({
   };
 
   // 表示上のゲージは最初ほど大きく伸びる (必要回数や減り方は変わらない)
-  const ratio = Math.min(1, gauge / CLICKS) ** DISPLAY_CURVE;
+  const ratio = Math.min(1, gauge / clicks) ** DISPLAY_CURVE;
   const billRatio = bill ? Math.max(0, (bill.deadline - now) / UPKEEP_WINDOW_MS) : 0;
 
   return (
@@ -145,6 +163,7 @@ export function GaugeCheckbox({
           aria-labelledby={label ? labelId : undefined}
           disabled={disabled}
           className="rc-gcb__box"
+          onPointerDown={notePointer}
           onClick={hit}
         >
           <span
@@ -160,7 +179,7 @@ export function GaugeCheckbox({
           </span>
         </button>
         {label && (
-          <span id={labelId} className="rc-gcb__label" onClick={hit}>
+          <span id={labelId} className="rc-gcb__label" onPointerDown={notePointer} onClick={hit}>
             {label}
           </span>
         )}
