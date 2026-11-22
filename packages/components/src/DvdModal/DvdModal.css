@@ -8,6 +8,13 @@
   background: rgba(5, 6, 16, 0.7);
   backdrop-filter: blur(4px);
   animation: rc-dvd-fade 0.2s;
+  /* × を狙って連打しても、文字が選択されたりドラッグが始まったりしないようにする */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rc-dvd-backdrop img {
+  -webkit-user-drag: none;
 }
 
 .rc-dvd {
@@ -87,11 +94,6 @@
   60% {
     transform: translateX(4px) rotate(10deg);
   }
-}
-
-.rc-dvd__close[data-corner] {
-  cursor: pointer;
-  box-shadow: 0 0 0 4px #fff, 0 0 30px 8px hsl(var(--rc-dvd-hue) 90% 70%);
 }
 
 .rc-dvd__close:focus-visible {
