@@ -96,11 +96,6 @@
   }
 }
 
-.rc-dvd__close[data-corner] {
-  cursor: pointer;
-  box-shadow: 0 0 0 4px #fff, 0 0 30px 8px hsl(var(--rc-dvd-hue) 90% 70%);
-}
-
 .rc-dvd__close:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 2px;
