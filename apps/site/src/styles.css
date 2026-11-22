@@ -365,24 +365,9 @@ p {
   white-space: nowrap;
 }
 
-.topbar__lang {
-  padding: 4px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink-muted);
-  font: inherit;
-  font-size: 12px;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.topbar__lang:hover {
-  color: var(--ink);
-}
-
 .topbar__menu {
   --rc-bm-focus: var(--accent);
+  --rc-bm-icon: var(--ink);
   flex: none;
 }
 

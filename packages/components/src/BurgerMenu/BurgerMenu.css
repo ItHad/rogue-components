@@ -8,7 +8,11 @@
   --rc-bm-patty-ink: #fff1e0;
   --rc-bm-lettuce: #5cc45a;
   --rc-bm-cheese: #fcd34d;
-  --rc-bm-tomato: #ef4444;
+  --rc-bm-tomato: #e11d2a;
+  --rc-bm-tomato-shade: #a3101a;
+  --rc-bm-tomato-ink: #fff5f5;
+  --rc-bm-onion: #f3e8ff;
+  --rc-bm-icon: currentColor;
   --rc-bm-plate: #e5e7f5;
   --rc-bm-focus: #fcd34d;
   --rc-bm-width: min(280px, calc(100vw - 24px));
@@ -43,83 +47,30 @@
 .rc-bm__icon {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  inline-size: 26px;
+  gap: 5px;
+  inline-size: 22px;
 }
 
+/* ふつうの三本線。開いている間は × になる */
 .rc-bm__bar {
   display: block;
   inline-size: 100%;
-  transition: transform 0.25s cubic-bezier(0.5, -0.4, 0.7, 1), opacity 0.2s;
-}
-
-.rc-bm__bar--top {
-  block-size: 8px;
-  border-radius: 12px 12px 2px 2px;
-  background:
-    radial-gradient(1px 1px at 30% 45%, var(--rc-bm-sesame) 99%, transparent),
-    radial-gradient(1px 1px at 55% 30%, var(--rc-bm-sesame) 99%, transparent),
-    radial-gradient(1px 1px at 75% 55%, var(--rc-bm-sesame) 99%, transparent),
-    var(--rc-bm-bun);
-}
-
-.rc-bm__bar--mid {
-  block-size: 5px;
-  inline-size: 110%;
-  border-radius: 3px;
-  background: var(--rc-bm-patty);
-  box-shadow: 0 -1.5px 0 var(--rc-bm-lettuce);
-}
-
-.rc-bm__bar--bottom {
-  block-size: 5px;
-  border-radius: 2px 2px 5px 5px;
-  background: var(--rc-bm-bun);
-}
-
-/* お腹がすいてそわそわする */
-.rc-bm__trigger:hover .rc-bm__bar--top {
-  transform: translateY(-2px) rotate(-4deg);
-}
-
-.rc-bm__trigger:hover .rc-bm__bar--mid {
-  transform: translateX(1px);
-}
-
-/* 開いている間は、具がメニューのほうへ落ちていって空っぽになる */
-.rc-bm[data-phase="open"] .rc-bm__bar {
-  opacity: 0;
-  transform: translateY(18px) scale(0.6);
-}
-
-.rc-bm[data-phase="open"] .rc-bm__bar--mid {
-  transition-delay: 0.05s;
+  block-size: 2px;
+  border-radius: 2px;
+  background: var(--rc-bm-icon);
+  transition: transform 0.25s, opacity 0.2s;
 }
 
 .rc-bm[data-phase="open"] .rc-bm__bar--top {
-  transition-delay: 0.1s;
+  transform: translateY(7px) rotate(45deg);
 }
 
-.rc-bm__trigger::after {
-  content: "×";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--rc-bm-bun);
-  font-size: 26px;
-  line-height: 1;
+.rc-bm[data-phase="open"] .rc-bm__bar--mid {
   opacity: 0;
-  transform: scale(0.4) rotate(-90deg);
-  transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
-  pointer-events: none;
 }
 
-.rc-bm[data-phase="open"] .rc-bm__trigger::after {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.15s;
+.rc-bm[data-phase="open"] .rc-bm__bar--bottom {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ---------- 積み上がったメニュー ---------- */
@@ -219,6 +170,21 @@
   color: var(--rc-bm-patty-ink);
 }
 
+/* 取り返しのつかない操作は、真っ赤なトマトの輪切り */
+.rc-bm__item--tomato .rc-bm__food {
+  margin-inline: -2px;
+  border-radius: 999px;
+  background:
+    radial-gradient(3px 5px at 9% 42%, #ffc7b8 99%, transparent),
+    radial-gradient(3px 5px at 14% 64%, #ffc7b8 99%, transparent),
+    radial-gradient(3px 5px at 86% 64%, #ffc7b8 99%, transparent),
+    radial-gradient(3px 5px at 91% 42%, #ffc7b8 99%, transparent),
+    linear-gradient(to bottom, var(--rc-bm-tomato), var(--rc-bm-tomato-shade));
+  box-shadow: inset 0 0 0 3px #ff6b6b;
+  color: var(--rc-bm-tomato-ink);
+  text-shadow: 0 1px 2px #6b0008;
+}
+
 .rc-bm__item--bun-bottom .rc-bm__food {
   border-radius: 8px 8px 22px 22px;
   background: linear-gradient(to bottom, var(--rc-bm-bun-shade), var(--rc-bm-bun) 30%);
@@ -258,12 +224,13 @@
   );
 }
 
-.rc-bm__filling--tomato {
+.rc-bm__filling--onion {
   z-index: 1;
-  block-size: 8px;
-  margin: -2px 6px;
-  border-radius: 4px;
-  background: var(--rc-bm-tomato);
+  block-size: 7px;
+  margin: -2px 10px;
+  border: 2px solid #c4a2e8;
+  border-radius: 999px;
+  background: var(--rc-bm-onion);
 }
 
 .rc-bm__plate {
@@ -306,6 +273,10 @@
   border-radius: 2px;
   background: var(--rc-bm-bun-shade);
   animation: rc-bm-crumb 0.6s cubic-bezier(0.3, 0, 0.8, 1) both;
+}
+
+.rc-bm__item--tomato .rc-bm__crumb {
+  background: var(--rc-bm-tomato);
 }
 
 .rc-bm__item[data-eaten] .rc-bm__food {
@@ -383,7 +354,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rc-bm__bar,
-  .rc-bm__trigger::after,
   .rc-bm__food {
     transition: none;
   }

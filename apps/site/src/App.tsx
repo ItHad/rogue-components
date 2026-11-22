@@ -81,24 +81,16 @@ export function App() {
         <p className="topbar__gems" aria-label={t.gemsLabel(state.gems)}>
           ◆ {state.gems.toLocaleString()}
         </p>
-        <button
-          type="button"
-          className="topbar__lang"
-          aria-label={t.language}
-          onClick={() => setLocale(locale === "ja" ? "en" : "ja")}
-        >
-          {t.switchTo}
-        </button>
         <BurgerMenu
           className="topbar__menu"
           label={t.menu.label}
           items={[
             {
-              id: "reset",
-              label: t.menu.reset,
-              description: t.menu.resetHint,
-              bites: 3,
-              onSelect: () => void resetEverything(),
+              id: "language",
+              label: t.switchTo,
+              description: t.language,
+              keepOpen: true,
+              onSelect: () => setLocale(locale === "ja" ? "en" : "ja"),
             },
             {
               id: "share",
@@ -112,6 +104,14 @@ export function App() {
                   hashtags={[t.collection.shareTag]}
                 />
               ),
+            },
+            {
+              id: "reset",
+              label: t.menu.reset,
+              description: t.menu.resetHint,
+              danger: true,
+              bites: 3,
+              onSelect: () => void resetEverything(),
             },
             {
               id: "author",

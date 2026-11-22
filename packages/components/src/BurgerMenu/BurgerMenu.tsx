@@ -29,6 +29,10 @@ export interface BurgerMenuItem {
   bites?: number;
   /** ボタンの代わりに置く中身 */
   render?: () => ReactNode;
+  /** データを消すなど取り返しのつかない操作。真っ赤なトマトになる */
+  danger?: boolean;
+  /** 選んでもメニューを閉じない */
+  keepOpen?: boolean;
 }
 
 export interface BurgerMenuProps {
@@ -39,10 +43,10 @@ export interface BurgerMenuProps {
 }
 
 type Phase = "closed" | "open" | "closing";
-type Layer = "bun-top" | "patty" | "bun-bottom";
-type Filling = "lettuce" | "cheese" | "tomato";
+type Layer = "bun-top" | "patty" | "tomato" | "bun-bottom";
+type Filling = "lettuce" | "cheese" | "onion";
 
-const FILLINGS: Filling[] = ["lettuce", "cheese", "tomato"];
+const FILLINGS: Filling[] = ["lettuce", "cheese", "onion"];
 const CLOSE_MS = 420;
 const EATEN_MS = 520;
 
@@ -76,7 +80,8 @@ function biteMask(n: number): CSSProperties {
   } as CSSProperties;
 }
 
-function layerOf(index: number, count: number): Layer {
+function layerOf(item: BurgerMenuItem, index: number, count: number): Layer {
+  if (item.danger) return "tomato";
   if (index === 0) return "bun-top";
   if (index === count - 1) return "bun-bottom";
   return "patty";
@@ -92,8 +97,8 @@ type Entry =
   | { kind: "plate"; key: string };
 
 /**
- * ハンバーガーメニュー。アイコンがほんもののハンバーガーで、開くとバンズや具が 1 枚ずつ落ちてきて積み上がる。
- * 積み上がった具がそのままメニューの項目になる。`bites` を付けた項目は、かじって完食しないと選べない。
+ * 見た目はふつうのハンバーガーメニュー。開くと本物のバンズや具が 1 枚ずつ落ちてきて積み上がり、それがメニューの項目になる。
+ * `danger` を付けた項目はトマトになる。`bites` を付けた項目は、かじって完食しないと選べない。
  */
 export function BurgerMenu({ items, label, className }: BurgerMenuProps) {
   const m = useMessages(MESSAGES);
@@ -171,12 +176,12 @@ export function BurgerMenu({ items, label, className }: BurgerMenuProps) {
       return;
     }
     item.onSelect?.();
-    close();
+    if (!item.keepOpen) close();
   };
 
   const entries: Entry[] = [];
   items.forEach((item, i) => {
-    entries.push({ kind: "item", key: `item-${item.id}`, item, layer: layerOf(i, items.length) });
+    entries.push({ kind: "item", key: `item-${item.id}`, item, layer: layerOf(item, i, items.length) });
     if (i < items.length - 1) entries.push({ kind: "filling", key: `filling-${i}`, filling: FILLINGS[i % FILLINGS.length]! });
   });
   entries.push({ kind: "plate", key: "plate" });
