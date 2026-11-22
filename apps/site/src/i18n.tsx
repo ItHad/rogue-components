@@ -12,7 +12,7 @@ const ja = {
   gemsLabel: (n: number) => `所持ジェム ${n}`,
   footer: "モンスターガチャ | 入力ひとつに全力をかけるガチャサイト",
   language: "言語",
-  switchTo: "English",
+  switchTo: "Switch to English",
   modalClose: "閉じる",
 
   menu: {
@@ -191,7 +191,7 @@ const en: Messages = {
   gemsLabel: (n: number) => `${n} gems`,
   footer: "Monster Gacha | a gacha site where every input takes everything you've got",
   language: "Language",
-  switchTo: "日本語",
+  switchTo: "日本語に変える",
   modalClose: "Close",
 
   menu: {
