@@ -5,8 +5,11 @@ export type Rarity = "N" | "R" | "SR" | "SSR";
 export interface Item {
   id: string;
   name: Record<Locale, string>;
-  rarity: Rarity;
+  /** SECRET はガチャからは出ない */
+  rarity: Rarity | "SECRET";
   flavor: Record<Locale, string>;
+  /** 省略すると /monsters/<id>.png */
+  image?: string;
 }
 
 export const RARITY_RATE: Record<Rarity, number> = {
@@ -142,6 +145,15 @@ export const ITEMS: readonly Item[] = [
   },
 ];
 
+/** ガチャでは出ず、背景のドラゴンの試練を越えるともらえる */
+export const SECRET_ITEMS: readonly Item[] = [
+  {
+    id: "yoi", rarity: "SECRET", image: "/monsters/yoi.svg",
+    name: { ja: "宵竜の子ヨイ", en: "Yoi, Dusk Dragon Hatchling" },
+    flavor: { ja: "親ゆずりの威厳は、まだない。", en: "Has yet to inherit its parent's majesty." }
+  },
+];
+
 const ITEMS_BY_RARITY: Record<Rarity, Item[]> = {
   N: ITEMS.filter((i) => i.rarity === "N"),
   R: ITEMS.filter((i) => i.rarity === "R"),
@@ -166,7 +178,8 @@ export function roll(): Item {
 
 export function highestRarity(items: readonly Item[]): Rarity {
   return items.reduce<Rarity>(
-    (best, i) => (RARITY_ORDER.indexOf(i.rarity) > RARITY_ORDER.indexOf(best) ? i.rarity : best),
+    (best, i) =>
+      i.rarity !== "SECRET" && RARITY_ORDER.indexOf(i.rarity) > RARITY_ORDER.indexOf(best) ? i.rarity : best,
     "N",
   );
 }

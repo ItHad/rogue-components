@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { roll, type Item } from "./gacha/items";
 import { GEM_PACK, PULL_COST, useGameState } from "./gacha/state";
+import { DragonTrial } from "./dragon/DragonTrial";
+import { SECRET_ITEMS } from "./gacha/items";
 import { useGates } from "./gates/useGates";
 import { useI18n } from "./i18n";
 import { Scenery } from "./ui/Scenery";
@@ -18,6 +20,8 @@ export function App() {
   const [view, setView] = useState<View>("gacha");
   const [state, setState] = useGameState();
   const { runGates, gateView } = useGates(state, setState);
+  /** 背景のドラゴンが降りてきているときの、降りてくる前の位置 */
+  const [dragonFrom, setDragonFrom] = useState<DOMRect | null>(null);
 
   // Coookie 同意バナー
   const visited = useRef(false);
@@ -53,7 +57,7 @@ export function App() {
 
   return (
     <div className="app">
-      <Scenery />
+      <Scenery onSummon={setDragonFrom} dragonAway={dragonFrom !== null} />
       <header className="topbar">
         <button type="button" className="topbar__logo" onClick={() => setView("gacha")}>
           <img className="topbar__logo-icon" src="/monsters/puni.png" alt="" width="28" height="28" />
@@ -112,6 +116,15 @@ export function App() {
       </nav>
 
       {gateView}
+
+      {dragonFrom && (
+        <DragonTrial
+          from={dragonFrom}
+          owned={SECRET_ITEMS.some((i) => (state.owned[i.id] ?? 0) > 0)}
+          onReward={(id) => setState((s) => ({ ...s, owned: { ...s.owned, [id]: (s.owned[id] ?? 0) + 1 } }))}
+          onClose={() => setDragonFrom(null)}
+        />
+      )}
     </div>
   );
 }

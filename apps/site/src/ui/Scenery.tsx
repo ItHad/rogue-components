@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
  * 画面の縦横比が変わっても地平線と丘がずれないよう、空も含めて 1 枚の SVG で描き、下端に合わせて切り抜く。
  * 月とお城は、中央に来るタイトルやガチャマシンと重ならないよう右寄りに置いている。
  * 縦長の画面では景色ごと左へずらし、お城をガチャマシンの右横に見せる (styles.css)。
+ * ドラゴンを続けて 10 回つつくと、近くまで降りてくる (onSummon)。
  */
 
 // 星の位置は毎回同じになるよう、決まった種から作る
@@ -123,14 +124,88 @@ function useMeteors(svgRef: RefObject<SVGSVGElement | null>): Meteor[] {
   return meteors;
 }
 
+/** 何回つつくとドラゴンが降りてくるか */
+const SUMMON_TAPS = 10;
+/** この時間より間があくと、数え直しになる */
+const TAP_GAP_MS = 3000;
+/** 小さくて当てにくいので、見た目より少し広く当たりにする */
+const TAP_SLOP = 14;
+/** ここを押したときは景色をつついたことにしない */
+const UI_SELECTOR = "button, a, input, textarea, select, label, [role=dialog], .topbar, .tabbar, .modal-backdrop, .gate-banner-backdrop";
+
+/**
+ * 背景のドラゴンを続けて 10 回つつくと onSummon を呼ぶ。
+ * 景色はページの後ろにあってクリックが届かないので、ページ全体のクリックの位置で当たりを調べる。
+ * ドラゴン以外の景色を押したり、間があいたりすると数え直し。
+ */
+function useDragonTaps(
+  bodyRef: RefObject<SVGSVGElement | null>,
+  enabled: boolean,
+  onSummon: ((from: DOMRect) => void) | undefined,
+) {
+  const onSummonRef = useRef(onSummon);
+  useEffect(() => {
+    onSummonRef.current = onSummon;
+  }, [onSummon]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let count = 0;
+    let last = 0;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!e.isPrimary || (e.target instanceof Element && e.target.closest(UI_SELECTOR))) return;
+      const body = bodyRef.current;
+      if (!body) return;
+      const r = body.getBoundingClientRect();
+      const hit =
+        e.clientX >= r.left - TAP_SLOP &&
+        e.clientX <= r.right + TAP_SLOP &&
+        e.clientY >= r.top - TAP_SLOP &&
+        e.clientY <= r.bottom + TAP_SLOP;
+      if (!hit) {
+        count = 0;
+        return;
+      }
+      if (e.timeStamp - last > TAP_GAP_MS) count = 0;
+      last = e.timeStamp;
+      count++;
+      if (count >= SUMMON_TAPS) {
+        count = 0;
+        onSummonRef.current?.(r);
+        return;
+      }
+      // つつかれたのがわかるように、少し光ってびくっとする。回数が増えるほど強く
+      const k = count / SUMMON_TAPS;
+      body.animate(
+        [
+          { filter: `brightness(${1.4 + k * 1.2})`, transform: `scale(${1.08 + k * 0.15}) rotate(-6deg)` },
+          { filter: "brightness(1)", transform: "none" },
+        ],
+        { duration: 320, easing: "ease-out" },
+      );
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, [bodyRef, enabled]);
+}
+
 // 丘の形。塗りと、その丘の上を通る道の切り抜きの両方に使う
 const FAR_HILL = "M720 660 C 820 576, 1000 548, 1100 566 S 1300 610, 1380 660 Z";
 const MID_HILL = "M0 640 C 180 580, 360 584, 520 628 S 820 612, 980 618 S 1300 568, 1440 612 L1440 900 L0 900 Z";
 const NEAR_HILL = "M0 724 C 200 664, 420 666, 620 708 S 1000 690, 1200 698 S 1380 676, 1440 690 L1440 900 L0 900 Z";
 
-export function Scenery() {
+interface SceneryProps {
+  /** ドラゴンを 10 回つついたとき。ドラゴンの画面上の位置を渡す */
+  onSummon?: (from: DOMRect) => void;
+  /** ドラゴンが降りてきている間は、空から姿を消す */
+  dragonAway?: boolean;
+}
+
+export function Scenery({ onSummon, dragonAway = false }: SceneryProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const dragonRef = useRef<SVGSVGElement>(null);
   const meteors = useMeteors(svgRef);
+  useDragonTaps(dragonRef, !dragonAway, onSummon);
 
   return (
     <div className="scenery" aria-hidden="true">
@@ -292,9 +367,9 @@ export function Scenery() {
       </svg>
 
       {/* 遠くを飛ぶドラゴン。横移動・上下のゆれ・羽ばたきを別々の要素で動かす */}
-      <div className="scenery__dragon">
+      <div className="scenery__dragon" data-away={dragonAway || undefined}>
         <div className="scenery__dragon-bob">
-          <svg viewBox="0 0 120 64" className="scenery__dragon-body">
+          <svg ref={dragonRef} viewBox="0 0 120 64" className="scenery__dragon-body">
             <path
               className="scenery__wing scenery__wing--far"
               d="M74 30 C 70 18, 60 6, 40 0 C 45 7, 47 11, 47 15 C 51 13, 55 15, 55 19 C 59 17, 62 21, 62 25 C 65 25, 66 28, 64 30 Z"

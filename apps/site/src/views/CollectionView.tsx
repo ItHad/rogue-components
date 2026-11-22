@@ -1,4 +1,4 @@
-import { ITEMS } from "../gacha/items";
+import { ITEMS, SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { ItemCard } from "../ui/ItemCard";
 
@@ -29,6 +29,10 @@ export function CollectionView({ owned }: CollectionViewProps) {
             </article>
           ),
         )}
+        {/* シークレットは手に入れるまで枠も出さない */}
+        {SECRET_ITEMS.filter((i) => (owned[i.id] ?? 0) > 0).map((item) => (
+          <ItemCard key={item.id} item={item} count={owned[item.id]} />
+        ))}
       </div>
     </section>
   );

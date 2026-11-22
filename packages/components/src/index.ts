@@ -31,3 +31,6 @@ export type { DvdModalProps } from "./DvdModal/DvdModal";
 
 export { BuzzWireToggle } from "./BuzzWireToggle/BuzzWireToggle";
 export type { BuzzWireToggleProps } from "./BuzzWireToggle/BuzzWireToggle";
+
+export { HoardSelect } from "./HoardSelect/HoardSelect";
+export type { HoardSelectProps, HoardOption } from "./HoardSelect/HoardSelect";

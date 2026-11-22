@@ -1,0 +1,237 @@
+.rc-hs {
+  --rc-hs-bg: #12142b;
+  --rc-hs-line: #3a3f78;
+  --rc-hs-ink: currentColor;
+  --rc-hs-muted: color-mix(in srgb, currentColor 60%, transparent);
+  --rc-hs-accent: #fcd34d;
+  --rc-hs-fire: #fb923c;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  inline-size: 100%;
+  font: inherit;
+  text-align: left;
+}
+
+.rc-hs__label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rc-hs__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  inline-size: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--rc-hs-line);
+  border-radius: 8px;
+  background: var(--rc-hs-bg);
+  color: var(--rc-hs-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rc-hs__trigger:focus-visible,
+.rc-hs__input:focus-visible {
+  outline: 2px solid var(--rc-hs-accent);
+  outline-offset: 1px;
+}
+
+.rc-hs__trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rc-hs__value[data-placeholder] {
+  color: var(--rc-hs-muted);
+}
+
+.rc-hs__caret {
+  transition: transform 0.2s;
+}
+
+.rc-hs[data-open] .rc-hs__caret {
+  transform: rotate(180deg);
+}
+
+.rc-hs__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--rc-hs-line);
+  border-radius: 8px;
+  background: var(--rc-hs-bg);
+  animation: rc-hs-open 0.15s ease-out;
+}
+
+.rc-hs__search {
+  position: relative;
+}
+
+.rc-hs__input {
+  display: block;
+  inline-size: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--rc-hs-line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--rc-hs-bg) 70%, #000);
+  color: var(--rc-hs-ink);
+  /* スマホで入力欄にフォーカスしたとき拡大されないよう 16px にする */
+  font: inherit;
+  font-size: 16px;
+}
+
+/* 吹き飛ばされた文字。入力欄の文字のあったあたりから右へ飛んでいく */
+.rc-hs__flying {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.rc-hs__fly {
+  position: absolute;
+  top: 50%;
+  left: calc(11px + var(--i) * 1em);
+  font-size: 16px;
+  line-height: 1;
+  translate: 0 -50%;
+  animation: rc-hs-fly 0.9s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+
+/* 吹いたときに横切る熱風 */
+.rc-hs__gust {
+  position: absolute;
+  inset: -4px -8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rc-hs-fire) 55%, transparent), transparent);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rc-hs[data-breath="inhale"] .rc-hs__panel {
+  animation: rc-hs-tremble 0.12s linear infinite;
+}
+
+.rc-hs[data-breath="inhale"] .rc-hs__status {
+  color: var(--rc-hs-fire);
+}
+
+.rc-hs[data-breath="blow"] .rc-hs__panel {
+  animation: rc-hs-shake 0.35s ease-out;
+}
+
+.rc-hs[data-breath="blow"] .rc-hs__gust {
+  animation: rc-hs-gust 0.6s ease-out;
+}
+
+.rc-hs[data-breath="blow"] .rc-hs__status {
+  color: var(--rc-hs-fire);
+  font-weight: 800;
+}
+
+.rc-hs__status {
+  margin: 0;
+  min-block-size: 1.4em;
+  color: var(--rc-hs-muted);
+  font-size: 12px;
+}
+
+.rc-hs__list {
+  max-block-size: 220px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.rc-hs__option {
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rc-hs__option[data-active] {
+  background: color-mix(in srgb, var(--rc-hs-accent) 18%, transparent);
+}
+
+.rc-hs__option[aria-selected="true"] {
+  color: var(--rc-hs-accent);
+  font-weight: 700;
+}
+
+.rc-hs__empty {
+  padding: 10px;
+  color: var(--rc-hs-muted);
+  font-size: 13px;
+}
+
+@keyframes rc-hs-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes rc-hs-fly {
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.6);
+  }
+}
+
+@keyframes rc-hs-gust {
+  0% {
+    opacity: 1;
+    background-position: -100% 0;
+  }
+
+  100% {
+    opacity: 0;
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rc-hs-tremble {
+  25% {
+    transform: translate(1px, 0);
+  }
+
+  75% {
+    transform: translate(-1px, 0);
+  }
+}
+
+@keyframes rc-hs-shake {
+  20% {
+    transform: translateX(6px);
+  }
+
+  45% {
+    transform: translateX(-4px);
+  }
+
+  70% {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-hs__panel,
+  .rc-hs[data-breath] .rc-hs__panel {
+    animation: none;
+  }
+
+  .rc-hs__fly {
+    animation-duration: 0.3s;
+  }
+}

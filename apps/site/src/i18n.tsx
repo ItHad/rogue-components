@@ -115,6 +115,22 @@ const ja = {
     forgotSetLead: "新しい決済パスワードを設定してください。",
   },
 
+  dragon: {
+    name: "宵の古竜",
+    intro: "……我を十度もつつくとは、命知らずな人の子よ。だが、その度胸は気に入った。我が試練を越えれば、褒美をとらせよう。",
+    introAgain: "また来たか、人の子よ。我が子は達者にしておるか。試練を越えれば、もう一頭預けてもよいぞ。我には子が多いのだ。",
+    accept: "試練を受ける",
+    decline: "やめておく",
+    order: (name: string) => `我が宝物庫から「${name}」を持ってまいれ。`,
+    hoard: "宝物庫",
+    offer: "献上する",
+    wrong: (got: string, next: string) => `愚か者め、それは「${got}」だ。……もう一度だけ機会をやろう。次は「${next}」を持ってこい。`,
+    giveUp: "もうよい。去れ。",
+    reward: "見事だ。約束どおり、我が子を汝に預けよう。大事にするのだぞ。",
+    receive: "受け取る",
+    leave: "ドラゴンを帰す",
+  },
+
   policy: {
     revised: "最終改定日: 魔界暦 666 年",
     title: "Coookie ポリシー",
@@ -267,6 +283,22 @@ const en: Messages = {
     forgotToggle: "Create a new password",
     forgotReset: "Reset password",
     forgotSetLead: "Please set a new payment password.",
+  },
+
+  dragon: {
+    name: "The Elder Dusk Dragon",
+    intro: "...Poking me ten times. You are a reckless one, child of man. Yet I admire your nerve. Pass my trial, and you shall be rewarded.",
+    introAgain: "You return, child of man. Is my hatchling well? Pass my trial again and I may entrust you with another. I have many children.",
+    accept: "Accept the trial",
+    decline: "Not today",
+    order: (name: string) => `Bring me the ${name} from my hoard.`,
+    hoard: "The hoard",
+    offer: "Offer it",
+    wrong: (got: string, next: string) => `Fool. That is the ${got}. ...I shall grant you one more chance. Bring me the ${next}.`,
+    giveUp: "Enough. Begone.",
+    reward: "Well done. As promised, I entrust my hatchling to you. Take good care of it.",
+    receive: "Receive",
+    leave: "Send the dragon away",
   },
 
   policy: {

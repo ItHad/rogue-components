@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <g stroke="#1d1638" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- しっぽ -->
+    <path fill="#5a4a92" d="M168 204 C 200 212, 222 198, 226 172 C 228 160, 232 150, 238 144" />
+    <path fill="#b8646a" d="M238 144 L 226 130 L 250 128 L 246 152 Z" />
+    <!-- つばさ -->
+    <path fill="#3a2f66" d="M100 132 C 78 108, 52 84, 22 72 C 28 88, 26 102, 18 114 C 32 114, 40 122, 40 132 C 52 128, 62 136, 62 146 C 74 142, 86 148, 92 158 Z" />
+    <path fill="#3a2f66" d="M156 132 C 178 108, 204 84, 234 72 C 228 88, 230 102, 238 114 C 224 114, 216 122, 216 132 C 204 128, 194 136, 194 146 C 182 142, 170 148, 164 158 Z" />
+    <!-- ツノ -->
+    <path fill="#fdf6d8" d="M94 66 C 86 46, 78 32, 64 20 C 90 26, 106 42, 112 58 Z" />
+    <path fill="#fdf6d8" d="M162 66 C 170 46, 178 32, 192 20 C 166 26, 150 42, 144 58 Z" />
+    <!-- 足 -->
+    <ellipse cx="100" cy="226" rx="22" ry="13" fill="#5a4a92" />
+    <ellipse cx="156" cy="226" rx="22" ry="13" fill="#5a4a92" />
+    <!-- からだ -->
+    <ellipse cx="128" cy="172" rx="58" ry="58" fill="#6a58a8" />
+    <path fill="#f3d9a4" d="M96 158 C 96 138, 160 138, 160 158 L 160 196 C 160 222, 96 222, 96 196 Z" />
+    <path fill="none" stroke-width="4" d="M100 168 H 156 M98 184 H 158 M100 200 H 156" />
+    <!-- うで -->
+    <ellipse cx="80" cy="176" rx="12" ry="16" fill="#6a58a8" transform="rotate(20 80 176)" />
+    <ellipse cx="176" cy="176" rx="12" ry="16" fill="#6a58a8" transform="rotate(-20 176 176)" />
+    <!-- 頭のトゲ -->
+    <path fill="#b8646a" d="M112 52 L 120 34 L 128 50 L 136 34 L 144 52 Z" />
+    <!-- 頭 -->
+    <ellipse cx="128" cy="94" rx="56" ry="46" fill="#6a58a8" />
+    <!-- 鼻先 -->
+    <ellipse cx="128" cy="116" rx="32" ry="20" fill="#7d6bbd" />
+  </g>
+  <!-- 鼻の穴 -->
+  <g fill="#1d1638">
+    <ellipse cx="117" cy="110" rx="3.5" ry="2.5" />
+    <ellipse cx="139" cy="110" rx="3.5" ry="2.5" />
+  </g>
+  <!-- 口と小さなキバ -->
+  <path d="M110 124 C 120 132, 136 132, 146 124" fill="none" stroke="#1d1638" stroke-width="4" stroke-linecap="round" />
+  <path d="M134 128 L 137 136 L 140 126 Z" fill="#fff" stroke="#1d1638" stroke-width="2" stroke-linejoin="round" />
+  <!-- 目 (威厳を出そうとしている眉) -->
+  <g stroke="#1d1638" stroke-width="5" stroke-linejoin="round">
+    <ellipse cx="104" cy="86" rx="12" ry="14" fill="#fcd34d" />
+    <ellipse cx="152" cy="86" rx="12" ry="14" fill="#fcd34d" />
+  </g>
+  <g fill="#1d1638">
+    <ellipse cx="106" cy="88" rx="3.5" ry="9" />
+    <ellipse cx="150" cy="88" rx="3.5" ry="9" />
+  </g>
+  <circle cx="101" cy="81" r="3" fill="#fff" />
+  <circle cx="147" cy="81" r="3" fill="#fff" />
+  <path d="M88 68 L 116 74 M168 68 L 140 74" stroke="#1d1638" stroke-width="6" stroke-linecap="round" />
+</svg>

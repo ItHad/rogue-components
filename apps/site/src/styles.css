@@ -211,6 +211,16 @@ p {
   animation-delay: -8s;
 }
 
+/* 降りてきている間は空にいない。戻るときはふわっと現れる */
+.scenery__dragon[data-away] {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.scenery__dragon:not([data-away]) {
+  transition: opacity 1.2s;
+}
+
 .scenery__dragon-bob {
   animation: scenery-dragon-bob 3.2s ease-in-out infinite alternate;
 }
@@ -745,6 +755,11 @@ p {
   color: #1b1200;
 }
 
+.rarity--SECRET {
+  background: linear-gradient(90deg, #3a2f66, #b8646a, #fcd34d);
+  color: #fff7e0;
+}
+
 .item-card {
   --glow: var(--r-N);
   position: relative;
@@ -773,6 +788,11 @@ p {
 .item-card[data-rarity="SSR"] {
   --glow: var(--r-SSR);
   box-shadow: 0 0 36px -4px var(--r-SSR);
+}
+
+.item-card[data-rarity="SECRET"] {
+  --glow: #b8646a;
+  box-shadow: 0 0 36px -4px #b8646a, 0 0 0 1px #fcd34d55 inset;
 }
 
 .item-card .rarity {
@@ -1209,4 +1229,179 @@ p {
 .gate .rc-pb {
   align-self: stretch;
   text-align: left;
+}
+/* ---------- dragon trial (背景のドラゴンの試練) ---------- */
+
+.dragon-trial {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: radial-gradient(ellipse at 50% 20%, #2f2a5ee6, #050610f5 70%);
+  backdrop-filter: blur(6px);
+  animation: fade-in 0.6s;
+}
+
+.dragon-trial__dragon {
+  flex: none;
+  inline-size: min(440px, 78vw);
+  margin-block-start: 2vh;
+  transform-origin: center;
+  /* 小さい背景のドラゴンと同じ向き・同じ姿で、ゆっくり上下する */
+  animation: scenery-dragon-bob 3.6s ease-in-out infinite alternate;
+}
+
+.dragon-trial__body {
+  display: block;
+  overflow: visible;
+  fill: #4b3d7e;
+  filter: drop-shadow(0 0 24px #b8646a66);
+}
+
+.dragon-trial__wing {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: scenery-wing 1.3s ease-in-out infinite;
+}
+
+.dragon-trial__wing--far {
+  fill: #3a2f66;
+  animation-delay: -0.08s;
+}
+
+.dragon-trial__wing--near {
+  fill: #5a4a92;
+}
+
+.dragon-trial__eye {
+  fill: #fcd34d;
+  filter: drop-shadow(0 0 2px #fcd34d);
+}
+
+/* 間違えると吠える。体を震わせて赤く光る */
+.dragon-trial__roar[data-roar] {
+  animation: dragon-roar 0.7s ease-out;
+}
+
+.dragon-trial__roar[data-roar] .dragon-trial__eye {
+  fill: #f87171;
+  filter: drop-shadow(0 0 3px #f87171);
+}
+
+/* 見限られると飛び去る */
+.dragon-trial[data-phase="gone"] .dragon-trial__dragon {
+  animation: dragon-leave 2.4s ease-in 0.4s forwards;
+}
+
+.dragon-trial[data-phase="gone"] .dragon-trial__dialog {
+  animation: dragon-dialog-out 0.6s ease-in 1.6s forwards;
+}
+
+.dragon-trial__dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  inline-size: min(480px, 100%);
+  padding: 22px 20px 20px;
+  border: 1px solid #5a4a92;
+  border-radius: 20px;
+  background: var(--bg-2);
+  box-shadow: 0 30px 80px -20px #000, 0 0 40px -10px #b8646a88;
+  text-align: center;
+  animation: modal-in 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.dragon-trial__dialog:focus {
+  outline: none;
+}
+
+.dragon-trial__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.dragon-trial__name {
+  color: #e9a3a8;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.dragon-trial__speech {
+  font-size: 15px;
+  line-height: 1.8;
+  text-align: left;
+  animation: fade-in 0.5s;
+}
+
+.dragon-trial__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dragon-trial .rc-hs {
+  --rc-hs-bg: var(--bg);
+  --rc-hs-line: var(--line);
+  --rc-hs-accent: var(--accent);
+}
+
+.dragon-trial__reward {
+  inline-size: min(200px, 100%);
+}
+
+.dragon-trial__reward .item-card__icon {
+  inline-size: 120px;
+  block-size: 120px;
+}
+
+@keyframes dragon-roar {
+  15% {
+    transform: translate(-6px, 2px) scale(1.04);
+    filter: brightness(1.4) drop-shadow(0 0 20px #f87171);
+  }
+
+  35% {
+    transform: translate(6px, -2px) scale(1.06);
+  }
+
+  55% {
+    transform: translate(-4px, 1px) scale(1.03);
+  }
+}
+
+@keyframes dragon-leave {
+  to {
+    transform: translate(70vw, -40vh) scale(0.15);
+    opacity: 0;
+  }
+}
+
+@keyframes dragon-dialog-out {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragon-trial__dragon,
+  .dragon-trial__wing,
+  .dragon-trial__roar[data-roar] {
+    animation: none;
+  }
+
+  .dragon-trial[data-phase="gone"] .dragon-trial__dragon {
+    animation: none;
+  }
 }
