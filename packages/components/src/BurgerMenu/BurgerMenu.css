@@ -13,7 +13,6 @@
   --rc-bm-tomato-ink: #fff5f5;
   --rc-bm-onion: #f3e8ff;
   --rc-bm-icon: currentColor;
-  --rc-bm-plate: #e5e7f5;
   --rc-bm-focus: #fcd34d;
   --rc-bm-width: min(280px, calc(100vw - 24px));
   position: relative;
@@ -233,11 +232,12 @@
   background: var(--rc-bm-onion);
 }
 
+/* 下に落ちる影。着地したのがわかるように */
 .rc-bm__plate {
-  block-size: 14px;
-  margin: 2px -12px 0;
+  block-size: 10px;
+  margin: 4px 16px 0;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 30%, #fff, var(--rc-bm-plate) 60%, #b6bad6);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent);
   pointer-events: none;
 }
 
