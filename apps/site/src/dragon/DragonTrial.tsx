@@ -190,6 +190,7 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
                 value={choice}
                 onChange={setChoice}
                 calm={round < ROUNDS - 1}
+                shuffle={round > 0}
               />
               <button type="button" className="btn btn--primary" disabled={!choice} onClick={offer}>
                 {t.dragon.offer}

@@ -47,6 +47,8 @@ export interface HoardSelectProps {
   breathInterval?: number;
   /** ドラゴンが眠っている。息を吹かず、並び順も崩れない、ただのセレクトボックスになる */
   calm?: boolean;
+  /** 並び順をばらばらにして始める。息を吹かれるたびに、少し崩れるのではなく丸ごと並べ直される */
+  shuffle?: boolean;
   label?: ReactNode;
   placeholder?: string;
   disabled?: boolean;
@@ -84,6 +86,20 @@ function jostle(order: readonly number[], chance: number): number[] {
   return next;
 }
 
+function shuffled(order: readonly number[]): number[] {
+  const next = [...order];
+  for (let i = next.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j]!, next[i]!];
+  }
+  return next;
+}
+
+function initialOrder(length: number, shuffle: boolean): number[] {
+  const order = Array.from({ length }, (_, i) => i);
+  return shuffle ? shuffled(order) : order;
+}
+
 /**
  * 一見ふつうのセレクトボックス。開くと検索欄つきの長いリストが出てくる。
  * 開くたびに並び順が少しずつ崩れ、開いている間はドラゴンがときどき息を吹いて、検索欄の文字を吹き飛ばす。
@@ -96,6 +112,7 @@ export function HoardSelect({
   onChange,
   breathInterval = 6500,
   calm = false,
+  shuffle = false,
   label,
   placeholder,
   disabled = false,
@@ -104,7 +121,7 @@ export function HoardSelect({
   const t = useMessages(MESSAGES);
   const [value, setValue] = useControllable(valueProp, defaultValue, onChange);
   const [open, setOpen] = useState(false);
-  const [order, setOrder] = useState(() => options.map((_, i) => i));
+  const [order, setOrder] = useState(() => initialOrder(options.length, shuffle));
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const [breath, setBreath] = useState<Breath>("calm");
@@ -116,13 +133,15 @@ export function HoardSelect({
   const flyId = useRef(0);
   const queryRef = useRef(query);
   queryRef.current = query;
+  const shuffleRef = useRef(shuffle);
+  shuffleRef.current = shuffle;
   const baseId = useId();
   const labelId = `${baseId}-label`;
   const listId = `${baseId}-list`;
 
   // 選択肢の数が変わったら並びを作り直す (言語の切り替えでは数は変わらないので並びは保たれる)
   useEffect(() => {
-    setOrder((o) => (o.length === options.length ? o : options.map((_, i) => i)));
+    setOrder((o) => (o.length === options.length ? o : initialOrder(options.length, shuffleRef.current)));
   }, [options]);
 
   const needle = query.trim().toLowerCase();
@@ -157,7 +176,7 @@ export function HoardSelect({
     });
     setQuery(kept.join(""));
     setActive(0);
-    setOrder((o) => jostle(o, 0.15));
+    setOrder((o) => (shuffleRef.current ? shuffled(o) : jostle(o, 0.15)));
     if (gone.length > 0) {
       setFlying((f) => [...f, ...gone]);
       const ids = new Set(gone.map((g) => g.id));
