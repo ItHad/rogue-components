@@ -6,7 +6,6 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
-  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
@@ -35,11 +34,6 @@ export interface BellowsAccordionProps {
   className?: string;
 }
 
-type Side = "left" | "right";
-
-const HANDLE_PX = 28;
-/** 閉じきる直前に残る蛇腹の幅 */
-const CLOSED_PX = 36;
 /** 持っている間に抜ける空気 (px/秒) */
 const LEAK_HELD = 70;
 /** 手を離したときに抜ける空気 (px/秒) */
@@ -51,23 +45,28 @@ const KEY_HOLD_MS = 220;
 const CLICK_SLOP_PX = 6;
 const NAG_MS = 2600;
 const FOLDS = 12;
+/** 閉じているときは見出しを真ん中に置くが、蛇腹が伸びる余地はこれだけ残す */
+const MIN_ROOM_PX = 300;
 
 /**
- * 見た目は普通のアコーディオン (開閉する見出し)。押しても開かず、本物のアコーディオンのように見出しを左右に引っぱると蛇腹が広がる。
+ * 見た目は普通のアコーディオン (› の付いた見出し)。押しても開かず、› をつかんで右へ引っぱると、見出しとの間に蛇腹が広がって中身が見える。
  * 蛇腹からは空気が抜け続けるので、引っぱり続けないと閉じてしまう。
  */
 export function BellowsAccordion({ label, children, className }: BellowsAccordionProps) {
   const m = useMessages(MESSAGES);
   const contentId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLButtonElement>(null);
+  const handleRef = useRef<HTMLSpanElement>(null);
   const [max, setMax] = useState(240);
+  const [offset, setOffset] = useState(0);
   const [width, setWidth] = useState(0);
   const [held, setHeld] = useState(false);
   const [puffs, setPuffs] = useState(0);
   const [nag, setNag] = useState(0);
   const widthRef = useRef(0);
   const maxRef = useRef(max);
-  const pointers = useRef(new Map<number, { side: Side; x: number; travel: number }>());
+  const grip = useRef<{ id: number; x: number; travel: number } | null>(null);
   const keyHeldUntil = useRef(0);
 
   maxRef.current = max;
@@ -78,17 +77,25 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
     setWidth(clamped);
   };
 
+  // 蛇腹が広がれるのは、見出しと › の右側に残った幅まで
   useLayoutEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
+    const root = rootRef.current;
+    const summary = summaryRef.current;
+    const handle = handleRef.current;
+    if (!root || !summary || !handle) return;
     const measure = () => {
-      const next = Math.max(60, el.clientWidth - HANDLE_PX * 2 - CLOSED_PX);
+      const rest = summary.offsetWidth + handle.offsetWidth;
+      const room = root.clientWidth - rest;
+      const left = Math.max(0, Math.min(room / 2, room - MIN_ROOM_PX));
+      const next = Math.max(60, room - left);
+      setOffset(left);
       setMax(next);
       if (widthRef.current > next) setStretch(next);
     };
     measure();
     const ro = new ResizeObserver(measure);
-    ro.observe(el);
+    ro.observe(root);
+    ro.observe(summary);
     return () => ro.disconnect();
   }, []);
 
@@ -102,7 +109,7 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      const holding = pointers.current.size > 0 || now < keyHeldUntil.current;
+      const holding = grip.current !== null || now < keyHeldUntil.current;
       setStretch(widthRef.current - (holding ? LEAK_HELD : LEAK_FREE) * dt);
       if (widthRef.current > 0) raf = requestAnimationFrame(tick);
     };
@@ -118,53 +125,41 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
 
   const scold = () => setNag((n) => n + 1);
 
-  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    // 真ん中より左をつかんだら左の持ち手、右なら右の持ち手
-    const side: Side = e.clientX < rect.left + rect.width / 2 ? "left" : "right";
+  const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
+    if (e.button !== 0 || grip.current) return;
     capturePointer(e);
-    pointers.current.set(e.pointerId, { side, x: e.clientX, travel: 0 });
+    grip.current = { id: e.pointerId, x: e.clientX, travel: 0 };
     setHeld(true);
   };
 
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    const p = pointers.current.get(e.pointerId);
-    if (!p) return;
-    const dx = e.clientX - p.x;
-    p.x = e.clientX;
-    p.travel += Math.abs(dx);
-    if (p.travel >= CLICK_SLOP_PX) setNag(0);
-    const outward = p.side === "right" ? dx : -dx;
-    // 片手で引くときは反対側も同じだけ動いたことにする
-    setStretch(widthRef.current + outward * (pointers.current.size === 1 ? 2 : 1));
+  const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
+    const g = grip.current;
+    if (!g || g.id !== e.pointerId) return;
+    const dx = e.clientX - g.x;
+    g.x = e.clientX;
+    g.travel += Math.abs(dx);
+    if (g.travel >= CLICK_SLOP_PX) setNag(0);
+    setStretch(widthRef.current + dx);
   };
 
-  const release = (e: PointerEvent<HTMLDivElement>) => {
-    const p = pointers.current.get(e.pointerId);
-    if (!p) return;
-    pointers.current.delete(e.pointerId);
-    if (e.type === "pointerup" && p.travel < CLICK_SLOP_PX) scold();
-    if (pointers.current.size === 0) {
-      setHeld(false);
-      if (widthRef.current > 0) setPuffs((n) => n + 1);
-    }
-  };
-
-  // マウスやタッチは pointerup で叱るので、ここではキーボードで押したときだけ
-  const onClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (e.detail === 0) scold();
+  const release = (e: PointerEvent<HTMLSpanElement>) => {
+    const g = grip.current;
+    if (!g || g.id !== e.pointerId) return;
+    grip.current = null;
+    setHeld(false);
+    if (e.type === "pointerup" && g.travel < CLICK_SLOP_PX) scold();
+    if (widthRef.current > 0) setPuffs((n) => n + 1);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    if (e.key !== "ArrowRight") return;
     e.preventDefault();
     keyHeldUntil.current = performance.now() + KEY_HOLD_MS;
     setStretch(widthRef.current + KEY_STEP);
   };
 
   const onKeyUp = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    if (e.key !== "ArrowRight") return;
     keyHeldUntil.current = 0;
     if (widthRef.current > 0) setPuffs((n) => n + 1);
   };
@@ -182,27 +177,11 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
       style={
         {
           "--rc-acc-ratio": ratio,
-          "--rc-acc-full": `${max + CLOSED_PX}px`,
+          "--rc-acc-full": `${max}px`,
           "--rc-acc-folds": FOLDS,
         } as CSSProperties
       }
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={release}
-      onPointerCancel={release}
     >
-      <button
-        type="button"
-        className="rc-acc__summary"
-        aria-expanded={readable}
-        aria-controls={contentId}
-        onClick={onClick}
-        onKeyDown={onKeyDown}
-        onKeyUp={onKeyUp}
-      >
-        <span className="rc-acc__label">{label}</span>
-        <span className="rc-acc__chevron" aria-hidden="true" />
-      </button>
       <p className="rc-acc__status" aria-live="polite">
         {status && (
           <span key={nag} data-nag={nag ? "" : undefined}>
@@ -210,22 +189,41 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
           </span>
         )}
       </p>
-      <div id={contentId} className="rc-acc__panel" hidden={!open}>
-        <div className="rc-acc__instrument">
-          <span className="rc-acc__handle rc-acc__handle--left" aria-hidden="true" />
-          <div className="rc-acc__bellows" style={{ width: CLOSED_PX + width }}>
-            <div className="rc-acc__content" aria-hidden={!readable}>
-              {children}
-            </div>
-            <span className="rc-acc__folds" aria-hidden="true" />
-            {puffs > 0 && !held && (
-              <span key={puffs} className="rc-acc__puff" aria-hidden="true">
-                {m.puff}
-              </span>
-            )}
+      <div className="rc-acc__row" style={{ paddingInlineStart: offset }}>
+        <button
+          ref={summaryRef}
+          type="button"
+          className="rc-acc__summary"
+          aria-expanded={readable}
+          aria-controls={contentId}
+          onClick={scold}
+          onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
+        >
+          {label}
+        </button>
+        <div id={contentId} className="rc-acc__bellows" style={{ width }} hidden={!open}>
+          <div className="rc-acc__content" aria-hidden={!readable}>
+            {children}
           </div>
-          <span className="rc-acc__handle rc-acc__handle--right" aria-hidden="true" />
+          <span className="rc-acc__folds" aria-hidden="true" />
+          {puffs > 0 && !held && (
+            <span key={puffs} className="rc-acc__puff" aria-hidden="true">
+              {m.puff}
+            </span>
+          )}
         </div>
+        <span
+          ref={handleRef}
+          className="rc-acc__handle"
+          aria-hidden="true"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={release}
+          onPointerCancel={release}
+        >
+          <span className="rc-acc__chevron" />
+        </span>
       </div>
     </div>
   );

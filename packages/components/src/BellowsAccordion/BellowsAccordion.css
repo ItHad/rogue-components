@@ -1,28 +1,25 @@
 .rc-acc {
-  position: relative;
   --rc-acc-bellows: #b91c1c;
   --rc-acc-bellows-dark: #5f0f0f;
   --rc-acc-board: #1f2937;
   --rc-acc-board-edge: #9ca3af;
   --rc-acc-paper: color-mix(in srgb, Canvas 86%, transparent);
   --rc-acc-accent: #fcd34d;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  position: relative;
   font: inherit;
   user-select: none;
   -webkit-user-select: none;
-  /* 縦のスクロールは残し、横に引っぱる操作だけ受け取る */
-  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
 }
 
-.rc-acc__summary {
-  display: inline-flex;
+.rc-acc__row {
+  display: flex;
   align-items: center;
-  align-self: center;
-  gap: 8px;
-  padding: 4px 10px;
+}
+
+.rc-acc__summary {
+  flex: none;
+  padding: 4px 6px 4px 10px;
   border: 0;
   border-radius: 6px;
   background: transparent;
@@ -36,13 +33,87 @@
   outline-offset: 2px;
 }
 
-/* 普通のアコーディオンの「⌄」。広げた分だけ回る */
+/* › の持ち手。開いている間は蛇腹の端の板になる */
+.rc-acc__handle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  inline-size: 28px;
+  min-block-size: 28px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: grab;
+  /* 縦のスクロールは残し、横に引っぱる操作だけ受け取る */
+  touch-action: pan-y;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.rc-acc[data-open] .rc-acc__handle {
+  border-color: var(--rc-acc-board-edge);
+  border-radius: 3px 8px 8px 3px;
+  background: var(--rc-acc-board);
+}
+
+.rc-acc[data-held] .rc-acc__handle {
+  cursor: grabbing;
+}
+
+/* 普通のアコーディオンの › 。広げた分だけ下を向く */
 .rc-acc__chevron {
   inline-size: 0.5em;
   block-size: 0.5em;
   border-inline-end: 2px solid currentColor;
   border-block-end: 2px solid currentColor;
-  transform: translateY(-25%) rotate(calc(45deg + var(--rc-acc-ratio) * 180deg));
+  transform: rotate(calc(-45deg + var(--rc-acc-ratio) * 90deg));
+}
+
+.rc-acc__bellows {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  padding-block: 10px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--rc-acc-bellows-dark) 0,
+      var(--rc-acc-bellows) 35%,
+      var(--rc-acc-bellows) 65%,
+      var(--rc-acc-bellows-dark) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  border-block: 3px solid var(--rc-acc-board);
+}
+
+.rc-acc__bellows[hidden] {
+  display: none;
+}
+
+/* 中身はいつも全開の幅で置いておき、蛇腹が伸びた分だけ左から見せる */
+.rc-acc__content {
+  inline-size: var(--rc-acc-full);
+  padding: 8px 14px;
+  background: var(--rc-acc-paper);
+  color: CanvasText;
+  opacity: clamp(0, calc((var(--rc-acc-ratio) - 0.2) / 0.4), 1);
+}
+
+/* 折り目の陰。中身の上にもうっすら重ねる */
+.rc-acc__folds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.35) 0,
+      transparent 20%,
+      transparent 80%,
+      rgb(255 255 255 / 0.12) 100%
+    )
+    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
+  opacity: calc(1 - var(--rc-acc-ratio) * 0.6);
 }
 
 /* 叱る吹き出し。見出しの上に重ねて、レイアウトは動かさない */
@@ -78,93 +149,6 @@
   80% {
     transform: translateX(4px);
   }
-}
-
-.rc-acc__panel {
-  display: flex;
-  justify-content: center;
-  inline-size: 100%;
-}
-
-.rc-acc__panel[hidden] {
-  display: none;
-}
-
-.rc-acc__instrument {
-  display: flex;
-  align-items: stretch;
-}
-
-.rc-acc__handle {
-  position: relative;
-  flex: none;
-  inline-size: 28px;
-  min-block-size: 56px;
-  border: 2px solid var(--rc-acc-board-edge);
-  background:
-    repeating-linear-gradient(
-      180deg,
-      transparent 0 9px,
-      color-mix(in srgb, var(--rc-acc-board-edge) 55%, transparent) 9px 11px
-    )
-    center / 10px 60% no-repeat,
-    var(--rc-acc-board);
-  cursor: grab;
-}
-
-.rc-acc__handle--left {
-  border-radius: 8px 3px 3px 8px;
-}
-
-.rc-acc__handle--right {
-  border-radius: 3px 8px 8px 3px;
-}
-
-.rc-acc[data-held] .rc-acc__handle {
-  cursor: grabbing;
-}
-
-.rc-acc__bellows {
-  position: relative;
-  flex: none;
-  overflow: hidden;
-  padding-block: 10px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      var(--rc-acc-bellows-dark) 0,
-      var(--rc-acc-bellows) 35%,
-      var(--rc-acc-bellows) 65%,
-      var(--rc-acc-bellows-dark) 100%
-    )
-    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
-  border-block: 3px solid var(--rc-acc-board);
-}
-
-/* 中身はいつも全開の幅で置いておき、蛇腹の幅で真ん中から見せる */
-.rc-acc__content {
-  inline-size: var(--rc-acc-full);
-  margin-inline-start: calc((100% - var(--rc-acc-full)) / 2);
-  padding: 8px 14px;
-  background: var(--rc-acc-paper);
-  color: CanvasText;
-  opacity: clamp(0, calc((var(--rc-acc-ratio) - 0.2) / 0.4), 1);
-}
-
-/* 折り目の陰。中身の上にもうっすら重ねる */
-.rc-acc__folds {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-      90deg,
-      rgb(0 0 0 / 0.35) 0,
-      transparent 20%,
-      transparent 80%,
-      rgb(255 255 255 / 0.12) 100%
-    )
-    0 0 / calc(100% / var(--rc-acc-folds)) 100%;
-  opacity: calc(1 - var(--rc-acc-ratio) * 0.6);
 }
 
 .rc-acc__puff {
