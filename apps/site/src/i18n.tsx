@@ -107,6 +107,12 @@ const ja = {
     setAndPay: "設定して決済する",
     wrong: "パスワードが違います。",
     pay: "決済する",
+    forgot: "パスワードを忘れた場合",
+    forgotTitle: "パスワードの再設定",
+    forgotLead: "本人確認のため、下のトグルをオンにしてください。",
+    forgotToggle: "パスワードを新たに作る",
+    forgotReset: "パスワードを再設定する",
+    forgotSetLead: "新しい決済パスワードを設定してください。",
   },
 
   policy: {
@@ -255,6 +261,12 @@ const en: Messages = {
     setAndPay: "Set and pay",
     wrong: "Incorrect password.",
     pay: "Pay",
+    forgot: "Forgot your password?",
+    forgotTitle: "Reset Password",
+    forgotLead: "To verify it's you, please switch the toggle below on.",
+    forgotToggle: "Create a new password",
+    forgotReset: "Reset password",
+    forgotSetLead: "Please set a new payment password.",
   },
 
   policy: {

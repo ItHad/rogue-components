@@ -977,6 +977,30 @@ p {
   font-weight: 700;
 }
 
+/* 「パスワードを忘れた場合」などの、控えめな文字リンク */
+.gate__link {
+  align-self: center;
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.gate__link:hover {
+  color: var(--ink);
+}
+
+/* 中央寄せの関門の中でも、ラベルはトグルと同じく左に揃える */
+.gate .rc-bw {
+  text-align: left;
+  --rc-bw-goal: var(--accent);
+  --rc-bw-focus: var(--accent);
+}
+
 .gate__age {
   font-weight: 700;
 }

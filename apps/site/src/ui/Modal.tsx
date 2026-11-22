@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 
 interface ModalProps {
@@ -7,11 +8,12 @@ interface ModalProps {
   children: ReactNode;
 }
 
-/** 関門を出すための、ふつうのモーダル。 */
+/** 関門を出すための、ふつうのモーダル。重ねて開いてもよい (body 直下に出し、Escape はいちばん上のものだけ閉じる)。 */
 export function Modal({ title, onClose, children }: ModalProps) {
   const { t } = useI18n();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -22,7 +24,9 @@ export function Modal({ title, onClose, children }: ModalProps) {
     const previous = document.activeElement as HTMLElement | null;
     dialogRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
+      if (e.key !== "Escape") return;
+      const backdrops = document.querySelectorAll(".modal-backdrop");
+      if (backdrops[backdrops.length - 1] === backdropRef.current) onCloseRef.current();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -31,8 +35,12 @@ export function Modal({ title, onClose, children }: ModalProps) {
     };
   }, []);
 
-  return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+  return createPortal(
+    <div
+      ref={backdropRef}
+      className="modal-backdrop"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div
         ref={dialogRef}
         className="modal"
@@ -51,6 +59,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
         </header>
         <div className="modal__body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
