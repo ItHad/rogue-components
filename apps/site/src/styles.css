@@ -170,24 +170,11 @@ p {
   }
 }
 
-/* 流れ星: 外側の要素で左下向きに傾け、内側の尾をその向きに走らせる */
+/* 流れ星 (景色の SVG の中)。傾きは親の g で付け、ここでは尾を前へ走らせる */
 .scenery__meteor {
-  position: absolute;
-  inline-size: 0;
-  block-size: 0;
-  transform: rotate(146deg);
-}
-
-.scenery__meteor-trail {
-  position: absolute;
-  inset-block-start: -1px;
-  inset-inline-start: 0;
-  inline-size: 110px;
-  block-size: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, #c7cdfc88 60%, #fff);
-  box-shadow: 0 0 6px #fdf6d8aa;
   opacity: 0;
+  filter: drop-shadow(0 0 3px #fdf6d8aa);
+  transform-box: fill-box;
   transform-origin: right center;
   animation: scenery-meteor 1.2s ease-in forwards;
 }

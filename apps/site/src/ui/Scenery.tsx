@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 /**
  * サイト全体の背景。夕暮れの平原と丘を、遠くのドラゴンが横切っていく。
@@ -83,16 +83,17 @@ const FAR_TREES: { x: number; y: number; s: number; pine?: boolean }[] = [
 
 interface Meteor {
   id: number;
-  /** 画面に対する流れ始めの位置 (%) */
-  top: number;
-  left: number;
+  /** 景色の SVG の座標での流れ始めの位置 */
+  x: number;
+  y: number;
 }
 
 /**
- * 6〜16 秒おきに、空の上のほうのどこかに流れ星を 1 つ流す。
- * 動きを減らす設定のときは流さない。
+ * 6〜16 秒おきに、空のどこかに流れ星を 1 つ流す。動きを減らす設定のときは流さない。
+ * 山の後ろを流れるよう景色の SVG の中に描くので、画面上のランダムな点を SVG の座標に直して使う
+ * (スマホでは景色をずらしているので、見えている空から選ぶため)。
  */
-function useMeteors(): Meteor[] {
+function useMeteors(svgRef: RefObject<SVGSVGElement | null>): Meteor[] {
   const [meteors, setMeteors] = useState<Meteor[]>([]);
 
   useEffect(() => {
@@ -101,16 +102,23 @@ function useMeteors(): Meteor[] {
     let timer: number;
     const schedule = () => {
       timer = window.setTimeout(() => {
-        const meteor = { id: ++id, top: 3 + Math.random() * 18, left: 25 + Math.random() * 70 };
-        setMeteors((list) => [...list, meteor]);
-        // 流れ終わったら取り除く (アニメーションは 1.2 秒)
-        window.setTimeout(() => setMeteors((list) => list.filter((m) => m.id !== meteor.id)), 1500);
+        const ctm = svgRef.current?.getScreenCTM();
+        if (ctm) {
+          const start = new DOMPoint(
+            window.innerWidth * (0.25 + Math.random() * 0.7),
+            window.innerHeight * (0.03 + Math.random() * 0.3),
+          ).matrixTransform(ctm.inverse());
+          const meteor = { id: ++id, x: start.x, y: start.y };
+          setMeteors((list) => [...list, meteor]);
+          // 流れ終わったら取り除く (アニメーションは 1.2 秒)
+          window.setTimeout(() => setMeteors((list) => list.filter((m) => m.id !== meteor.id)), 1500);
+        }
         schedule();
       }, 6000 + Math.random() * 10000);
     };
     schedule();
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [svgRef]);
 
   return meteors;
 }
@@ -121,11 +129,12 @@ const MID_HILL = "M0 640 C 180 580, 360 584, 520 628 S 820 612, 980 618 S 1300 5
 const NEAR_HILL = "M0 724 C 200 664, 420 666, 620 708 S 1000 690, 1200 698 S 1380 676, 1440 690 L1440 900 L0 900 Z";
 
 export function Scenery() {
-  const meteors = useMeteors();
+  const svgRef = useRef<SVGSVGElement>(null);
+  const meteors = useMeteors(svgRef);
 
   return (
     <div className="scenery" aria-hidden="true">
-      <svg className="scenery__land" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+      <svg ref={svgRef} className="scenery__land" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
         <defs>
           <linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="900" gradientUnits="userSpaceOnUse">
             <stop offset="0" stopColor="#0a0b1a" />
@@ -133,6 +142,11 @@ export function Scenery() {
             <stop offset="0.53" stopColor="#2f2a5e" />
             <stop offset="0.62" stopColor="#6b3f6e" />
             <stop offset="0.7" stopColor="#b8646a" />
+          </linearGradient>
+          <linearGradient id="sc-meteor">
+            <stop offset="0" stopColor="#c7cdfc" stopOpacity="0" />
+            <stop offset="0.6" stopColor="#c7cdfc" stopOpacity="0.55" />
+            <stop offset="1" stopColor="#fff" />
           </linearGradient>
           <radialGradient id="sc-moon-glow">
             <stop offset="0" stopColor="#fdf6d8" stopOpacity="0.35" />
@@ -183,6 +197,13 @@ export function Scenery() {
           <circle cx="1101" cy="144" r="5" fill="#ece3bd" />
           <circle cx="1118" cy="158" r="3.5" fill="#ece3bd" />
         </g>
+
+        {/* 流れ星。山より先に描いて、山の後ろへ消えていくようにする。左下向きに傾けて尾を走らせる */}
+        {meteors.map((m) => (
+          <g key={m.id} transform={`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(146)`}>
+            <rect className="scenery__meteor" x={0} y={-1} width={110} height={2} rx={1} fill="url(#sc-meteor)" />
+          </g>
+        ))}
 
         {/* 遠くの山々 */}
         <path
@@ -269,12 +290,6 @@ export function Scenery() {
           )}
         </g>
       </svg>
-
-      {meteors.map((m) => (
-        <div key={m.id} className="scenery__meteor" style={{ top: `${m.top}%`, left: `${m.left}%` }}>
-          <span className="scenery__meteor-trail" />
-        </div>
-      ))}
 
       {/* 遠くを飛ぶドラゴン。横移動・上下のゆれ・羽ばたきを別々の要素で動かす */}
       <div className="scenery__dragon">
