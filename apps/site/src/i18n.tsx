@@ -33,7 +33,7 @@ const ja = {
     pull1: "1 回引く",
     pull10: "10 回引く",
     short: "ジェムが足りません。",
-    goShop: "ショップでチャージする",
+    goShop: "ショップでチャージする（お金はかかりませんよ！）",
     rates: "排出率",
   },
 
@@ -227,7 +227,7 @@ const en: Messages = {
     pull1: "Pull ×1",
     pull10: "Pull ×10",
     short: "Not enough gems.",
-    goShop: "Top up at the shop",
+    goShop: "Top up at the shop (it's free, really!)",
     rates: "Drop rates",
   },
 
