@@ -1370,6 +1370,13 @@ p {
   gap: 10px;
 }
 
+.dragon-trial__round {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
 .dragon-trial .rc-hs {
   --rc-hs-bg: var(--bg);
   --rc-hs-line: var(--line);

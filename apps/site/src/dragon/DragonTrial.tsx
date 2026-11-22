@@ -4,7 +4,7 @@ import { HoardSelect } from "rogue-components";
 import { SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { ItemCard } from "../ui/ItemCard";
-import { randomTreasure, treasureName, treasureOptions } from "./treasures";
+import { ALL_TREASURES, distinctTreasures, randomTreasure, treasureName, treasureOptions } from "./treasures";
 
 const REWARD = SECRET_ITEMS[0]!;
 /** 降りてくるまで */
@@ -13,6 +13,10 @@ const APPROACH_MS = 1600;
 const GIVE_UP_MS = 2600;
 
 type Phase = "intro" | "trial" | "reward" | "gone";
+
+/** 試練は 3 つ。3 択 → 宝物庫の 360 点 → 息を吹かれながら 360 点 */
+const ROUNDS = 3;
+const FIRST_CHOICES = 3;
 
 interface DragonTrialProps {
   /** 背景のドラゴンがいた位置。ここから大きくなりながら降りてくる */
@@ -23,17 +27,22 @@ interface DragonTrialProps {
   onClose: () => void;
 }
 
-/** 背景のドラゴンが降りてきて、宝物庫から財宝を持ってくるよう命じる。間違えられるのは 1 回まで。 */
+/** 背景のドラゴンが降りてきて、宝物庫から財宝を 3 つ持ってくるよう命じる。どの試練も間違えられるのは 1 回まで。 */
 export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps) {
   const { locale, t } = useI18n();
   const [phase, setPhase] = useState<Phase>("intro");
   const [arrived, setArrived] = useState(false);
-  const [target, setTarget] = useState(() => randomTreasure());
+  const [round, setRound] = useState(0);
+  const [firstPool] = useState(() => distinctTreasures(FIRST_CHOICES));
+  const pool = round === 0 ? firstPool : ALL_TREASURES;
+  const [target, setTarget] = useState(() => randomTreasure(undefined, firstPool));
   const [choice, setChoice] = useState<string | null>(null);
   const [mistake, setMistake] = useState<{ got: string; roar: number } | null>(null);
+  /** 前の試練を越えたところ (台詞をほめ言葉から始める) */
+  const [passed, setPassed] = useState(false);
   const dragonRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const options = useMemo(() => treasureOptions(locale), [locale]);
+  const options = useMemo(() => treasureOptions(locale, pool), [locale, pool]);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -89,8 +98,16 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
   const offer = () => {
     if (!choice) return;
     if (choice === target) {
-      onReward(REWARD.id);
-      setPhase("reward");
+      if (round === ROUNDS - 1) {
+        onReward(REWARD.id);
+        setPhase("reward");
+        return;
+      }
+      setRound(round + 1);
+      setTarget(randomTreasure(target));
+      setChoice(null);
+      setMistake(null);
+      setPassed(true);
       return;
     }
     if (mistake) {
@@ -98,8 +115,9 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
       return;
     }
     setMistake({ got: choice, roar: Date.now() });
-    setTarget(randomTreasure(target));
+    setTarget(randomTreasure(target, pool));
     setChoice(null);
+    setPassed(false);
   };
 
   let speech: string;
@@ -107,7 +125,7 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
   else if (phase === "reward") speech = t.dragon.reward;
   else if (phase === "gone") speech = t.dragon.giveUp;
   else if (mistake) speech = t.dragon.wrong(treasureName(mistake.got, locale), treasureName(target, locale));
-  else speech = t.dragon.order(treasureName(target, locale));
+  else speech = (passed ? `${t.dragon.passed} ` : "") + t.dragon.order[round]!(treasureName(target, locale));
 
   return createPortal(
     <div className="dragon-trial" data-arrived={arrived || undefined} data-phase={phase}>
@@ -164,7 +182,15 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
 
           {phase === "trial" && (
             <>
-              <HoardSelect label={t.dragon.hoard} options={options} value={choice} onChange={setChoice} />
+              <p className="dragon-trial__round">{t.dragon.round(round + 1, ROUNDS)}</p>
+              <HoardSelect
+                key={round}
+                label={t.dragon.hoard}
+                options={options}
+                value={choice}
+                onChange={setChoice}
+                calm={round < ROUNDS - 1}
+              />
               <button type="button" className="btn btn--primary" disabled={!choice} onClick={offer}>
                 {t.dragon.offer}
               </button>
