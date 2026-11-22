@@ -98,11 +98,11 @@ const FRAME_H = 0.62;
 /** 枠の線からこれだけ (大きさに対する割合) はみ出しても写っていることにする */
 const TOLERANCE = 0.2;
 /** 動き回る速さ (舞台の幅に対する毎秒の割合) */
-const ROAM_SPEED = 0.11;
+const ROAM_SPEED = 0.07;
 const RESTLESS_SPEED = 1.7;
 /** 枠に入れてからじっとしている時間 */
-const PATIENCE_MS = [18000, 32000] as const;
-const RESTLESS_PATIENCE_MS = [5000, 9000] as const;
+const PATIENCE_MS = [10000, 18000] as const;
+const RESTLESS_PATIENCE_MS = [3500, 6000] as const;
 /** 動き出す前にそわそわする時間 */
 const FIDGET_MS = 1200;
 const COUNTDOWN = 3;
