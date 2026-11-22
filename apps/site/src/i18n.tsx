@@ -49,6 +49,22 @@ const ja = {
       n > 1 ? `さらに、宵の古竜から我が子を ${n} 頭も託されています🐉` : "さらに、宵の古竜から我が子を託されました🐉",
   },
 
+  photo: {
+    title: "図鑑コンプリート！みんなで記念撮影",
+    doneTitle: "記念撮影",
+    lead: "せっかくそろったので、みんなで写真を撮りましょう。",
+    leadNew: "最後の仲間が加わって、図鑑がそろいました！みんなで写真を撮りましょう。新入りは落ち着きがないので気をつけて。",
+    caption: (date: string) => `図鑑コンプリート記念　${date}`,
+    fileName: "monster-gacha-photo.png",
+    share: "SNS に共有",
+    shareText: (total: number) => `モンスターガチャの図鑑を全 ${total} 種そろえて、みんなで記念撮影しました📸`,
+    shareSecret: "宵の古竜の子も一緒です🐉",
+    back: "ゲームに戻る",
+    open: "みんなで記念撮影をする",
+    again: "もう一度記念撮影をする",
+    dragonHint: "ヒント：背景のドラゴンを連続で押すと...",
+  },
+
   shop: {
     title: "ショップ",
     lead: "お代はいただきませんが、欲張りすぎにはご注意を。",
@@ -341,6 +357,22 @@ const en: Messages = {
     forgotToggle: "Create a new password",
     forgotReset: "Reset password",
     forgotSetLead: "Please set a new payment password.",
+  },
+
+  photo: {
+    title: "Collection complete! Group photo time",
+    doneTitle: "Group photo",
+    lead: "Everyone's here, so let's take a photo together.",
+    leadNew: "The last member has joined and your collection is complete! Let's take a group photo. The newcomers are a bit restless, so watch out.",
+    caption: (date: string) => `Collection complete · ${date}`,
+    fileName: "monster-gacha-photo.png",
+    share: "Share on social media",
+    shareText: (total: number) => `I collected all ${total} monsters in Monster Gacha and we took a group photo 📸`,
+    shareSecret: "The Elder Dusk Dragon's hatchling joined us too 🐉",
+    back: "Back to the game",
+    open: "Take a group photo",
+    again: "Take another group photo",
+    dragonHint: "Hint: Try tapping the dragon in the background over and over...",
   },
 
   dragon: {

@@ -924,6 +924,10 @@ p {
   outline: none;
 }
 
+.modal--wide {
+  width: min(720px, 100%);
+}
+
 /* 中身が長くなってスクロールしても、閉じるボタンは常に見えるようにする */
 .modal__header {
   position: sticky;
@@ -1430,5 +1434,53 @@ p {
 
   .dragon-trial[data-phase="gone"] .dragon-trial__dragon {
     animation: none;
+  }
+}
+
+/* ---------- group photo ---------- */
+
+.collection__photo {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 24px;
+}
+
+.photo__lead {
+  margin: 0 0 12px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.photo {
+  --rc-gp-accent: var(--accent);
+}
+
+.photo__share {
+  --rc-ssb-accent: var(--accent);
+  --rc-ssb-accent-ink: var(--accent-ink);
+  --rc-ssb-bg: var(--surface);
+  --rc-ssb-line: var(--line);
+  --rc-ssb-muted: var(--ink-muted);
+}
+
+.photo__hint {
+  margin: 16px 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9em;
+  text-align: center;
+}
+
+/* PC の低いウィンドウでも、撮影ボタンまで 1 画面に収める */
+.photo .rc-gp__stage {
+  inline-size: min(100%, max(260px, calc((100dvh - 340px) * 4 / 3)));
+}
+
+.photo .rc-gp__print {
+  inline-size: min(420px, 100%, max(240px, calc((100dvh - 330px) * 1.25)));
+}
+
+@media (max-width: 600px) {
+  .photo .rc-gp__stage {
+    inline-size: min(100%, max(260px, calc(100dvh - 340px)));
   }
 }

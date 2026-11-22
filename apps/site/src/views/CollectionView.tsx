@@ -1,13 +1,15 @@
 import { SmugShareButton } from "rogue-components";
-import { ITEMS, SECRET_ITEMS } from "../gacha/items";
+import { isComplete, ITEMS, SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { ItemCard } from "../ui/ItemCard";
 
 interface CollectionViewProps {
   owned: Record<string, number>;
+  photoTaken: boolean;
+  onPhoto: () => void;
 }
 
-export function CollectionView({ owned }: CollectionViewProps) {
+export function CollectionView({ owned, photoTaken, onPhoto }: CollectionViewProps) {
   const { t } = useI18n();
   const found = ITEMS.filter((i) => (owned[i.id] ?? 0) > 0).length;
   // シークレットは「全 n 種」に数えず、見つけたときだけ一言添える
@@ -32,6 +34,12 @@ export function CollectionView({ owned }: CollectionViewProps) {
         url={window.location.origin}
         hashtags={[t.collection.shareTag]}
       />
+      {/* 撮りそびれても、ここから撮れる */}
+      {isComplete(owned) && (
+        <button type="button" className="btn btn--primary collection__photo" onClick={onPhoto}>
+          {photoTaken ? t.photo.again : t.photo.open}
+        </button>
+      )}
       <div className="collection">
         {ITEMS.map((item) =>
           (owned[item.id] ?? 0) > 0 ? (

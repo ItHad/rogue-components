@@ -154,6 +154,11 @@ export const SECRET_ITEMS: readonly Item[] = [
   },
 ];
 
+/** ガチャで出るモンスターを全部持っているか (シークレットは数えない) */
+export function isComplete(owned: Record<string, number>): boolean {
+  return ITEMS.every((i) => (owned[i.id] ?? 0) > 0);
+}
+
 const ITEMS_BY_RARITY: Record<Rarity, Item[]> = {
   N: ITEMS.filter((i) => i.rarity === "N"),
   R: ITEMS.filter((i) => i.rarity === "R"),

@@ -19,6 +19,7 @@
 | `SmugShareButton` | 共有ボタン | ちゃんと共有できるが、文面の最後に自分を褒める一言を勝手に書き足す。プレビューで消せるが、消すとしょんぼりする |
 | `BurgerMenu` | ハンバーガーメニュー | 開くと本物のバンズや具が落ちてきて積み上がり、それがメニューになる。`danger` の項目は真っ赤なトマトになり、`bites` を付けた項目はかじって完食しないと選べない |
 | `RiggedRating` | 「このアプリを評価してください ★★★★★」 | ★1〜★4 はカーソルや指が近づくと悲鳴を上げて逃げ回り、絶対に押せない。押せるのは ★5 だけ |
+| `GroupPhoto` | 集合写真のカメラ | 被写体が枠のまわりをうろちょろしている。全員をドラッグで枠に入れてから撮らないと「もう一回」になる。枠に入れた被写体も、しばらくすると飽きて出ていく。撮れた写真は PNG で保存できる |
 | `BellowsAccordion` | › の付いたアコーディオンの見出し | 押しても「アコーディオンなんだから、ひっぱらないと」と言われて開かない。› をつかんで右へ引っぱると、見出しとの間に蛇腹が広がって中身が見える。空気が抜け続けるので、引っぱり続けないと閉じてしまう |
 
 ## 使い方
@@ -63,6 +64,7 @@ function SignUp() {
 | `BurgerMenu` | `items`（`id`, `label`, `onSelect`, `href`, `bites`, `danger`, `keepOpen`, `render` を持つ項目のリスト。上から順に上のバンズ、パティ、下のバンズになる） | `label` |
 | `RiggedRating` | `value` / `onChange(stars: number)`（押せるのは 5 だけ） | `label` |
 | `BellowsAccordion` | `children`（蛇腹を広げると見える中身） | `label` |
+| `GroupPhoto` | `subjects`（`id`・`label`・`src`・`restless`）/ `onSuccess()` | `caption`・`fileName`・`children`（撮れたあとに写真の下に出す） |
 
 ### 日本語と英語
 

@@ -44,5 +44,8 @@ export type { BurgerMenuProps, BurgerMenuItem } from "./BurgerMenu/BurgerMenu";
 export { RiggedRating } from "./RiggedRating/RiggedRating";
 export type { RiggedRatingProps } from "./RiggedRating/RiggedRating";
 
+export { GroupPhoto } from "./GroupPhoto/GroupPhoto";
+export type { GroupPhotoProps, GroupPhotoSubject } from "./GroupPhoto/GroupPhoto";
+
 export { BellowsAccordion } from "./BellowsAccordion/BellowsAccordion";
 export type { BellowsAccordionProps } from "./BellowsAccordion/BellowsAccordion";

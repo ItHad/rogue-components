@@ -26,6 +26,8 @@ export interface GameState {
   pullsSinceCaptcha: number;
   /** 図鑑を開く前のレビュー依頼で ★5 を付けたか */
   rated: boolean;
+  /** 図鑑をそろえたあとの記念撮影を済ませたか */
+  photoTaken: boolean;
 }
 
 /** CAPTCHA は何回のガチャ操作ごとに出すか */
@@ -43,6 +45,7 @@ const INITIAL_STATE: GameState = {
   captchaLevel: 0,
   pullsSinceCaptcha: CAPTCHA_EVERY,
   rated: false,
+  photoTaken: false,
 };
 
 function load(): GameState {
