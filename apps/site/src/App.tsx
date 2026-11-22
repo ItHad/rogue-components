@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BurgerMenu, SmugShareButton } from "rogue-components";
 import { isComplete, roll, type Item } from "./gacha/items";
 import { GEM_PACK, PULL_COST, resetEverything, useGameState } from "./gacha/state";
@@ -28,6 +28,16 @@ export function App() {
   /** 図鑑の最後の枠を埋めたモンスター。ガチャ結果を閉じたら記念撮影に呼ぶ */
   const [newcomers, setNewcomers] = useState<string[] | null>(null);
   const [photoOpen, setPhotoOpen] = useState(false);
+
+  // タブを移ったら、そのタブのいちばん上から見せる
+  const firstView = useRef(true);
+  useLayoutEffect(() => {
+    if (firstView.current) {
+      firstView.current = false;
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [view]);
 
   // Coookie 同意バナー
   const visited = useRef(false);
