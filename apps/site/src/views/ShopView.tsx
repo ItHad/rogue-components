@@ -29,7 +29,10 @@ export function ShopView({ onCharge }: ShopViewProps) {
   return (
     <section className="page">
       <h1 className="page__title">{t.shop.title}</h1>
-      <p className="page__lead">{t.shop.lead}</p>
+      <p className="page__lead">
+        {t.shop.lead}
+        <strong>{t.shop.leadWarn}</strong>
+      </p>
 
       <article className="product">
         <div className="product__visual" aria-hidden="true">

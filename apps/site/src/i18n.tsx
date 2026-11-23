@@ -67,7 +67,8 @@ const ja = {
 
   shop: {
     title: "ショップ",
-    lead: "お代はいただきませんが、欲張りすぎにはご注意を。",
+    lead: "お代はいただきませんが、",
+    leadWarn: "欲張りすぎにはご注意を。",
     product: "ジェム 100 個パック",
     desc: "1 パックでガチャを 1 回引けます。",
     quantity: "購入数",
@@ -139,6 +140,7 @@ const ja = {
       digits: (n: number) => `数字を ${n} 種類以上使う`,
       allSymbols: "記号 ! ? # $ をすべて使う",
       noReuse: "同じ文字を 2 回使わない",
+      alternate: "英字と、数字・記号を交互に並べる",
     },
     label: "決済パスワード",
     next: "次へ",
@@ -263,7 +265,8 @@ const en: Messages = {
 
   shop: {
     title: "Shop",
-    lead: "It's on the house. Just don't get too greedy.",
+    lead: "It's on the house. ",
+    leadWarn: "Just don't get too greedy.",
     product: "Gems ×100 Pack",
     desc: "One pack gets you one pull.",
     quantity: "Quantity",
@@ -342,6 +345,7 @@ const en: Messages = {
       digits: (n: number) => `At least ${n} different numbers`,
       allSymbols: "Use every symbol: ! ? # $",
       noReuse: "Never use the same character twice",
+      alternate: "Alternate letters with numbers/symbols",
     },
     label: "Payment password",
     next: "Next",
