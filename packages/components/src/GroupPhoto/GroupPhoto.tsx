@@ -205,6 +205,8 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
   const [started, setStarted] = useState(false);
   /** シャッターを切った回数 */
   const [attempts, setAttempts] = useState(0);
+  /** 撮影ボタンが画面の上を逃げ回っているか */
+  const [dodging, setDodging] = useState(false);
   const onSuccessRef = useRef(onSuccess);
   const subjectsRef = useRef(subjects);
   useEffect(() => {
@@ -375,6 +377,7 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
       pausedAt.current = null;
     }
     setMissing([]);
+    setDodging(false);
     setPhase("live");
   };
 
@@ -384,6 +387,11 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
   };
 
   const press = () => {
+    // 2 回目からは、最初に押したときは撮らずに逃げ出す
+    if (attempts > 0 && !dodging) {
+      setDodging(true);
+      return;
+    }
     if (!started) {
       // 整列していたみんなが、枠の真ん中から外へ向かって一斉に逃げ出す
       const { width: w, height: hh } = size.current;
@@ -626,9 +634,10 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
           <button type="button" className="rc-gp__button" onClick={retry}>
             {m.retry}
           </button>
-        ) : attempts > 0 ? (
-          // 2 回目からは撮影ボタンが画面の上をぐるぐる回る
-          <span className="rc-gp__orbit">
+        ) : (
+          // 2 回目からは、押した瞬間に撮影ボタンが画面の上をぐるぐる回り出す。
+          // 包みを付け外しするとボタンが作り直されてフォーカスが外れるので、包みは置いたままクラスだけ切り替える
+          <span className={dodging ? "rc-gp__orbit" : undefined}>
             <button
               type="button"
               className="rc-gp__button rc-gp__button--shutter"
@@ -638,15 +647,6 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
               {m.shutter}
             </button>
           </span>
-        ) : (
-          <button
-            type="button"
-            className="rc-gp__button rc-gp__button--shutter"
-            disabled={phase === "countdown"}
-            onClick={press}
-          >
-            {m.shutter}
-          </button>
         )}
       </div>
     </div>

@@ -164,14 +164,15 @@
   touch-action: manipulation;
 }
 
-/* 2 回目からの撮影ボタン。画面いっぱいに楕円を描いて回り続ける。
-   横と縦を 1/4 周ずらして往復させると、ぐるっと一周する */
+/* 2 回目からの撮影ボタン。押した瞬間に、画面いっぱいに楕円を描いて回り出す。
+   横と縦を 1/4 周ずらして往復させると、ぐるっと一周する。
+   もとのボタンがあった画面の下の真ん中から回り始めるように、開始位置をずらしている */
 .rc-gp__orbit {
   position: fixed;
   left: 50%;
   top: 50%;
   z-index: 30000;
-  animation: rc-gp-orbit-x 2s ease-in-out infinite alternate;
+  animation: rc-gp-orbit-x 2s ease-in-out -1s infinite alternate;
 }
 
 .rc-gp__orbit > .rc-gp__button {
@@ -179,7 +180,7 @@
   white-space: nowrap;
   box-shadow: 0 6px 18px -4px #000;
   transform: translate(-50%, -50%);
-  animation: rc-gp-orbit-y 2s ease-in-out -1s infinite alternate;
+  animation: rc-gp-orbit-y 2s ease-in-out -2s infinite alternate;
 }
 
 @keyframes rc-gp-orbit-x {
