@@ -25,6 +25,8 @@ const STOP_SPEED = 1;
 const HEAT_PER_STEP = 1.5;
 /** 冷却速度 (%/秒) */
 const COOL_PER_SEC = 25;
+/** オーバーヒートしてから操作できるようになるまで (秒)。この間は通常より遅く冷える */
+const OVERHEAT_COOLDOWN_SEC = 7;
 
 const MESSAGES = {
   ja: {
@@ -175,7 +177,8 @@ export function EpochDatePicker({
       if (accelerating) {
         addHeat((Math.abs(v) / maxSpeed) * HEAT_PER_SEC_AT_MAX * dt);
       } else {
-        heatRef.current = Math.max(0, heatRef.current - COOL_PER_SEC * dt);
+        const cool = overheatedRef.current ? 100 / OVERHEAT_COOLDOWN_SEC : COOL_PER_SEC;
+        heatRef.current = Math.max(0, heatRef.current - cool * dt);
         if (heatRef.current === 0 && overheatedRef.current) {
           overheatedRef.current = false;
           setOverheated(false);
