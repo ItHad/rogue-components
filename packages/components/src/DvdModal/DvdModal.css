@@ -78,6 +78,102 @@
   color: #fff;
 }
 
+/* ギアを上げたら、× はモーダルの枠の外まで出ていく (目で追えるように少し大きくする) */
+.rc-dvd[data-gear] {
+  overflow: visible;
+}
+
+.rc-dvd__close[data-gear] {
+  inline-size: 64px;
+  block-size: 46px;
+  border-radius: 12px;
+  font-size: 26px;
+  transition:
+    inline-size 0.25s,
+    block-size 0.25s,
+    font-size 0.25s;
+}
+
+/* 「そろそろギア上げてくよ」の吹き出し。右上の × から出る */
+.rc-dvd__speech {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+  z-index: 3;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #fff;
+  color: #12142b;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -6px #000a;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.rc-dvd__speech::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  right: 20px;
+  border: 7px solid transparent;
+  border-bottom-color: #fff;
+}
+
+.rc-dvd[data-announce] .rc-dvd__speech {
+  visibility: visible;
+  animation: rc-dvd-speech 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transform-origin: top right;
+}
+
+.rc-dvd[data-announce] .rc-dvd__close {
+  animation: rc-dvd-rev 0.12s infinite;
+}
+
+/* 「疲れてきた...」の吹き出し。位置は × について回るように JS で動かす */
+.rc-dvd__tired {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: #fff;
+  color: #12142b;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -6px #000a;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.rc-dvd[data-tired] .rc-dvd__tired {
+  visibility: visible;
+}
+
+.rc-dvd[data-tired] .rc-dvd__tired::after {
+  content: "💦";
+  margin-inline-start: 4px;
+}
+
+@keyframes rc-dvd-speech {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* 宣言中は、エンジンをふかすように小刻みに震える (transform は位置に使っているので translate で) */
+@keyframes rc-dvd-rev {
+  50% {
+    translate: 1px -1px;
+  }
+}
+
 .rc-dvd__x {
   display: inline-block;
 }

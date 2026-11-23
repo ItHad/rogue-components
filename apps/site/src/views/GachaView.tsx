@@ -9,8 +9,8 @@ type Phase = "idle" | "spinning" | "capsule" | "result";
 
 interface GachaViewProps {
   gems: number;
-  /** 関門を通過して引けたら結果を、やめたら null を返す */
-  onPull: (count: number) => Promise<Item[] | null>;
+  /** 関門を通過して引けたら結果を、やめたら null を返す。gearUp なら結果の × がギアを上げる */
+  onPull: (count: number) => Promise<{ items: Item[]; gearUp: boolean } | null>;
   onGoShop: () => void;
   /** ガチャ結果を閉じたとき */
   onResultClosed?: () => void;
@@ -22,6 +22,7 @@ export function GachaView({ gems, onPull, onGoShop, onResultClosed }: GachaViewP
   const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>("idle");
   const [results, setResults] = useState<Item[]>([]);
+  const [gearUp, setGearUp] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,8 @@ export function GachaView({ gems, onPull, onGoShop, onResultClosed }: GachaViewP
     try {
       const got = await onPull(count);
       if (!got) return;
-      setResults(got);
+      setResults(got.items);
+      setGearUp(got.gearUp);
       setPhase("spinning");
     } finally {
       setBusy(false);
@@ -83,7 +85,7 @@ export function GachaView({ gems, onPull, onGoShop, onResultClosed }: GachaViewP
         {phase === "capsule" && <p className="machine__hint">{t.gacha.capsuleHint}</p>}
       </div>
 
-      <DvdModal open={phase === "result"} title={t.gacha.resultTitle} onClose={() => {
+      <DvdModal open={phase === "result"} title={t.gacha.resultTitle} gearUp={gearUp} onClose={() => {
           setPhase("idle");
           onResultClosed?.();
         }}
