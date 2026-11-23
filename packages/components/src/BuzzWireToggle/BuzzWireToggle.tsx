@@ -14,14 +14,14 @@ import "./BuzzWireToggle.css";
 
 const MESSAGES = {
   ja: {
-    playing: "丸をゴールまで運んでください。壁に触れるとやり直しです。",
-    failed: "壁に触れてしまいました。トグルが縮んでしまった……",
+    playing: "壁に気を付けてね！",
+    failed: "あー……",
     done: "ゴール！",
     goal: "ゴール",
   },
   en: {
-    playing: "Carry the knob to the goal. Touch a wall and you start over.",
-    failed: "You touched a wall. The toggle shrank back...",
+    playing: "Watch out for the walls!",
+    failed: "Whoops...",
     done: "Goal!",
     goal: "Goal",
   },
