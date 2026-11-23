@@ -18,6 +18,8 @@ export interface GateProps {
   request: GateRequest;
   /** 関門を突破したときに呼ぶ。patch はゲーム状態に書き込まれる。 */
   onPass: (patch?: Partial<GameState>) => void;
+  /** 関門を突破する前でも、ゲーム状態に書き込んでおきたいときに呼ぶ */
+  save: (patch: Partial<GameState>) => void;
 }
 
 /**

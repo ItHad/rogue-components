@@ -40,10 +40,19 @@ export function useGates(state: GameState, setState: Dispatch<SetStateAction<Gam
     [setState],
   );
 
+  const save = useCallback(
+    (patch: Partial<GameState>) => {
+      const next = { ...stateRef.current, ...patch };
+      stateRef.current = next;
+      setState(next);
+    },
+    [setState],
+  );
+
   let gateView = null;
   if (active) {
     const { gate, request, resolve } = active;
-    const body = <gate.Component key={gate.id} state={state} request={request} onPass={(patch) => resolve(patch ?? {})} />;
+    const body = <gate.Component key={gate.id} state={state} request={request} onPass={(patch) => resolve(patch ?? {})} save={save} />;
     gateView =
       gate.layout === "banner" ? (
         <div className="gate-banner-backdrop">
