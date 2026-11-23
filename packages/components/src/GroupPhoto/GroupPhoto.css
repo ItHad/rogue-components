@@ -143,6 +143,8 @@
 }
 
 .rc-gp__after {
+  /* 撮影ボタンが回りに出ていっても、下の中身がずれないようにする */
+  min-block-size: 44px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -160,6 +162,42 @@
   font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+/* 2 回目からの撮影ボタン。画面いっぱいに楕円を描いて回り続ける。
+   横と縦を 1/4 周ずらして往復させると、ぐるっと一周する */
+.rc-gp__orbit {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 30000;
+  animation: rc-gp-orbit-x 2s ease-in-out infinite alternate;
+}
+
+.rc-gp__orbit > .rc-gp__button {
+  display: block;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px -4px #000;
+  transform: translate(-50%, -50%);
+  animation: rc-gp-orbit-y 2s ease-in-out -1s infinite alternate;
+}
+
+@keyframes rc-gp-orbit-x {
+  from {
+    translate: calc(-50vw + 90px) 0;
+  }
+  to {
+    translate: calc(50vw - 90px) 0;
+  }
+}
+
+@keyframes rc-gp-orbit-y {
+  from {
+    translate: 0 calc(-50vh + 40px);
+  }
+  to {
+    translate: 0 calc(50vh - 40px);
+  }
 }
 
 .rc-gp__button:disabled {
