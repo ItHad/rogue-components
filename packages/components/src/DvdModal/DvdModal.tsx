@@ -11,6 +11,11 @@ const MESSAGES = { ja: { close: "閉じる" }, en: { close: "Close" } };
 const CROSS_X_SEC = 1.5;
 const CROSS_Y_SEC = 1.0;
 /**
+ * 動き出してからこの時間 (ミリ秒) は × に当たっても閉じない。
+ * スマホでは指が触れた瞬間に pointerenter → pointerdown と続けて届くので、これがないと止まっている × をそのまま押せてしまう。
+ */
+const GRACE_MS = 200;
+/**
  * 動き出した時刻 → 動き出してからの秒 (まだ右上でじっとしている間は null)。
  * x は CROSS_X_SEC ずらして右端から、y は上端から動き出すので、出発点は右上の角になる。
  */
@@ -115,6 +120,9 @@ export function DvdModal({ open, title, onClose, children, closeOnEscape = true,
           getSelection()?.removeAllRanges();
           if (isOnButton(e.clientX, e.clientY)) {
             e.preventDefault();
+            movingSinceRef.current ??= performance.now();
+            // 動き出した直後は判定なし (外れ扱いにもしない)
+            if (performance.now() - movingSinceRef.current < GRACE_MS) return;
             onCloseRef.current();
           } else if (movingSinceRef.current !== null) {
             setMisses((m) => m + 1);
