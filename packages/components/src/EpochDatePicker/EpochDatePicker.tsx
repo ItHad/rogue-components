@@ -34,6 +34,7 @@ const MESSAGES = {
     next: "1 日進める",
     prev: "1 日戻す",
     overheated: "オーバーヒートしました。冷却中…",
+    scold: "説明はちゃんと読もう",
   },
   en: {
     weekdays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -46,6 +47,7 @@ const MESSAGES = {
     next: "Next day",
     prev: "Previous day",
     overheated: "Overheated. Cooling down…",
+    scold: "Read the instructions, please.",
   },
 };
 
@@ -74,6 +76,8 @@ export interface EpochDatePickerProps {
   maxSpeed?: number;
   disabled?: boolean;
   className?: string;
+  /** 矢印をこの回数押されたら、カレンダーが「説明はちゃんと読もう」と言い出す。省略すると言わない */
+  scoldAfterPresses?: number;
 }
 
 /**
@@ -89,6 +93,7 @@ export function EpochDatePicker({
   maxSpeed = MAX_SPEED,
   disabled = false,
   className,
+  scoldAfterPresses,
 }: EpochDatePickerProps) {
   const t = useMessages(MESSAGES);
   const [value, setValue] = useControllable(valueProp, defaultValue, onChange);
@@ -97,6 +102,8 @@ export function EpochDatePicker({
   const [open, setOpen] = useState(false);
   const [holding, setHolding] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [presses, setPresses] = useState(0);
+  const scolding = scoldAfterPresses !== undefined && presses >= scoldAfterPresses;
   const labelId = useId();
 
   const dayRef = useRef(toDay(value));
@@ -184,6 +191,7 @@ export function EpochDatePicker({
 
   const step = (dir: 1 | -1) => {
     if (disabled || overheatedRef.current) return;
+    setPresses((n) => n + 1);
     move(dir);
     addHeat(HEAT_PER_STEP);
   };
@@ -291,6 +299,12 @@ export function EpochDatePicker({
           </time>
           {arrow(1)}
         </div>
+      )}
+      {/* 矢印を押しすぎた人へ、カレンダーから一言 */}
+      {open && scolding && (
+        <p className="rc-edp__scold" role="status">
+          {t.scold}
+        </p>
       )}
       {/* 説明は出さない。過熱したときだけ何が起きたかを告げる */}
       <p className="rc-edp__status" role="status">

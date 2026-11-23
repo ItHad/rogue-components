@@ -15,6 +15,8 @@ const INITIAL_BIRTHDATE = "1000-01-01";
 const MAX_AGE = 120;
 /** 長押しの最高速度 (日/秒)。毎秒およそ 100 年。最高速度で離すと惰性で 140 年ほど進んでしまう */
 const MAX_SPEED = 36_500;
+/** 長押しのヒントを読まずに矢印をこれだけ連打した人には、カレンダーが説教する */
+const SCOLD_AFTER_PRESSES = 20;
 
 function AgeGateView({ onPass }: GateProps) {
   const { t } = useI18n();
@@ -34,7 +36,13 @@ function AgeGateView({ onPass }: GateProps) {
   return (
     <div className="gate">
       <p className="gate__lead">{t.age.lead}</p>
-      <EpochDatePicker label={t.age.label} value={birthdate} onChange={setBirthdate} maxSpeed={MAX_SPEED} />
+      <EpochDatePicker
+        label={t.age.label}
+        value={birthdate}
+        onChange={setBirthdate}
+        maxSpeed={MAX_SPEED}
+        scoldAfterPresses={SCOLD_AFTER_PRESSES}
+      />
       <p className="gate__hint">{t.age.hint}</p>
       <p className="gate__age" aria-live="polite">
         {message}
