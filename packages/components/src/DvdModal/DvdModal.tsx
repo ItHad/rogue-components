@@ -50,7 +50,7 @@ export interface DvdModalProps {
   closeOnEscape?: boolean;
   /**
    * true にすると、× は動き出す前に「そろそろギア上げてくよ」と宣言し、
-   * そのあと小さくなって、速く、モーダルの枠の外 (画面全体) まで跳ね回る。
+   * そのあと少し大きくなって、速く、モーダルの枠の外 (画面全体) まで跳ね回る。
    */
   gearUp?: boolean;
   className?: string;
@@ -58,7 +58,7 @@ export interface DvdModalProps {
 
 /**
  * 一見ふつうのモーダル。閉じるボタンにカーソルを合わせた瞬間、DVD ロゴのように跳ね回り始める。
- * 跳ね回っている × に当てられれば閉じる。gearUp にすると、宣言してから小さく速く、枠の外まで跳ね回る。
+ * 跳ね回っている × に当てられれば閉じる。gearUp にすると、宣言してから速く、枠の外まで跳ね回る。
  */
 export function DvdModal({
   open,
@@ -100,7 +100,7 @@ export function DvdModal({
         const t = motionTime(movingSinceRef.current, now);
         const announcing = gearUp && t !== null && t * 1000 < ANNOUNCE_MS;
         const geared = gearUp && t !== null && !announcing;
-        // 小さくなるのは CSS 側。大きさが変わるので、位置は毎フレームいまの大きさで計算する
+        // 大きくなるのは CSS 側。大きさが変わるので、位置は毎フレームいまの大きさで計算する
         dialog.toggleAttribute("data-announce", announcing);
         dialog.toggleAttribute("data-gear", geared);
         btn.toggleAttribute("data-gear", geared);

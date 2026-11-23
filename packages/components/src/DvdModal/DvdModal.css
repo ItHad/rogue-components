@@ -78,16 +78,16 @@
   color: #fff;
 }
 
-/* ギアを上げたら、× はモーダルの枠の外まで出ていく */
+/* ギアを上げたら、× はモーダルの枠の外まで出ていく (目で追えるように少し大きくする) */
 .rc-dvd[data-gear] {
   overflow: visible;
 }
 
 .rc-dvd__close[data-gear] {
-  inline-size: 30px;
-  block-size: 22px;
-  border-radius: 6px;
-  font-size: 14px;
+  inline-size: 64px;
+  block-size: 46px;
+  border-radius: 12px;
+  font-size: 26px;
   transition:
     inline-size 0.25s,
     block-size 0.25s,

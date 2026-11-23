@@ -59,7 +59,7 @@ function SignUp() {
 | `PasswordBoss` | `password: string` | `onDefeat()`（強度 100 で呼ばれる）, `name`, `rules`（倒すための条件のリスト。すべて満たすまで倒れない） |
 | `EpochDatePicker` | `value` / `onChange(value: string)`（`YYYY-MM-DD`） | `label`, `maxSpeed`（長押しの最高速度・日/秒）, `disabled` |
 | `PhilosophicalCaptcha` | `value` / `onChange(verified: boolean)` | `level`, `questions` |
-| `DvdModal` | `open` / `onClose()` | `title`, `children`, `closeOnEscape`（既定は `true`）, `gearUp`（`true` で × が「そろそろギア上げてくよ」と宣言し、小さく速く枠の外まで跳ね回る） |
+| `DvdModal` | `open` / `onClose()` | `title`, `children`, `closeOnEscape`（既定は `true`）, `gearUp`（`true` で × が「そろそろギア上げてくよ」と宣言し、速く枠の外まで跳ね回る） |
 | `BuzzWireToggle` | `checked` / `onChange(checked: boolean)` | `label`, `disabled` |
 | `SmugShareButton` | `text: string` / `onShare(target: "x" \| "native" \| "copy", text: string)` | `url`, `hashtags`, `brags`（書き足す一言の候補）, `label`, `disabled` |
 | `BurgerMenu` | `items`（`id`, `label`, `onSelect`, `href`, `bites`, `danger`, `keepOpen`, `render` を持つ項目のリスト。上から順に上のバンズ、パティ、下のバンズになる） | `label` |
