@@ -5,6 +5,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
@@ -22,6 +23,7 @@ const MESSAGES = {
     missed: (names: string[], rest: number) =>
       `${names.join("、")}${rest > 0 ? ` ほか ${rest} 体` : ""}が写っていません。`,
     retry: "もう一回",
+    dodge: "ｻｻｯ",
     done: "みんな写りました！",
     restless: "新入り",
     save: "写真を保存",
@@ -36,6 +38,7 @@ const MESSAGES = {
     missed: (names: string[], rest: number) =>
       `${names.join(", ")}${rest > 0 ? ` and ${rest} more` : ""} didn't make it into the photo.`,
     retry: "One more time",
+    dodge: "Swish!",
     done: "Everyone made it in!",
     restless: "New",
     save: "Save the photo",
@@ -112,6 +115,7 @@ const RESTLESS_PATIENCE_MS = [3500, 6000] as const;
 const FIDGET_MS = 1200;
 const COUNTDOWN = 3;
 const FLASH_MS = 450;
+const DODGE_FX_MS = 800;
 
 function between([lo, hi]: readonly [number, number]) {
   return lo + Math.random() * (hi - lo);
@@ -207,6 +211,13 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
   const [attempts, setAttempts] = useState(0);
   /** 撮影ボタンが画面の上を逃げ回っているか */
   const [dodging, setDodging] = useState(false);
+  /** 撮影ボタンがよけたときの効果 (ボタンがいた場所に出す) */
+  const [dodgeFx, setDodgeFx] = useState<{ key: number; x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!dodgeFx) return;
+    const id = window.setTimeout(() => setDodgeFx(null), DODGE_FX_MS);
+    return () => window.clearTimeout(id);
+  }, [dodgeFx]);
   const onSuccessRef = useRef(onSuccess);
   const subjectsRef = useRef(subjects);
   useEffect(() => {
@@ -386,9 +397,11 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
     b.leaveAt = performance.now() + between(subject.restless ? RESTLESS_PATIENCE_MS : PATIENCE_MS);
   };
 
-  const press = () => {
+  const press = (e: MouseEvent<HTMLButtonElement>) => {
     // 2 回目からは、最初に押したときは撮らずに逃げ出す
     if (attempts > 0 && !dodging) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setDodgeFx((fx) => ({ key: (fx?.key ?? 0) + 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }));
       setDodging(true);
       return;
     }
@@ -629,6 +642,18 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
               ? m.hint
               : m.lineup}
       </p>
+      {dodgeFx && (
+        <span
+          key={dodgeFx.key}
+          className="rc-gp__dodge"
+          style={{ left: dodgeFx.x, top: dodgeFx.y }}
+          aria-hidden="true"
+        >
+          <span className="rc-gp__dodge-puff" />
+          <span className="rc-gp__dodge-lines" />
+          <span className="rc-gp__dodge-word">{m.dodge}</span>
+        </span>
+      )}
       <div className="rc-gp__after">
         {phase === "missed" ? (
           <button type="button" className="rc-gp__button" onClick={retry}>

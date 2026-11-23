@@ -201,6 +201,103 @@
   }
 }
 
+/* 撮影ボタンがよけた瞬間、もといた場所に残す効果。土ぼこりの輪とスピード線と「ｻｻｯ」 */
+.rc-gp__dodge {
+  position: fixed;
+  z-index: 29999;
+  inline-size: 0;
+  block-size: 0;
+  pointer-events: none;
+}
+
+.rc-gp__dodge-puff {
+  position: absolute;
+  left: 0;
+  top: 0;
+  inline-size: 130px;
+  block-size: 46px;
+  border: 3px solid var(--rc-gp-accent);
+  border-radius: 999px;
+  translate: -50% -50%;
+  opacity: 0;
+  animation: rc-gp-dodge-puff 0.45s ease-out;
+}
+
+.rc-gp__dodge-lines {
+  position: absolute;
+  left: -76px;
+  top: -16px;
+  inline-size: 46px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow:
+    10px 14px 0 #fff,
+    -6px 28px 0 #fff;
+  opacity: 0;
+  animation: rc-gp-dodge-lines 0.5s ease-out;
+}
+
+.rc-gp__dodge-word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #fff;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow:
+    2px 2px 0 #1b1530,
+    -2px 2px 0 #1b1530,
+    2px -2px 0 #1b1530,
+    -2px -2px 0 #1b1530,
+    0 4px 10px #0008;
+  opacity: 0;
+  animation: rc-gp-dodge-word 0.8s ease-out;
+}
+
+@keyframes rc-gp-dodge-puff {
+  from {
+    opacity: 1;
+    scale: 0.7;
+  }
+  to {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+@keyframes rc-gp-dodge-lines {
+  from {
+    opacity: 0.9;
+    translate: 40px 0;
+  }
+  to {
+    opacity: 0;
+    translate: -30px 0;
+  }
+}
+
+@keyframes rc-gp-dodge-word {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) rotate(-10deg) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -110%) rotate(-10deg) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -125%) rotate(-10deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -150%) rotate(-10deg) scale(1);
+  }
+}
+
 .rc-gp__button:disabled {
   opacity: 0.6;
   cursor: default;
