@@ -3,8 +3,8 @@ import { useMessages } from "../locale";
 import "./DvdModal.css";
 
 const MESSAGES = {
-  ja: { close: "閉じる", gearUp: "そろそろギア上げてくよ" },
-  en: { close: "Close", gearUp: "Time to shift up a gear." },
+  ja: { close: "閉じる", gearUp: "そろそろギア上げてくよ", tired: "疲れてきた..." },
+  en: { close: "Close", gearUp: "Time to shift up a gear.", tired: "Getting tired..." },
 };
 
 /**
@@ -34,6 +34,28 @@ const ANNOUNCE_MS = 1400;
 /** ギアを上げたあとに × が動ける、画面の端からの余白 (px) */
 const GEAR_MARGIN = 8;
 
+/** ギアを上げて動き出してから、疲れてくるまでの時間 (秒) */
+const TIRED_AT_SEC = 15;
+/** 疲れてから元の速さに落ちるまでの時間 (秒)。この間に段々遅くなる */
+const SLOW_DOWN_SEC = 5;
+/** 「疲れてきた...」を、元の速さに落ちてからも出しておく時間 (秒) */
+const TIRED_LINGER_SEC = 1.5;
+/** 元の速さは、ギアを上げたあとの速さの何倍か (端から端までの時間の比。x, y で同じ) */
+const BASE_RATE = GEAR_CROSS_X_SEC / CROSS_X_SEC;
+
+/**
+ * ギアを上げて動き出してからの秒 → 速く動いた分も含めて進んだ「ギアを上げたあとの速さでの秒」。
+ * 疲れるまでは 1 倍、そこから SLOW_DOWN_SEC かけて BASE_RATE 倍まで一定の割合で落ち、あとはそのまま。
+ * 速さを積分しているので、遅くなっても位置は飛ばない。
+ */
+function gearClock(g: number): number {
+  if (g <= TIRED_AT_SEC) return g;
+  const s = Math.min(g - TIRED_AT_SEC, SLOW_DOWN_SEC);
+  const slowing = s - ((1 - BASE_RATE) * s * s) / (2 * SLOW_DOWN_SEC);
+  const after = Math.max(0, g - TIRED_AT_SEC - SLOW_DOWN_SEC) * BASE_RATE;
+  return TIRED_AT_SEC + slowing + after;
+}
+
 /** 0 → 1 → 0 → 1 … と往復する三角波 */
 function bounce(t: number, cross: number) {
   const p = (t / cross) % 2;
@@ -51,6 +73,7 @@ export interface DvdModalProps {
   /**
    * true にすると、× は動き出す前に「そろそろギア上げてくよ」と宣言し、
    * そのあと少し大きくなって、速く、モーダルの枠の外 (画面全体) まで跳ね回る。
+   * 15 秒ほどすると「疲れてきた...」と言って、段々元の速さまで落ちる。
    */
   gearUp?: boolean;
   className?: string;
@@ -73,6 +96,7 @@ export function DvdModal({
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const tiredRef = useRef<HTMLParagraphElement>(null);
   /** × が動き出した時刻。カーソルが乗るまでは null で、右上でじっとしている */
   const movingSinceRef = useRef<number | null>(null);
   /** ギアを上げて動き出したときの位相のずれ (秒)。そのときいた位置から続けて動かすため */
@@ -109,6 +133,7 @@ export function DvdModal({
         let px: number;
         let py: number;
         let hits = 0;
+        let tired = false;
         if (t === null || announcing) {
           // 右上でじっとしている (宣言中も)
           px = dialog.clientWidth - bw;
@@ -132,12 +157,26 @@ export function DvdModal({
             y: Math.min(1, Math.max(0, -top / h)) * GEAR_CROSS_Y_SEC,
           };
           const g = t - ANNOUNCE_MS / 1000;
-          const gx = g + gearPhaseRef.current.x;
-          const gy = g + gearPhaseRef.current.y;
+          const clock = gearClock(g);
+          const gx = clock + gearPhaseRef.current.x;
+          const gy = clock + gearPhaseRef.current.y;
           px = left + bounce(gx, GEAR_CROSS_X_SEC) * w;
           py = top + bounce(gy, GEAR_CROSS_Y_SEC) * h;
           hits = Math.floor(gx / GEAR_CROSS_X_SEC) + Math.floor(gy / GEAR_CROSS_Y_SEC);
+          tired = g >= TIRED_AT_SEC && g < TIRED_AT_SEC + SLOW_DOWN_SEC + TIRED_LINGER_SEC;
+          const bubble = tiredRef.current;
+          if (bubble && tired) {
+            // 吹き出しは × について回る。画面の上半分にいるときは下に、下半分にいるときは上に出し、画面からはみ出さないようにする
+            const tw = bubble.offsetWidth;
+            const th = bubble.offsetHeight;
+            const below = py + oy < window.innerHeight / 2;
+            const bx = Math.min(Math.max(px + bw / 2 - tw / 2, left), left + window.innerWidth - GEAR_MARGIN * 2 - tw);
+            const by = below ? py + bh + 10 : py - th - 10;
+            bubble.style.transform = `translate(${bx}px, ${by}px)`;
+            bubble.toggleAttribute("data-below", below);
+          }
         }
+        dialog.toggleAttribute("data-tired", tired);
         btn.style.transform = `translate(${px}px, ${py}px)`;
         btn.toggleAttribute("data-moving", t !== null);
         // DVD ロゴのように、壁に当たるたびに色が変わる
@@ -224,6 +263,11 @@ export function DvdModal({
         {gearUp && (
           <p className="rc-dvd__speech" aria-hidden="true">
             {t.gearUp}
+          </p>
+        )}
+        {gearUp && (
+          <p ref={tiredRef} className="rc-dvd__tired" aria-hidden="true">
+            {t.tired}
           </p>
         )}
       </div>
