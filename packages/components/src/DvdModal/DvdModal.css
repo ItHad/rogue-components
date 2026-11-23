@@ -78,6 +78,74 @@
   color: #fff;
 }
 
+/* ギアを上げたら、× はモーダルの枠の外まで出ていく */
+.rc-dvd[data-gear] {
+  overflow: visible;
+}
+
+.rc-dvd__close[data-gear] {
+  inline-size: 30px;
+  block-size: 22px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition:
+    inline-size 0.25s,
+    block-size 0.25s,
+    font-size 0.25s;
+}
+
+/* 「そろそろギア上げてくよ」の吹き出し。右上の × から出る */
+.rc-dvd__speech {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+  z-index: 3;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #fff;
+  color: #12142b;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -6px #000a;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.rc-dvd__speech::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  right: 20px;
+  border: 7px solid transparent;
+  border-bottom-color: #fff;
+}
+
+.rc-dvd[data-announce] .rc-dvd__speech {
+  visibility: visible;
+  animation: rc-dvd-speech 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transform-origin: top right;
+}
+
+.rc-dvd[data-announce] .rc-dvd__close {
+  animation: rc-dvd-rev 0.12s infinite;
+}
+
+@keyframes rc-dvd-speech {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* 宣言中は、エンジンをふかすように小刻みに震える (transform は位置に使っているので translate で) */
+@keyframes rc-dvd-rev {
+  50% {
+    translate: 1px -1px;
+  }
+}
+
 .rc-dvd__x {
   display: inline-block;
 }

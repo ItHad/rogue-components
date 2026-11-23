@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BurgerMenu, SmugShareButton } from "rogue-components";
-import { isComplete, roll, type Item } from "./gacha/items";
+import { isComplete, ITEMS, roll, type Item } from "./gacha/items";
 import { GEM_PACK, PULL_COST, resetEverything, useGameState } from "./gacha/state";
 import { DragonTrial } from "./dragon/DragonTrial";
 import { SECRET_ITEMS } from "./gacha/items";
@@ -17,6 +17,8 @@ type View = "gacha" | "collection" | "shop";
 const NAV: View[] = ["gacha", "collection", "shop"];
 const TAB_ICON: Record<View, string> = { gacha: "puni", collection: "hakase", shop: "gogogo" };
 const AUTHOR_X = "files3333";
+/** 図鑑がこの数まで埋まったら、次のガチャから結果の × がギアを上げる */
+const GEAR_UP_FOUND = 15;
 
 export function App() {
   const { locale, setLocale, t } = useI18n();
@@ -47,9 +49,11 @@ export function App() {
     void runGates("visit");
   }, [runGates]);
 
-  const pull = async (count: number): Promise<Item[] | null> => {
+  const pull = async (count: number): Promise<{ items: Item[]; gearUp: boolean } | null> => {
     if (state.gems < PULL_COST * count) return null;
     if (!(await runGates("pull"))) return null;
+    // 引く前の時点で埋まっている数で決める (このガチャで 15 体に届いたら、次のガチャから)
+    const gearUp = ITEMS.filter((i) => (state.owned[i.id] ?? 0) > 0).length >= GEAR_UP_FOUND;
     const results = Array.from({ length: count }, roll);
     // 10 連で最後の 2 体が同時に出ても、そろった 1 回だけ数える
     const after = { ...state.owned };
@@ -68,7 +72,7 @@ export function App() {
         owned,
       };
     });
-    return results;
+    return { items: results, gearUp };
   };
 
   const go = async (next: View) => {
