@@ -122,6 +122,44 @@
   animation: rc-edp-steam 1s ease-out infinite;
 }
 
+/* 矢印を押しすぎた人へ、カレンダーから一言。カレンダーの下から吹き出しで出る */
+.rc-edp__scold {
+  position: relative;
+  margin: 4px 0 0;
+  padding: 6px 14px;
+  border: 2px solid #1c1917;
+  border-radius: 14px;
+  background: #fff;
+  color: #1c1917;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px #0004;
+  animation: rc-edp-scold 0.25s ease-out;
+}
+
+/* 吹き出しのしっぽ (カレンダーを指す) */
+.rc-edp__scold::before,
+.rc-edp__scold::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  border: solid transparent;
+}
+
+.rc-edp__scold::before {
+  bottom: 100%;
+  border-width: 0 9px 10px;
+  border-bottom-color: #1c1917;
+}
+
+.rc-edp__scold::after {
+  bottom: calc(100% - 3px);
+  border-width: 0 7px 8px;
+  border-bottom-color: #fff;
+}
+
 .rc-edp[data-overheated] .rc-edp__page {
   animation: rc-edp-shake 0.12s linear infinite;
   background: #fecaca;
@@ -142,6 +180,13 @@
 @keyframes rc-edp-open {
   from {
     transform: translateY(-6px);
+    opacity: 0;
+  }
+}
+
+@keyframes rc-edp-scold {
+  from {
+    transform: scale(0.6);
     opacity: 0;
   }
 }
@@ -171,6 +216,7 @@
 @media (prefers-reduced-motion: reduce) {
 
   .rc-edp__steam,
+  .rc-edp__scold,
   .rc-edp__row,
   .rc-edp[data-overheated] .rc-edp__page {
     animation: none;
