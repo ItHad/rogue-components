@@ -5,6 +5,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
@@ -14,6 +15,7 @@ import "./GroupPhoto.css";
 
 const MESSAGES = {
   ja: {
+    lineup: "みんな並んでいます。撮影ボタンを押してください",
     hint: "みんなをドラッグして、枠の中に入れてください",
     inFrame: (n: number, total: number) => `枠の中 ${n} / ${total}`,
     shutter: "撮影する",
@@ -21,12 +23,14 @@ const MESSAGES = {
     missed: (names: string[], rest: number) =>
       `${names.join("、")}${rest > 0 ? ` ほか ${rest} 体` : ""}が写っていません。`,
     retry: "もう一回",
+    dodge: "ｻｻｯ",
     done: "みんな写りました！",
     restless: "新入り",
     save: "写真を保存",
     saved: "保存しました",
   },
   en: {
+    lineup: "Everyone is lined up. Press the shutter",
     hint: "Drag everyone into the frame",
     inFrame: (n: number, total: number) => `In frame: ${n} / ${total}`,
     shutter: "Take the photo",
@@ -34,6 +38,7 @@ const MESSAGES = {
     missed: (names: string[], rest: number) =>
       `${names.join(", ")}${rest > 0 ? ` and ${rest} more` : ""} didn't make it into the photo.`,
     retry: "One more time",
+    dodge: "Swish!",
     done: "Everyone made it in!",
     restless: "New",
     save: "Save the photo",
@@ -65,7 +70,8 @@ export interface GroupPhotoProps {
 }
 
 type Phase = "live" | "countdown" | "missed" | "done";
-type Mode = "roam" | "pose" | "held";
+/** lined: 最初に整列している / scatter: 最初のカウントダウンで枠の外へ逃げ出している */
+type Mode = "lined" | "scatter" | "roam" | "pose" | "held";
 
 interface Body {
   x: number;
@@ -98,8 +104,10 @@ const FRAME_H = 0.62;
 /** 枠の線からこれだけ (大きさに対する割合) はみ出しても写っていることにする */
 const TOLERANCE = 0.2;
 /** 動き回る速さ (舞台の幅に対する毎秒の割合) */
-const ROAM_SPEED = 0.055;
+const ROAM_SPEED = 0.07;
 const RESTLESS_SPEED = 1.7;
+/** 最初のカウントダウンで逃げ出す速さ。数え終わる前に全員が枠から出きる */
+const SCATTER_SPEED = 0.4;
 /** 枠に入れてからじっとしている時間 */
 const PATIENCE_MS = [10000, 18000] as const;
 const RESTLESS_PATIENCE_MS = [3500, 6000] as const;
@@ -107,6 +115,7 @@ const RESTLESS_PATIENCE_MS = [3500, 6000] as const;
 const FIDGET_MS = 1200;
 const COUNTDOWN = 3;
 const FLASH_MS = 450;
+const DODGE_FX_MS = 800;
 
 function between([lo, hi]: readonly [number, number]) {
   return lo + Math.random() * (hi - lo);
@@ -131,6 +140,30 @@ function inFrame(b: Body, frame: Rect, size: number) {
   );
 }
 
+function touchesFrame(x: number, y: number, frame: Rect, size: number) {
+  const half = size / 2;
+  return x + half > frame.left && x - half < frame.right && y + half > frame.top && y - half < frame.bottom;
+}
+
+/** 枠の中に整列したときの i 番目の位置 */
+function lineupPoint(i: number, n: number, width: number, height: number) {
+  const frame = frameOf(width, height);
+  const fw = frame.right - frame.left;
+  const fh = frame.bottom - frame.top;
+  const cols = Math.max(1, Math.ceil(Math.sqrt((n * fw) / fh)));
+  const rows = Math.ceil(n / cols);
+  const row = Math.floor(i / cols);
+  const inRow = row === rows - 1 ? n - row * cols : cols;
+  const col = i % cols;
+  const margin = sizeOf(width) * (0.5 - TOLERANCE) + 1;
+  const x = frame.left + ((col + 0.5 + (cols - inRow) / 2) * fw) / cols;
+  const y = frame.top + ((row + 0.5) * fh) / rows;
+  return {
+    x: Math.min(frame.right - margin, Math.max(frame.left + margin, x)),
+    y: Math.min(frame.bottom - margin, Math.max(frame.top + margin, y)),
+  };
+}
+
 /** 枠の外のどこか */
 function outsidePoint(width: number, height: number, size: number) {
   const frame = frameOf(width, height);
@@ -138,9 +171,7 @@ function outsidePoint(width: number, height: number, size: number) {
   let p = { x: half, y: half };
   for (let i = 0; i < 60; i++) {
     p = { x: half + Math.random() * (width - size), y: half + Math.random() * (height - size) };
-    const touches =
-      p.x + half > frame.left && p.x - half < frame.right && p.y + half > frame.top && p.y - half < frame.bottom;
-    if (!touches) break;
+    if (!touchesFrame(p.x, p.y, frame, size)) break;
   }
   return p;
 }
@@ -157,6 +188,8 @@ function loadImage(src: string) {
 /**
  * 集合写真を撮るカメラ。枠のまわりを被写体がうろちょろしていて、全員をドラッグで枠に入れてから撮らないと「もう一回」になる。
  * 枠に入れた被写体もしばらくすると飽きて出ていく。
+ * 最初はみんな枠の中に整列しているが、最初のカウントダウンで一斉に逃げ出すので、最初の 1 枚は必ず撮り直しになる。
+ * 2 回目からは撮影ボタンが画面の上をぐるぐる回る。
  */
 export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-photo.png", children, className }: GroupPhotoProps) {
   const m = useMessages(MESSAGES);
@@ -172,6 +205,19 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
   const [flash, setFlash] = useState(0);
   const [shot, setShot] = useState<Shot | null>(null);
   const [saved, setSaved] = useState(false);
+  /** 最初のカウントダウンが始まったか */
+  const [started, setStarted] = useState(false);
+  /** シャッターを切った回数 */
+  const [attempts, setAttempts] = useState(0);
+  /** 撮影ボタンが画面の上を逃げ回っているか */
+  const [dodging, setDodging] = useState(false);
+  /** 撮影ボタンがよけたときの効果 (ボタンがいた場所に出す) */
+  const [dodgeFx, setDodgeFx] = useState<{ key: number; x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!dodgeFx) return;
+    const id = window.setTimeout(() => setDodgeFx(null), DODGE_FX_MS);
+    return () => window.clearTimeout(id);
+  }, [dodgeFx]);
   const onSuccessRef = useRef(onSuccess);
   const subjectsRef = useRef(subjects);
   useEffect(() => {
@@ -204,19 +250,19 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
 
   const { width, height } = size.current;
   const now0 = performance.now();
-  for (const s of subjects) {
-    if (bodies.current.has(s.id)) continue;
-    const p = outsidePoint(width, height, sizeOf(width));
+  subjects.forEach((s, i) => {
+    if (bodies.current.has(s.id)) return;
+    const p = started ? outsidePoint(width, height, sizeOf(width)) : lineupPoint(i, subjects.length, width, height);
     bodies.current.set(s.id, {
       ...p,
       heading: Math.random() * Math.PI * 2,
       turnAt: now0 + Math.random() * 1000,
-      mode: "roam",
+      mode: started ? "roam" : "lined",
       leaveAt: 0,
     });
-  }
+  });
 
-  const moving = phase === "live" || phase === "countdown";
+  const moving = started && (phase === "live" || phase === "countdown");
 
   useEffect(() => {
     if (!moving) return;
@@ -231,7 +277,11 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
       const frame = frameOf(w, h);
       for (const subject of subjectsRef.current) {
         const b = bodies.current.get(subject.id);
-        if (!b || b.mode === "held") continue;
+        if (!b || b.mode === "held" || b.mode === "lined") continue;
+        if (b.mode === "scatter" && !touchesFrame(b.x, b.y, frame, s)) {
+          b.mode = "roam";
+          b.turnAt = now + 300 + Math.random() * 800;
+        }
         if (b.mode === "pose") {
           if (now < b.leaveAt) continue;
           // 飽きたら枠の外へ向かって歩き出す
@@ -241,11 +291,11 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
           b.turnAt = now + 1500;
           b.mode = "roam";
         }
-        if (now >= b.turnAt) {
+        if (b.mode === "roam" && now >= b.turnAt) {
           b.heading += (Math.random() - 0.5) * 2.4;
           b.turnAt = now + 500 + Math.random() * 1100;
         }
-        const v = speedOf(subject);
+        const v = b.mode === "scatter" ? Math.max(speedOf(subject), w * SCATTER_SPEED) : speedOf(subject);
         let x = b.x + Math.cos(b.heading) * v * dt;
         let y = b.y + Math.sin(b.heading) * v * dt;
         if (x < half || x > w - half) {
@@ -271,12 +321,23 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
     const s = sizeOf(w);
     const frame = frameOf(w, h);
     held.current = null;
-    for (const b of bodies.current.values()) if (b.mode === "held") b.mode = "roam";
+    for (const b of bodies.current.values()) if (b.mode === "held" || b.mode === "scatter") b.mode = "roam";
     setFlash((n) => n + 1);
     const out = subjects.filter((sub) => {
       const b = bodies.current.get(sub.id);
       return !b || !inFrame(b, frame, s);
     });
+    // 最初の 1 枚は必ず撮り直し。万一みんな枠に入っていても、いちばん端にいた子は写っていないことにする
+    if (attempts === 0 && out.length === 0 && subjects.length > 0) {
+      const cx = (frame.left + frame.right) / 2;
+      const cy = (frame.top + frame.bottom) / 2;
+      const far = (sub: GroupPhotoSubject) => {
+        const b = bodies.current.get(sub.id);
+        return b ? Math.hypot(b.x - cx, b.y - cy) : 0;
+      };
+      out.push(subjects.reduce((a, b) => (far(b) > far(a) ? b : a)));
+    }
+    setAttempts((n) => n + 1);
     pausedAt.current = performance.now();
     if (out.length > 0) {
       setMissing(out.map((sub) => sub.id));
@@ -327,12 +388,37 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
       pausedAt.current = null;
     }
     setMissing([]);
+    setDodging(false);
     setPhase("live");
   };
 
   const pose = (subject: GroupPhotoSubject, b: Body) => {
     b.mode = "pose";
     b.leaveAt = performance.now() + between(subject.restless ? RESTLESS_PATIENCE_MS : PATIENCE_MS);
+  };
+
+  const press = (e: MouseEvent<HTMLButtonElement>) => {
+    // 2 回目からは、最初に押したときは撮らずに逃げ出す
+    if (attempts > 0 && !dodging) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setDodgeFx((fx) => ({ key: (fx?.key ?? 0) + 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }));
+      setDodging(true);
+      return;
+    }
+    if (!started) {
+      // 整列していたみんなが、枠の真ん中から外へ向かって一斉に逃げ出す
+      const { width: w, height: hh } = size.current;
+      const frame = frameOf(w, hh);
+      const cx = (frame.left + frame.right) / 2;
+      const cy = (frame.top + frame.bottom) / 2;
+      for (const b of bodies.current.values()) {
+        const away = b.x === cx && b.y === cy ? Math.random() * Math.PI * 2 : Math.atan2(b.y - cy, b.x - cx);
+        b.heading = away + (Math.random() - 0.5) * 0.6;
+        b.mode = "scatter";
+      }
+      setStarted(true);
+    }
+    setPhase("countdown");
   };
 
   const toLocal = (e: PointerEvent<Element>) => {
@@ -343,7 +429,7 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
   const grab = (subject: GroupPhotoSubject) => (e: PointerEvent<HTMLButtonElement>) => {
     if (!moving || held.current) return;
     const b = bodies.current.get(subject.id);
-    if (!b) return;
+    if (!b || b.mode === "scatter") return;
     e.preventDefault();
     capturePointer(e);
     const p = toLocal(e);
@@ -383,7 +469,7 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
     if (!moving || (e.key !== "Enter" && e.key !== " ")) return;
     e.preventDefault();
     const b = bodies.current.get(subject.id);
-    if (!b) return;
+    if (!b || b.mode === "scatter") return;
     const { width: w, height: hh } = size.current;
     const s = sizeOf(w);
     const frame = frameOf(w, hh);
@@ -552,22 +638,40 @@ export function GroupPhoto({ subjects, onSuccess, caption, fileName = "group-pho
           ? m.missed(missingNames.slice(0, 3), Math.max(0, missingNames.length - 3))
           : phase === "countdown"
             ? m.cheese
-            : m.hint}
+            : started
+              ? m.hint
+              : m.lineup}
       </p>
+      {dodgeFx && (
+        <span
+          key={dodgeFx.key}
+          className="rc-gp__dodge"
+          style={{ left: dodgeFx.x, top: dodgeFx.y }}
+          aria-hidden="true"
+        >
+          <span className="rc-gp__dodge-puff" />
+          <span className="rc-gp__dodge-lines" />
+          <span className="rc-gp__dodge-word">{m.dodge}</span>
+        </span>
+      )}
       <div className="rc-gp__after">
         {phase === "missed" ? (
           <button type="button" className="rc-gp__button" onClick={retry}>
             {m.retry}
           </button>
         ) : (
-          <button
-            type="button"
-            className="rc-gp__button rc-gp__button--shutter"
-            disabled={phase === "countdown"}
-            onClick={() => setPhase("countdown")}
-          >
-            {m.shutter}
-          </button>
+          // 2 回目からは、押した瞬間に撮影ボタンが画面の上をぐるぐる回り出す。
+          // 包みを付け外しするとボタンが作り直されてフォーカスが外れるので、包みは置いたままクラスだけ切り替える
+          <span className={dodging ? "rc-gp__orbit" : undefined}>
+            <button
+              type="button"
+              className="rc-gp__button rc-gp__button--shutter"
+              disabled={phase === "countdown"}
+              onClick={press}
+            >
+              {m.shutter}
+            </button>
+          </span>
         )}
       </div>
     </div>

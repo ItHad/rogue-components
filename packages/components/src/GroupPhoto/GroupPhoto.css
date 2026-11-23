@@ -143,6 +143,8 @@
 }
 
 .rc-gp__after {
+  /* 撮影ボタンが回りに出ていっても、下の中身がずれないようにする */
+  min-block-size: 44px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -160,6 +162,140 @@
   font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+/* 2 回目からの撮影ボタン。押した瞬間に、画面いっぱいに楕円を描いて回り出す。
+   横と縦を 1/4 周ずらして往復させると、ぐるっと一周する。
+   もとのボタンがあった画面の下の真ん中から回り始めるように、開始位置をずらしている */
+.rc-gp__orbit {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 30000;
+  animation: rc-gp-orbit-x 2s ease-in-out -1s infinite alternate;
+}
+
+.rc-gp__orbit > .rc-gp__button {
+  display: block;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px -4px #000;
+  transform: translate(-50%, -50%);
+  animation: rc-gp-orbit-y 2s ease-in-out -2s infinite alternate;
+}
+
+@keyframes rc-gp-orbit-x {
+  from {
+    translate: calc(-50vw + 90px) 0;
+  }
+  to {
+    translate: calc(50vw - 90px) 0;
+  }
+}
+
+@keyframes rc-gp-orbit-y {
+  from {
+    translate: 0 calc(-50vh + 40px);
+  }
+  to {
+    translate: 0 calc(50vh - 40px);
+  }
+}
+
+/* 撮影ボタンがよけた瞬間、もといた場所に残す効果。土ぼこりの輪とスピード線と「ｻｻｯ」 */
+.rc-gp__dodge {
+  position: fixed;
+  z-index: 29999;
+  inline-size: 0;
+  block-size: 0;
+  pointer-events: none;
+}
+
+.rc-gp__dodge-puff {
+  position: absolute;
+  left: 0;
+  top: 0;
+  inline-size: 130px;
+  block-size: 46px;
+  border: 3px solid var(--rc-gp-accent);
+  border-radius: 999px;
+  translate: -50% -50%;
+  opacity: 0;
+  animation: rc-gp-dodge-puff 0.45s ease-out;
+}
+
+.rc-gp__dodge-lines {
+  position: absolute;
+  left: -76px;
+  top: -16px;
+  inline-size: 46px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow:
+    10px 14px 0 #fff,
+    -6px 28px 0 #fff;
+  opacity: 0;
+  animation: rc-gp-dodge-lines 0.5s ease-out;
+}
+
+.rc-gp__dodge-word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #fff;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow:
+    2px 2px 0 #1b1530,
+    -2px 2px 0 #1b1530,
+    2px -2px 0 #1b1530,
+    -2px -2px 0 #1b1530,
+    0 4px 10px #0008;
+  opacity: 0;
+  animation: rc-gp-dodge-word 0.8s ease-out;
+}
+
+@keyframes rc-gp-dodge-puff {
+  from {
+    opacity: 1;
+    scale: 0.7;
+  }
+  to {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+@keyframes rc-gp-dodge-lines {
+  from {
+    opacity: 0.9;
+    translate: 40px 0;
+  }
+  to {
+    opacity: 0;
+    translate: -30px 0;
+  }
+}
+
+@keyframes rc-gp-dodge-word {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) rotate(-10deg) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -110%) rotate(-10deg) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -125%) rotate(-10deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -150%) rotate(-10deg) scale(1);
+  }
 }
 
 .rc-gp__button:disabled {
