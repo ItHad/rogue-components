@@ -4,7 +4,7 @@ import { HoardSelect } from "rogue-components";
 import { SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { ItemCard } from "../ui/ItemCard";
-import { ALL_TREASURES, distinctTreasures, randomTreasure, treasureName, treasureOptions } from "./treasures";
+import { ALL_TREASURES, HOARD_TREASURES, distinctTreasures, randomTreasure, treasureName, treasureOptions } from "./treasures";
 
 const REWARD = SECRET_ITEMS[0]!;
 /** 降りてくるまで */
@@ -14,9 +14,13 @@ const GIVE_UP_MS = 2600;
 
 type Phase = "intro" | "trial" | "reward" | "gone";
 
-/** 試練は 3 つ。3 択 → 宝物庫の 360 点 → 息を吹かれながら 360 点 */
+/** 試練は 3 つ。3 択 → 宝物庫の 360 点 → 息を吹かれながら 1000 点 */
 const ROUNDS = 3;
 const FIRST_CHOICES = 3;
+
+/** その試練で探させる財宝 */
+const poolFor = (round: number, firstPool: readonly string[]) =>
+  round === 0 ? firstPool : round === 1 ? HOARD_TREASURES : ALL_TREASURES;
 
 interface DragonTrialProps {
   /** 背景のドラゴンがいた位置。ここから大きくなりながら降りてくる */
@@ -34,7 +38,7 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
   const [arrived, setArrived] = useState(false);
   const [round, setRound] = useState(0);
   const [firstPool] = useState(() => distinctTreasures(FIRST_CHOICES));
-  const pool = round === 0 ? firstPool : ALL_TREASURES;
+  const pool = poolFor(round, firstPool);
   const [target, setTarget] = useState(() => randomTreasure(undefined, firstPool));
   const [choice, setChoice] = useState<string | null>(null);
   const [mistake, setMistake] = useState<{ got: string; roar: number } | null>(null);
@@ -104,7 +108,7 @@ export function DragonTrial({ from, owned, onReward, onClose }: DragonTrialProps
         return;
       }
       setRound(round + 1);
-      setTarget(randomTreasure(target));
+      setTarget(randomTreasure(target, poolFor(round + 1, firstPool)));
       setChoice(null);
       setMistake(null);
       setPassed(true);

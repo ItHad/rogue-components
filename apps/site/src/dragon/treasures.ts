@@ -1,17 +1,24 @@
 import type { HoardOption, Locale } from "rogue-components";
 
-// 状態 × 素材 × 品物 の組み合わせで 360 点。似た名前どうしがまぎらわしくなるように選んでいる
+// 状態 × 素材 × 品物 の組み合わせで 10 × 5 × 20 = 1000 点。似た名前どうしがまぎらわしくなるように選んでいる。
+// 2 つめの試練では、そのうち状態の前 6 つ × 品物の前 12 個の 360 点だけを使う
 const CONDITIONS: Record<Locale, string[]> = {
-  ja: ["古びた", "錆びた", "欠けた", "輝く", "呪われた", "ひび割れた"],
-  en: ["Old", "Rusty", "Chipped", "Gleaming", "Cursed", "Cracked"],
+  ja: ["古びた", "錆びた", "欠けた", "輝く", "呪われた", "ひび割れた", "煤けた", "磨かれた", "焦げた", "曇った"],
+  en: ["Old", "Rusty", "Chipped", "Gleaming", "Cursed", "Cracked", "Sooty", "Polished", "Scorched", "Tarnished"],
 };
 const MATERIALS: Record<Locale, string[]> = {
   ja: ["金の", "銀の", "銅の", "黄金の", "白金の"],
   en: ["Gold", "Silver", "Bronze", "Golden", "Platinum"],
 };
 const OBJECTS: Record<Locale, string[]> = {
-  ja: ["杯", "盃", "冠", "王冠", "指輪", "腕輪", "短剣", "長剣", "盾", "大盾", "鏡", "手鏡"],
-  en: ["Cup", "Chalice", "Crown", "Coronet", "Ring", "Bangle", "Dagger", "Longsword", "Shield", "Tower Shield", "Mirror", "Hand Mirror"],
+  ja: [
+    "杯", "盃", "冠", "王冠", "指輪", "腕輪", "短剣", "長剣", "盾", "大盾", "鏡", "手鏡",
+    "壺", "大壺", "笏", "王笏", "首飾り", "胸飾り", "兜", "大兜",
+  ],
+  en: [
+    "Cup", "Chalice", "Crown", "Coronet", "Ring", "Bangle", "Dagger", "Longsword", "Shield", "Tower Shield", "Mirror", "Hand Mirror",
+    "Urn", "Great Urn", "Scepter", "Royal Scepter", "Necklace", "Brooch", "Helm", "Great Helm",
+  ],
 };
 
 /** 財宝の id (`状態-素材-品物` の番号) から名前を作る */
@@ -35,8 +42,14 @@ export function treasureOptions(locale: Locale, ids: readonly string[] = IDS): H
     .sort((a, b) => a.label.localeCompare(b.label, locale));
 }
 
-/** 宝物庫にある財宝をすべて */
+/** 宝物庫にある財宝をすべて (1000 点)。最後の試練で使う */
 export const ALL_TREASURES: readonly string[] = IDS;
+
+/** 宝物庫の手前の 360 点。2 つめの試練で使う */
+export const HOARD_TREASURES: readonly string[] = IDS.filter((id) => {
+  const [c, , o] = id.split("-").map(Number) as [number, number, number];
+  return c < 6 && o < 12;
+});
 
 export function randomTreasure(except?: string, pool: readonly string[] = IDS): string {
   let id: string;
