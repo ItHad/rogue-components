@@ -167,7 +167,7 @@ const ja = {
     order: [
       (name: string) => `まずは小手調べだ。この 3 つの中から「${name}」を持ってまいれ。`,
       (name: string) => `次は宝物庫の奥だ。360 の財宝の中から「${name}」を探してまいれ。`,
-      (name: string) => `最後の試練だ。我が息に耐えながら「${name}」を持ってまいれ。`,
+      (name: string) => `最後の試練だ。宝物庫のすべて、1000 の財宝の中から、我が息に耐えながら「${name}」を持ってまいれ。`,
     ],
     passed: "……ほう、やるではないか。",
     round: (n: number, total: number) => `試練 ${n} / ${total}`,
@@ -388,7 +388,7 @@ const en: Messages = {
     order: [
       (name: string) => `A warm-up first. From these three, bring me the ${name}.`,
       (name: string) => `Now into the depths of my hoard. Among 360 treasures, find the ${name}.`,
-      (name: string) => `The final trial. Endure my breath and bring me the ${name}.`,
+      (name: string) => `The final trial. From all 1000 treasures of my hoard, endure my breath and bring me the ${name}.`,
     ],
     passed: "...Hmph. Not bad.",
     round: (n: number, total: number) => `Trial ${n} of ${total}`,
