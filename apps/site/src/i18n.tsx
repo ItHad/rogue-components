@@ -62,7 +62,8 @@ const ja = {
     back: "ゲームに戻る",
     open: "みんなで記念撮影をする",
     again: "もう一度記念撮影をする",
-    dragonHint: "ヒント：背景のドラゴンを連続で押すと...",
+    hintLabel: "ヒント",
+    dragonHint: "背景のドラゴンを連続で押すと...",
   },
 
   shop: {
@@ -376,7 +377,8 @@ const en: Messages = {
     back: "Back to the game",
     open: "Take a group photo",
     again: "Take another group photo",
-    dragonHint: "Hint: Try tapping the dragon in the background over and over...",
+    hintLabel: "Hint",
+    dragonHint: "Try tapping the dragon in the background over and over...",
   },
 
   dragon: {

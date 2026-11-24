@@ -1467,7 +1467,10 @@ p {
   margin: 16px 0 0;
   color: var(--ink-muted);
   font-size: 0.9em;
-  text-align: center;
+}
+
+.photo__hint p {
+  margin: 0;
 }
 
 /* PC の低いウィンドウでも、撮影ボタンまで 1 画面に収める */
