@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { GroupPhoto, SmugShareButton, type GroupPhotoSubject } from "rogue-components";
+import { BellowsAccordion, GroupPhoto, SmugShareButton, type GroupPhotoSubject } from "rogue-components";
 import { ITEMS, SECRET_ITEMS } from "../gacha/items";
 import { useI18n } from "../i18n";
 import { Modal } from "../ui/Modal";
@@ -59,7 +59,11 @@ export function PhotoSession({ owned, newcomers, onTaken, onClose }: PhotoSessio
           {t.photo.back}
         </button>
       </GroupPhoto>
-      {taken && hatchlings.length === 0 && <p className="photo__hint">{t.photo.dragonHint}</p>}
+      {taken && hatchlings.length === 0 && (
+        <BellowsAccordion className="photo__hint" label={t.photo.hintLabel}>
+          <p>{t.photo.dragonHint}</p>
+        </BellowsAccordion>
+      )}
     </Modal>
   );
 }

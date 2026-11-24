@@ -34,8 +34,8 @@ export interface BellowsAccordionProps {
   className?: string;
 }
 
-/** 持っている間に抜ける空気 (px/秒) */
-const LEAK_HELD = 70;
+/** 持っている間は空気を抜かない。広げている途中で縮みだすと引っぱった分が報われない */
+const LEAK_HELD = 0;
 /** 手を離したときに抜ける空気 (px/秒) */
 const LEAK_FREE = 360;
 const KEY_STEP = 28;
@@ -48,7 +48,7 @@ const FOLDS = 12;
 
 /**
  * 見た目は普通のアコーディオン (› の付いた見出し)。押しても開かず、› をつかんで右へ引っぱると、見出しとの間に蛇腹が広がって中身が見える。
- * 蛇腹からは空気が抜け続けるので、引っぱり続けないと閉じてしまう。
+ * 持っている間は広がったままだが、手を離すと空気が抜けて閉じてしまう。
  */
 export function BellowsAccordion({ label, children, className }: BellowsAccordionProps) {
   const m = useMessages(MESSAGES);
@@ -166,7 +166,7 @@ export function BellowsAccordion({ label, children, className }: BellowsAccordio
 
   const ratio = width / max;
   const readable = ratio >= 0.6;
-  const status = nag ? m.nag : open && held ? m.leaking : "";
+  const status = nag ? m.nag : open && !held ? m.leaking : "";
 
   return (
     <div
